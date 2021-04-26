@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 
 namespace GitTank
 {
@@ -94,7 +92,7 @@ namespace GitTank
             {
                 var workingDirectory = Path.Combine(RootWorkingDirectory, repository);
                 var arguments = defaultArguments;
-                if (repository.Equals("awesomesauce", StringComparison.OrdinalIgnoreCase))
+                if (repository.Equals("", StringComparison.OrdinalIgnoreCase))
                 {
                     arguments += "";
                 }
