@@ -1,5 +1,5 @@
 # GitTank
-Git client
+Git client that helps to manage and keep multiple repositries in sync.
 
 Version | Build Status
 ------------ | -------------
