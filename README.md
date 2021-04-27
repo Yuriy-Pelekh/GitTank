@@ -1,5 +1,5 @@
 # GitTank
-Git client that helps to manage and keep multiple repositries in sync.
+Git client that helps to manage and keep multiple repositries in a sync.
 
 Version | Build Status | Tests
 ------------ | ------------- | -------------
@@ -8,3 +8,7 @@ Stable build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2
 
 TODO:
 - [ ] Make it awesome
+- [ ] Simplify others life
+- [ ] Make people more performant and effective
+- [ ] Manage multuple repos at once
+- [ ] Learn something new
