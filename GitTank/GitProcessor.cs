@@ -16,8 +16,7 @@ namespace GitTank
         private readonly string _defaultRepository;
         private readonly string _defaultBranch;
         private readonly string _alternativeBranch;
-
-        private List<string> Repositories = new();
+        private readonly IEnumerable<string> _repositories;
 
         public GitProcessor(IConfiguration configuration)
         {
@@ -28,7 +27,7 @@ namespace GitTank
             _defaultRepository = configuration.GetValue<string>("appSettings:defaultRepository");
             _defaultBranch = configuration.GetValue<string>("appSettings:defaultBranch");
             _alternativeBranch = configuration.GetValue<string>("appSettings:alternativeBranch");
-            Repositories = configuration.GetSection("appSettings:repositories")
+            _repositories = configuration.GetSection("appSettings:repositories")
                 .GetChildren()
                 .Select(c => c.Value)
                 .ToList();
@@ -55,7 +54,7 @@ namespace GitTank
 
         public async Task Update()
         {
-            foreach (var repository in Repositories)
+            foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
                 string[] arguments =
@@ -86,7 +85,7 @@ namespace GitTank
         {
             var arguments = $"checkout {selectedItem}";
 
-            foreach (var repository in Repositories)
+            foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
 
@@ -99,7 +98,7 @@ namespace GitTank
         {
             const string defaultArguments = "merge origin/";
 
-            foreach (var repository in Repositories)
+            foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
                 var arguments = defaultArguments;
