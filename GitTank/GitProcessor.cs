@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GitTank
@@ -10,17 +12,26 @@ namespace GitTank
         public event OutputEventHandler Output;
         private readonly ProcessHelper _processHelper;
         private const string Command = "git";
-        private const string RootWorkingDirectory = @"";
+        private readonly string RootWorkingDirectory;
+        private readonly string DefaultRepository;
+        private readonly string DefaultBranch;
+        private readonly string AlternativeBranch;
 
-        private List<string> Repositories = new()
-        {
+        private List<string> Repositories = new();
 
-        };
-
-        public GitProcessor()
+        public GitProcessor(IConfiguration configuration)
         {
             _processHelper = new ProcessHelper();
             _processHelper.Output += OnOutput;
+
+            RootWorkingDirectory = configuration.GetValue<string>("appSettings:sourcePath");
+            DefaultRepository = configuration.GetValue<string>("appSettings:defaultRepository");
+            DefaultBranch = configuration.GetValue<string>("appSettings:defaultBranch");
+            AlternativeBranch = configuration.GetValue<string>("appSettings:alternativeBranch");
+            Repositories = configuration.GetSection("appSettings:repositories")
+                .GetChildren()
+                .Select(c => c.Value)
+                .ToList();
         }
 
         ~GitProcessor()
@@ -36,7 +47,7 @@ namespace GitTank
         public async Task<string> GetBranch()
         {
             const string arguments = "rev-parse --abbrev-ref HEAD"; //"git branch --show-current";
-            const string workingDirectory = @"";
+            var workingDirectory = Path.Combine(RootWorkingDirectory, DefaultRepository);
 
             _processHelper.Configure(Command, arguments, workingDirectory);
             return await _processHelper.Execute();
@@ -64,7 +75,7 @@ namespace GitTank
         public async Task<string> Branches()
         {
             const string arguments = "branch"; // -r - only remote, -a - all
-            const string workingDirectory = @"";
+            var workingDirectory = Path.Combine(RootWorkingDirectory, DefaultRepository);
 
             _processHelper.Configure(Command, arguments, workingDirectory);
             return await _processHelper.Execute();
@@ -92,13 +103,13 @@ namespace GitTank
             {
                 var workingDirectory = Path.Combine(RootWorkingDirectory, repository);
                 var arguments = defaultArguments;
-                if (repository.Equals("", StringComparison.OrdinalIgnoreCase))
+                if (repository.Equals(DefaultRepository, StringComparison.OrdinalIgnoreCase))
                 {
-                    arguments += "";
+                    arguments += AlternativeBranch;
                 }
                 else
                 {
-                    arguments += "";
+                    arguments += DefaultBranch;
                 }
 
                 _processHelper.Configure(Command, arguments, workingDirectory);

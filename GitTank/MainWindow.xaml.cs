@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using GitTank.ViewModels;
+using Microsoft.Extensions.Configuration;
 
 namespace GitTank
 {
@@ -11,21 +12,22 @@ namespace GitTank
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly GitProcessor _gitProcessor = new();
+        private readonly GitProcessor _gitProcessor;
 
-        public MainWindow()
+        public MainWindow(IConfiguration configuration)
         {
             InitializeComponent();
+            Loaded += OnLoaded;
 
             DataContext = new MainViewModel();
-
+            _gitProcessor = new GitProcessor(configuration);
             _gitProcessor.Output += OnOutput;
-            Loaded += OnLoaded;
         }
 
         ~MainWindow()
         {
             _gitProcessor.Output -= OnOutput;
+            Loaded -= OnLoaded;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
