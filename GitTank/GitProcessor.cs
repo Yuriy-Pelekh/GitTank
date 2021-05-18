@@ -15,7 +15,6 @@ namespace GitTank
         private readonly string _rootWorkingDirectory;
         private readonly string _defaultRepository;
         private readonly string _defaultBranch;
-        private readonly string _alternativeBranch;
         private readonly IEnumerable<string> _repositories;
 
         public GitProcessor(IConfiguration configuration)
@@ -26,7 +25,6 @@ namespace GitTank
             _rootWorkingDirectory = configuration.GetValue<string>("appSettings:sourcePath");
             _defaultRepository = configuration.GetValue<string>("appSettings:defaultRepository");
             _defaultBranch = configuration.GetValue<string>("appSettings:defaultBranch");
-            _alternativeBranch = configuration.GetValue<string>("appSettings:alternativeBranch");
             _repositories = configuration.GetSection("appSettings:repositories")
                 .GetChildren()
                 .Select(c => c.Value)
@@ -102,14 +100,7 @@ namespace GitTank
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
                 var arguments = defaultArguments;
-                if (repository.Equals(_defaultRepository, StringComparison.OrdinalIgnoreCase))
-                {
-                    arguments += _alternativeBranch;
-                }
-                else
-                {
-                    arguments += _defaultBranch;
-                }
+                arguments += _defaultBranch;
 
                 _processHelper.Configure(Command, arguments, workingDirectory);
                 await _processHelper.Execute();
