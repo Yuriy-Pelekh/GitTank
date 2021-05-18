@@ -16,7 +16,20 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
-        <ComboBox Grid.Column="0" Grid.Row="0" x:Name="ComboBoxBranches" Margin="10,10,10,10" IsTextSearchEnabled="True" IsEditable="false"/>
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Grid.Row="0" Content="Repository:" VerticalAlignment="Bottom" Margin="5,0,0,0"/>
+            <Label Grid.Column="0" Grid.Row="1"  Content="Branch:" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ComboBoxRepositories" Margin="0,9,10,0" IsTextSearchEnabled="True" IsEditable="false"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" x:Name="ComboBoxBranches" Margin="0,9,10,10" IsTextSearchEnabled="True" IsEditable="false"/>
+        </Grid>
         <TextBox Grid.Column="0" Grid.Row="1" x:Name="TextBoxOutput" IsReadOnly="True" Margin="10,0,10,10" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
         <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="0, 10, 10, 10">
             <Button Content="Branch" Margin="0, 0, 0, 5" Click="OnButtonBranchClick"/>
