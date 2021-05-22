@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GitTank
 {
-    internal class ProcessHelper: IDisposable
+    internal class ProcessHelper : IDisposable
     {
         public event OutputEventHandler Output;
         private readonly Process _process;
@@ -66,6 +66,10 @@ namespace GitTank
             _process.Start();
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
+            // Throws an excpetion on some machines. Suspect it is because of some policies configurations. Requires more attention.
+            // See
+            //     Dispatcher.UnhandledException += OnDispatcherUnhandledException;
+            // in App.xaml.cs for reference
             _process.WaitForExit();
             _process.CancelErrorRead();
             _process.CancelOutputRead();

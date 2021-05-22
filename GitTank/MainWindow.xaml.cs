@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -12,10 +13,12 @@ namespace GitTank
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly IConfiguration _configuration;
         private readonly GitProcessor _gitProcessor;
 
         public MainWindow(IConfiguration configuration)
         {
+            _configuration = configuration;
             InitializeComponent();
             Loaded += OnLoaded;
 
@@ -32,6 +35,26 @@ namespace GitTank
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            Task.Run(() =>
+            {
+                var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
+                var repositories = _configuration.GetSection("appSettings:repositories")
+                    .GetChildren()
+                    .Select(c => c.Value)
+                    .ToList();
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    foreach (var repository in repositories)
+                    {
+                        ComboBoxRepositories.Items.Add(repository);
+
+                        if (repository.Equals(defaultRepository, StringComparison.OrdinalIgnoreCase))
+                        {
+                            ComboBoxRepositories.SelectedIndex = ComboBoxRepositories.Items.Count - 1;
+                        }
+                    }
+                }), DispatcherPriority.Background);
+            });
             Task.Run(() =>
             {
                 var remoteBranches = _gitProcessor.Branches().Result;
