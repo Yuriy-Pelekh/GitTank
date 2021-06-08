@@ -62,15 +62,18 @@ namespace GitTank
                 {
                     foreach (var remoteBranch in remoteBranches.Split(Environment.NewLine))
                     {
-                        if (remoteBranch.StartsWith("*"))
+                        if (!string.IsNullOrWhiteSpace(remoteBranch?.Trim()))
                         {
-                            var currentBranch = remoteBranch.Replace("*", string.Empty);
-                            ComboBoxBranches.Items.Add(currentBranch.Trim());
-                            ComboBoxBranches.SelectedIndex = ComboBoxBranches.Items.Count - 1;
-                        }
-                        else
-                        {
-                            ComboBoxBranches.Items.Add(remoteBranch.Trim());
+                            if (remoteBranch.StartsWith("*"))
+                            {
+                                var currentBranch = remoteBranch.Replace("*", string.Empty);
+                                ComboBoxBranches.Items.Add(currentBranch.Trim());
+                                ComboBoxBranches.SelectedIndex = ComboBoxBranches.Items.Count - 1;
+                            }
+                            else
+                            {
+                                ComboBoxBranches.Items.Add(remoteBranch.Trim());
+                            }
                         }
                     }
                 }), DispatcherPriority.Background);
@@ -138,6 +141,17 @@ namespace GitTank
             Task.Run(() =>
             {
                 var remoteBranches = _gitProcessor.Sync();
+                Dispatcher.BeginInvoke(new Action(() => ((UIElement)sender).IsEnabled = true), DispatcherPriority.Background);
+            });
+        }
+
+        private void OnButtonPushClick(object sender, RoutedEventArgs e)
+        {
+            ((UIElement)sender).IsEnabled = false;
+            TextBoxOutput.Text = string.Empty;
+            Task.Run(() =>
+            {
+                var remoteBranches = _gitProcessor.Push();
                 Dispatcher.BeginInvoke(new Action(() => ((UIElement)sender).IsEnabled = true), DispatcherPriority.Background);
             });
         }

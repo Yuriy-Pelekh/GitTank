@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,10 +44,21 @@ namespace GitTank
         public async Task<string> GetBranch()
         {
             const string arguments = "rev-parse --abbrev-ref HEAD"; //"git branch --show-current";
-            var workingDirectory = Path.Combine(_rootWorkingDirectory, _defaultRepository);
 
-            _processHelper.Configure(Command, arguments, workingDirectory);
-            return await _processHelper.Execute();
+            var result = string.Empty;
+
+            foreach (var repository in _repositories)
+            {
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
+                _processHelper.Configure(Command, arguments, workingDirectory);
+                var currentBranch = await _processHelper.Execute();
+                if (string.Equals(repository, _defaultRepository))
+                {
+                    result = currentBranch;
+                }
+            }
+
+            return result;
         }
 
         public async Task Update()
@@ -56,9 +68,9 @@ namespace GitTank
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
                 string[] arguments =
                 {
-                    "fetch -v --progress --prune \"origin\"",
+                    //"fetch -v --progress --prune \"origin\"",
                     "pull --progress -v --no-rebase \"origin\"",
-                    "remote prune origin"
+                    //"remote prune origin"
                 };
 
                 foreach (var argument in arguments)
@@ -80,11 +92,22 @@ namespace GitTank
 
         public async Task Checkout(string selectedItem)
         {
-            var arguments = $"checkout {selectedItem}";
+            var remoteBranch = "ls-remote --heads origin {0}";
+            var localBranch = "branch --list {0}";
+            var arguments = $"checkout -b {selectedItem}";
 
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
+                _processHelper.Configure(Command, string.Format(localBranch, selectedItem), workingDirectory);
+                var localBranchExists = await _processHelper.Execute();
+                _processHelper.Configure(Command, string.Format(remoteBranch, selectedItem), workingDirectory);
+                var remoteBranchExists = await _processHelper.Execute();
+
+                if (!string.IsNullOrWhiteSpace(localBranchExists) || !string.IsNullOrWhiteSpace(remoteBranchExists))
+                {
+                    arguments = $"checkout {selectedItem}";
+                }
 
                 _processHelper.Configure(Command, arguments, workingDirectory);
                 await _processHelper.Execute();
@@ -93,14 +116,31 @@ namespace GitTank
 
         public async Task Sync()
         {
-            const string defaultArguments = "merge origin/";
+            foreach (var repository in _repositories)
+            {
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
+                string[] arguments =
+                {
+                    "fetch -v --progress --prune \"origin\"",
+                    $"merge origin/{_defaultBranch}"
+                };
+
+                foreach (var argument in arguments)
+                {
+                    _processHelper.Configure(Command, argument, workingDirectory);
+                    await _processHelper.Execute();
+                }
+            }
+        }
+
+        public async Task Push()
+        {
+            // Requires: git config --global push.default current
+            const string arguments = "push -u";
 
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                var arguments = defaultArguments;
-                arguments += _defaultBranch;
-
                 _processHelper.Configure(Command, arguments, workingDirectory);
                 await _processHelper.Execute();
             }
