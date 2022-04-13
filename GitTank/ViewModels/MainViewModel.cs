@@ -276,7 +276,6 @@ namespace GitTank.ViewModels
         private void OnOutput(string line)
         {
             OutputInfo += line + Environment.NewLine;
-            //TODO: ScrollToEnd()
         }
 
     }
