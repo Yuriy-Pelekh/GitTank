@@ -1,32 +1,28 @@
 ﻿using Microsoft.Xaml.Behaviors;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace GitTank.Behaviors
 {
     public class AutoScrollBehavior : Behavior<ScrollViewer>
     {
-        private double _height = 0.0d;
-        private ScrollViewer _scrollViewer = null;
+        private double _height;
+        private ScrollViewer _scrollViewer;
 
         protected override void OnAttached()
         {
             base.OnAttached();
 
-            this._scrollViewer = base.AssociatedObject;
-            this._scrollViewer.LayoutUpdated += new EventHandler(_scrollViewer_LayoutUpdated);
+            _scrollViewer = AssociatedObject;
+            _scrollViewer.LayoutUpdated += OnScrollViewerLayoutUpdated;
         }
 
-        private void _scrollViewer_LayoutUpdated(object sender, EventArgs e)
+        private void OnScrollViewerLayoutUpdated(object sender, EventArgs e)
         {
-            if (Math.Abs(this._scrollViewer.ExtentHeight - _height) > 1)
+            if (Math.Abs(_scrollViewer.ExtentHeight - _height) > 1)
             {
-                this._scrollViewer.ScrollToVerticalOffset(this._scrollViewer.ExtentHeight);
-                this._height = this._scrollViewer.ExtentHeight;
+                _scrollViewer.ScrollToVerticalOffset(_scrollViewer.ExtentHeight);
+                _height = _scrollViewer.ExtentHeight;
             }
         }
 
@@ -34,9 +30,9 @@ namespace GitTank.Behaviors
         {
             base.OnDetaching();
 
-            if (this._scrollViewer != null)
+            if (_scrollViewer != null)
             {
-                this._scrollViewer.LayoutUpdated -= new EventHandler(_scrollViewer_LayoutUpdated);
+                _scrollViewer.LayoutUpdated -= OnScrollViewerLayoutUpdated;
             }
         }
     }
