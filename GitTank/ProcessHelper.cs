@@ -60,6 +60,7 @@ namespace GitTank
             _process.StartInfo.FileName = command;
             _process.StartInfo.Arguments = arguments;
             _process.StartInfo.WorkingDirectory = workingDirectory;
+            _gitLogger = new GitLogger(Path.GetFileName(workingDirectory));
         }
 
         public async Task<string> Execute()
@@ -67,14 +68,10 @@ namespace GitTank
             _output.Clear();
             _result.Clear();
             Output?.Invoke(_process.StartInfo.FileName + " " + _process.StartInfo.Arguments);
-            string repoName = Path.GetFileName(_process.StartInfo.WorkingDirectory).ToString();
-            _gitLogger = new GitLogger(repoName);
             _generalLogger.LogInformation("Information");
-            _generalLogger.LogError("Error");
-
             _gitLogger.LogInformation((_process.StartInfo.FileName.ToString() + " " + _process.StartInfo.Arguments.ToString()));
             Output?.Invoke("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
-            _gitLogger.LogInformation("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
+            _gitLogger.LogInformation("in " + _process.StartInfo.WorkingDirectory);
             _process.Start();
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
