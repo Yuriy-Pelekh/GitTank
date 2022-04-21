@@ -8,12 +8,12 @@ namespace GitTank.Loggers
 {
     interface ITankLogger
     {
-        void LogDebug(string message, Exception exception);
+        void LogDebug(string message);
 
-        void LogInformation(string message, Exception exception = null);
+        void LogInformation(string message);
 
-        void LogWarning(string message, Exception exception = null);
+        void LogWarning(string message);
 
-        void LogError(string message, Exception exception = null);
+        void LogError(string message, Exception exception);
     }
 }

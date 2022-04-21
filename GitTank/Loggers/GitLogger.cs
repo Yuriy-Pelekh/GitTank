@@ -13,6 +13,7 @@ namespace GitTank.Loggers
     {
         private readonly ILogger _logger;
         private readonly string directoryPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString();
+
         public GitLogger(string path)
         {
             ILogger logger = new LoggerConfiguration()
@@ -23,36 +24,24 @@ namespace GitTank.Loggers
             _logger = logger;
         }
 
-        public void LogDebug(string message, Exception exception = null)
+        public void LogDebug(string message)
         {
-            if (exception == null)
                 _logger.Debug(message);
-            else
-                _logger.Debug(exception, message);
         }
 
         public void LogError(string message, Exception exception)
         {
-            if (exception == null)
-                _logger.Error(message);
-            else
-                _logger.Error(exception, message);
+                _logger.Error(exception,message);
         }
 
-        public void LogInformation(string message, Exception exception = null)
+        public void LogInformation(string message)
         {
-            if (exception == null)
                 _logger.Information(message);
-            else
-                _logger.Information(exception, message);
         }
 
-        public void LogWarning(string message, Exception exception)
+        public void LogWarning(string message)
         {
-            if (exception == null)
                 _logger.Warning(message);
-            else
-                _logger.Warning(exception, message);
         }
     }
 }
