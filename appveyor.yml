@@ -21,9 +21,9 @@ build_script:
 - pwsh: >-
     dotnet restore
 
-    dotnet build
+    dotnet build %configuration
 
-    dotnet publish
+    dotnet publish %configuration
 artifacts:
 - path: GitTank\bin\Release\..\publish
   name: GitTank
