@@ -43,8 +43,7 @@ namespace GitTank
                 _result.AppendLine(e.Data);
                 if (_linesCount > 10000)
                 {
-                    Output?.Invoke(_output.ToString());
-                    _gitLogger.Information(_output.ToString());
+                    OnOutput(_output.ToString());
                     _output.Clear();
                     _linesCount = 0;
                 }
@@ -68,15 +67,13 @@ namespace GitTank
             _output.Clear();
             _result.Clear();
             var commandInfo = _process.StartInfo.FileName + " " + _process.StartInfo.Arguments;
-            Output?.Invoke(commandInfo);
+            OnOutput(commandInfo);
             _generalLogger.Information($"Command executed: {commandInfo}");
-            _gitLogger.Information((_process.StartInfo.FileName.ToString() + " " + _process.StartInfo.Arguments.ToString()));
-            Output?.Invoke("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
-            _gitLogger.Information("in " + _process.StartInfo.WorkingDirectory);
+            OnOutput("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
             _process.Start();
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
-            // Throws an excpetion on some machines. Suspect it is because of some policies configurations. Requires more attention.
+            // Throws an exception on some machines. Suspect it is because of some policies configurations. Requires more attention.
             // See
             //     Dispatcher.UnhandledException += OnDispatcherUnhandledException;
             // in App.xaml.cs for reference
@@ -86,17 +83,13 @@ namespace GitTank
 
             if (_output.Length > 0)
             {
-                Output?.Invoke(_output.ToString());
-                _gitLogger.Information(_output.ToString());
+                OnOutput(_output.ToString());
                 _output.Clear();
                 _linesCount = 0;
             }
 
-            var summary = $"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}";
-            Output?.Invoke(summary);
-            _gitLogger.Information(summary);
-            Output?.Invoke("_________________________________________________________________________________");
-            _gitLogger.Information("_________________________________________________________________________________");
+            OnOutput($"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}");
+            OnOutput("_________________________________________________________________________________");
             return _result.ToString();
         }
 
@@ -125,6 +118,12 @@ namespace GitTank
         ~ProcessHelper()
         {
             Dispose(false);
+        }
+
+        protected virtual void OnOutput(string line)
+        {
+            Output?.Invoke(line);
+            _gitLogger.Information(line);
         }
     }
 }
