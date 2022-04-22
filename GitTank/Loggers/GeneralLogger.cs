@@ -1,30 +1,28 @@
 ﻿using Serilog;
 using Serilog.Events;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GitTank.Loggers
 {
-    class GeneralLogger : ITankLogger
+    internal class GeneralLogger : ITankLogger
     {
-        const string logTemplate = "[{Timestamp:HH:mm:ss}] {Message:l} {NewLine}{Exception}";
+        private const string LogTemplate = "[{Timestamp:HH:mm:ss}] {Message:l} {NewLine}{Exception}";
         private readonly ILogger _logger;
-        private readonly string directoryPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString();
+
+        private readonly string _directoryPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString();
+
         public GeneralLogger()
         {
             ILogger logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.Logger(l =>
+                .WriteTo.Logger(configuration =>
                 {
-                    l.WriteTo.File($"{directoryPath}/logs/generalLog.txt", outputTemplate: logTemplate);
+                    configuration.WriteTo.File($"{_directoryPath}/logs/generalLog.txt", outputTemplate: LogTemplate);
                 })
-                .WriteTo.Logger(l =>
+                .WriteTo.Logger(configuration =>
                 {
-                     l.WriteTo.File($"{directoryPath}/logs/errorLog.txt", LogEventLevel.Error, logTemplate);
+                    configuration.WriteTo.File($"{_directoryPath}/logs/errorLog.txt", LogEventLevel.Error, LogTemplate);
                 })
                 .CreateLogger();
             _logger = logger;
@@ -32,22 +30,22 @@ namespace GitTank.Loggers
 
         public void LogDebug(string message)
         {
-                _logger.Debug(message);
+            _logger.Debug(message);
         }
 
         public void LogError(string message, Exception exception)
         {
-                _logger.Error(exception, message);
+            _logger.Error(exception, message);
         }
 
         public void LogInformation(string message)
         {
-                _logger.Information(message);
+            _logger.Information(message);
         }
 
         public void LogWarning(string message)
         {
-                _logger.Warning(message);
+            _logger.Warning(message);
         }
     }
 }
