@@ -98,7 +98,7 @@ namespace GitTank
         private void OnApplicationDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             Logger.Error("OnApplicationDispatcherUnhandledException", e.Exception);
-            //Debugger.Break();
+            Debugger.Break();
         }
 
         private void OnTaskSchedulerUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
