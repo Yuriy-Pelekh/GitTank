@@ -26,6 +26,6 @@ build_script:
     dotnet publish
 artifacts:
 - path: GitTank\bin\Release\net6.0-windows10.0.22000.0\publish
-  name: GitTank
+  name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
 - path: '\'
   name: source
