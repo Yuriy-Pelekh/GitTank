@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
+using GitTank.Loggers;
 using GitTank.ViewModels;
 using Microsoft.Extensions.Configuration;
 
@@ -14,11 +11,11 @@ namespace GitTank
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(IConfiguration configuration)
+        public MainWindow(IConfiguration configuration, ILogger logger)
         {
             InitializeComponent();
 
-            DataContext = new MainViewModel(configuration);
+            DataContext = new MainViewModel(configuration, logger);
         }
 
         private void OnTextBoxOutputTextChanged(object sender, TextChangedEventArgs e)

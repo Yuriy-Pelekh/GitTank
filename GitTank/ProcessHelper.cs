@@ -1,5 +1,7 @@
-﻿using System;
+﻿using GitTank.Loggers;
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,8 +14,10 @@ namespace GitTank
         private readonly StringBuilder _output = new();
         private readonly StringBuilder _result = new();
         private int _linesCount;
+        private ILogger _gitLogger;
+        private readonly ILogger _generalLogger;
 
-        public ProcessHelper()
+        public ProcessHelper(ILogger logger)
         {
             _process = new Process
             {
@@ -26,7 +30,7 @@ namespace GitTank
                     CreateNoWindow = true
                 }
             };
-
+            _generalLogger = logger;
             _process.OutputDataReceived += OnDataReceived;
             _process.ErrorDataReceived += OnDataReceived;
         }
@@ -39,7 +43,7 @@ namespace GitTank
                 _result.AppendLine(e.Data);
                 if (_linesCount > 10000)
                 {
-                    Output?.Invoke(_output.ToString());
+                    OnOutput(_output.ToString());
                     _output.Clear();
                     _linesCount = 0;
                 }
@@ -55,18 +59,21 @@ namespace GitTank
             _process.StartInfo.FileName = command;
             _process.StartInfo.Arguments = arguments;
             _process.StartInfo.WorkingDirectory = workingDirectory;
+            _gitLogger = new GitLogger(Path.GetFileName(workingDirectory));
         }
 
         public async Task<string> Execute()
         {
             _output.Clear();
             _result.Clear();
-            Output?.Invoke(_process.StartInfo.FileName + " " + _process.StartInfo.Arguments);
-            Output?.Invoke("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
+            var commandInfo = _process.StartInfo.FileName + " " + _process.StartInfo.Arguments;
+            OnOutput(commandInfo);
+            _generalLogger.Information($"Command executed: {commandInfo}");
+            OnOutput("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
             _process.Start();
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
-            // Throws an excpetion on some machines. Suspect it is because of some policies configurations. Requires more attention.
+            // Throws an exception on some machines. Suspect it is because of some policies configurations. Requires more attention.
             // See
             //     Dispatcher.UnhandledException += OnDispatcherUnhandledException;
             // in App.xaml.cs for reference
@@ -76,20 +83,19 @@ namespace GitTank
 
             if (_output.Length > 0)
             {
-                Output?.Invoke(_output.ToString());
+                OnOutput(_output.ToString());
                 _output.Clear();
                 _linesCount = 0;
             }
 
-            var summary = $"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}";
-            Output?.Invoke(summary);
-            Output?.Invoke("_________________________________________________________________________________");
+            OnOutput($"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}");
+            OnOutput("_________________________________________________________________________________");
             return _result.ToString();
         }
 
         private void ReleaseUnmanagedResources()
         {
-            // TODO release unmanaged resources here
+            // TODO: release unmanaged resources here
             _process.OutputDataReceived -= OnDataReceived;
             _process.ErrorDataReceived -= OnDataReceived;
         }
@@ -112,6 +118,12 @@ namespace GitTank
         ~ProcessHelper()
         {
             Dispose(false);
+        }
+
+        protected virtual void OnOutput(string line)
+        {
+            Output?.Invoke(line);
+            _gitLogger.Information(line);
         }
     }
 }

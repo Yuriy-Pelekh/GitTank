@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using GitTank.Loggers;
 
 namespace GitTank.ViewModels
 {
@@ -240,10 +241,10 @@ namespace GitTank.ViewModels
 
         #endregion
 
-        public MainViewModel(IConfiguration configuration)
+        public MainViewModel(IConfiguration configuration, ILogger logger)
         {
             _configuration = configuration;
-            _gitProcessor = new GitProcessor(configuration);
+            _gitProcessor = new GitProcessor(configuration, logger);
             _gitProcessor.Output += OnOutput;
             OnLoaded();
         }
