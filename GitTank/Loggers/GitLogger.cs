@@ -11,8 +11,9 @@ namespace GitTank.Loggers
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File(
-                    $"{DirectoryPath}/{path}.log",
-                    outputTemplate: outputTemplate)
+                    $"{DirectoryPath}/{path}-.log",
+                    outputTemplate: outputTemplate,
+                    rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             Log = logger;
