@@ -55,7 +55,7 @@ namespace GitTank.ViewModels
             get => _outputInfo;
             set
             {
-                if (!string.IsNullOrEmpty(value))
+                if (value is not null)
                 {
                     _outputInfo = value;
                     OnPropertyChanged();
@@ -68,7 +68,7 @@ namespace GitTank.ViewModels
             get => _isUpdateButtonEnable;
             set
             {
-                if (!_isUpdateButtonEnable != value)
+                if (_isUpdateButtonEnable != value)
                 {
                     _isUpdateButtonEnable = value;
                     OnPropertyChanged();
