@@ -13,22 +13,22 @@ namespace GitTank.Loggers
             DirectoryPath = path ?? Path.Combine(Directory.GetCurrentDirectory(), "logs");
         }
 
-        public void LogDebug(string message)
+        public void Debug(string message)
         {
             Log.Debug(message);
         }
 
-        public void LogError(string message, Exception exception)
+        public void Error(string message, Exception exception)
         {
             Log.Error(exception, message);
         }
 
-        public void LogInformation(string message)
+        public void Information(string message)
         {
             Log.Information(message);
         }
 
-        public void LogWarning(string message)
+        public void Warning(string message)
         {
             Log.Warning(message);
         }

@@ -5,7 +5,7 @@ namespace GitTank.Loggers
 {
     internal class GeneralLogger : BaseLogger
     {
-        private const string LogTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+        private const string LogTemplate = "[{Timestamp:HH:mm:ss} {Level:u}] {Message:lj}{NewLine}{Exception}";
 
         public GeneralLogger()
         {

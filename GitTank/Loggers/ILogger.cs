@@ -2,14 +2,14 @@
 
 namespace GitTank.Loggers
 {
-    internal interface ILogger
+    public interface ILogger
     {
-        void LogDebug(string message);
+        void Debug(string message);
 
-        void LogInformation(string message);
+        void Information(string message);
 
-        void LogWarning(string message);
+        void Warning(string message);
 
-        void LogError(string message, Exception exception);
+        void Error(string message, Exception exception);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GitTank.Loggers;
 
 namespace GitTank
 {
@@ -16,9 +17,9 @@ namespace GitTank
         private readonly string _defaultBranch;
         private readonly IEnumerable<string> _repositories;
 
-        public GitProcessor(IConfiguration configuration)
+        public GitProcessor(IConfiguration configuration, ILogger logger)
         {
-            _processHelper = new ProcessHelper();
+            _processHelper = new ProcessHelper(logger);
             _processHelper.Output += OnOutput;
 
             _rootWorkingDirectory = configuration.GetValue<string>("appSettings:sourcePath");
