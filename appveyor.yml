@@ -21,11 +21,11 @@ build_script:
 - pwsh: >-
     dotnet restore
 
-    dotnet build %configuration
+    dotnet build
 
-    dotnet publish %configuration
+    dotnet publish
 artifacts:
-- path: GitTank\bin\Release\..\publish
+- path: GitTank\bin\Release\net6.0-windows10.0.22000.0\publish
   name: GitTank
 - path: '\'
   name: source
