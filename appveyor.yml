@@ -27,7 +27,7 @@ build_script:
 test_script:
 - pwsh: dotnet test
 artifacts:
-- path: GitTank\bin\$(configuration)\**\publish\**
+- path: GitTank\bin\$(configuration)\**\publish\*
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
 - path: '\'
   name: source
