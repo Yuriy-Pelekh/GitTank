@@ -13,7 +13,8 @@ namespace GitTank.Loggers
                 .WriteTo.File(
                     $"{DirectoryPath}/{path}-.log",
                     outputTemplate: outputTemplate,
-                    rollingInterval: RollingInterval.Day)
+                    rollingInterval: RollingInterval.Day,
+                    shared: true)
                 .CreateLogger();
 
             Log = logger;

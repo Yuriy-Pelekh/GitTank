@@ -59,7 +59,6 @@ namespace GitTank
             _process.StartInfo.FileName = command;
             _process.StartInfo.Arguments = arguments;
             _process.StartInfo.WorkingDirectory = workingDirectory;
-            // TODO: 2022-04-22 YUP - Move it outside this function and keep it somewhere in the root of the class as log file is recreated on each command execution.
             _gitLogger = new GitLogger(Path.GetFileName(workingDirectory));
         }
 
@@ -96,7 +95,7 @@ namespace GitTank
 
         private void ReleaseUnmanagedResources()
         {
-            // TODO release unmanaged resources here
+            // TODO: release unmanaged resources here
             _process.OutputDataReceived -= OnDataReceived;
             _process.ErrorDataReceived -= OnDataReceived;
         }
