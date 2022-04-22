@@ -22,16 +22,19 @@ namespace GitTank
 
         public App()
         {
+            Logger.Debug("Starting application");
+
             // Catch exceptions from all threads in the AppDomain.
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
+
             // Catch exceptions from a single specific UI dispatcher thread.
             Dispatcher.UnhandledException += OnDispatcherUnhandledException;
+
             // Catch exceptions from the main UI dispatcher thread in the WPF application.
             Current.DispatcherUnhandledException += OnApplicationDispatcherUnhandledException;
+
             // Catch exceptions from within each AppDomain that uses a task scheduler for asynchronous operations.
             TaskScheduler.UnobservedTaskException += OnTaskSchedulerUnobservedTaskException;
-
-            Logger.Debug("Starting application");
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -89,12 +92,13 @@ namespace GitTank
         {
             Logger.Error("OnDispatcherUnhandledException", e.Exception);
             e.Handled = true;
+            Debugger.Break();
         }
 
         private void OnApplicationDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             Logger.Error("OnApplicationDispatcherUnhandledException", e.Exception);
-            Debugger.Break();
+            //Debugger.Break();
         }
 
         private void OnTaskSchedulerUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)

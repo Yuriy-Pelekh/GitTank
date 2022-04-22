@@ -23,12 +23,23 @@ namespace GitTank
             _processHelper.Output += OnOutput;
 
             _rootWorkingDirectory = configuration.GetValue<string>("appSettings:sourcePath");
+            logger.Debug($"Original source path: {_rootWorkingDirectory ?? "null"}");
+
+            // Convert path to absolute in case it was set as relative.
+            _rootWorkingDirectory = Path.GetFullPath(_rootWorkingDirectory);
+            logger.Debug($"Absolute source path: {_rootWorkingDirectory}");
+
             _defaultRepository = configuration.GetValue<string>("appSettings:defaultRepository");
+            logger.Debug($"Default repository: {_defaultRepository}");
+
             _defaultBranch = configuration.GetValue<string>("appSettings:defaultBranch");
+            logger.Debug($"Default branch: {_defaultBranch}");
+
             _repositories = configuration.GetSection("appSettings:repositories")
                 .GetChildren()
                 .Select(c => c.Value)
                 .ToList();
+            logger.Debug($"Repositories: {string.Join(", ", _repositories)}");
         }
 
         ~GitProcessor()
