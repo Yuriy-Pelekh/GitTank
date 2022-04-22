@@ -24,6 +24,8 @@ build_script:
     dotnet build
 
     dotnet publish
+test_script:
+- pwsh: dotnet test
 artifacts:
 - path: GitTank\bin\Release\net6.0-windows10.0.22000.0\publish
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
