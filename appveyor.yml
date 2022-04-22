@@ -29,5 +29,3 @@ test_script:
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
-- path: '\'
-  name: source
