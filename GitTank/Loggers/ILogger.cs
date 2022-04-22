@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GitTank.Loggers
 {
-    interface ITankLogger
+    internal interface ILogger
     {
         void LogDebug(string message);
 

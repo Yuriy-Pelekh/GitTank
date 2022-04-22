@@ -1,51 +1,33 @@
 ﻿using Serilog;
 using Serilog.Events;
-using System;
-using System.IO;
 
 namespace GitTank.Loggers
 {
-    internal class GeneralLogger : ITankLogger
+    internal class GeneralLogger : BaseLogger
     {
-        private const string LogTemplate = "[{Timestamp:HH:mm:ss}] {Message:l} {NewLine}{Exception}";
-        private readonly ILogger _logger;
-
-        private readonly string _directoryPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString();
+        private const string LogTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
 
         public GeneralLogger()
         {
-            ILogger logger = new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Logger(configuration =>
                 {
-                    configuration.WriteTo.File($"{_directoryPath}/logs/generalLog.txt", outputTemplate: LogTemplate);
+                    configuration.WriteTo.File(
+                        $"{DirectoryPath}/.log",
+                        outputTemplate: LogTemplate,
+                        rollingInterval: RollingInterval.Day);
                 })
                 .WriteTo.Logger(configuration =>
                 {
-                    configuration.WriteTo.File($"{_directoryPath}/logs/errorLog.txt", LogEventLevel.Error, LogTemplate);
+                    configuration.WriteTo.File(
+                        $"{DirectoryPath}/Errors-.log",
+                        LogEventLevel.Error,
+                        LogTemplate,
+                        rollingInterval: RollingInterval.Day);
                 })
                 .CreateLogger();
-            _logger = logger;
-        }
-
-        public void LogDebug(string message)
-        {
-            _logger.Debug(message);
-        }
-
-        public void LogError(string message, Exception exception)
-        {
-            _logger.Error(exception, message);
-        }
-
-        public void LogInformation(string message)
-        {
-            _logger.Information(message);
-        }
-
-        public void LogWarning(string message)
-        {
-            _logger.Warning(message);
+            Log = logger;
         }
     }
 }

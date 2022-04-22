@@ -15,7 +15,7 @@ namespace GitTank
         private readonly StringBuilder _result = new();
         private int _linesCount;
         private GitLogger _gitLogger;
-        private GeneralLogger _generalLogger;
+        private readonly GeneralLogger _generalLogger;
 
         public ProcessHelper()
         {
