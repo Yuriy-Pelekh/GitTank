@@ -63,7 +63,6 @@
                 Margin="0,5" 
                 IsEnabled="{Binding IsUpdateButtonEnable}"
                 Command="{Binding UpdateCommand}"/>
-            <!--<Button Content="Branches" Margin="0,5" Click="OnButtonBranchesClick"/>-->
             <Button 
                 Content="Checkout" 
                 Margin="0,5"
