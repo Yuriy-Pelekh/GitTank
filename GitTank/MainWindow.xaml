@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:valueConverters="clr-namespace:GitTank.ValueConverters"
+        xmlns:viewModels="clr-namespace:GitTank.ViewModels"
         mc:Ignorable="d"
         Title="GitTank" WindowStartupLocation="CenterScreen"
         Height="450" Width="800"
@@ -85,7 +86,67 @@
         </StackPanel>
     </Grid>
     <Grid Visibility="{Binding Path=IsNewUI, Mode=OneTime, Converter={StaticResource BoolToVisibility}}">
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Repositories}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderThickness="2" BorderBrush="DeepSkyBlue" CornerRadius="10" Width="200" Height="175" Margin="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <CheckBox Margin="10,5" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding .}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Grid.Row="2" HorizontalAlignment="Center" Margin="5">
+                                <Run Text="branch:"/>
+                                <Run Text="antman"/>
+                            </TextBlock>
+                            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="11 behind | 17 ahead" Foreground="DarkGray"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="8 behind | 4 ahead" Foreground="DarkGray"/>
+                            </StackPanel>
+                            <Grid Grid.Row="5" Margin="0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="Success" Background="LawnGreen" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="T" TextAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Grid.Row="6" Text="@01.04.2022 17:36:43" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="7" Text="Log" Foreground="DodgerBlue" FontSize="16" HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
     </Grid>
 </Window>
