@@ -17,12 +17,56 @@
     </Style>
 
     <Style TargetType="{x:Type views:RepositoryTile}">
+        <Setter Property="BorderBrush" Value="DeepSkyBlue"/>
+        <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type views:RepositoryTile}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10"
+                            Width="200"
+                            Height="175"
+                            Margin="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <CheckBox Margin="10,5" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding .}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Grid.Row="2" HorizontalAlignment="Center" Margin="5">
+                                <Run Text="branch:"/>
+                                <Run Text="antman"/>
+                            </TextBlock>
+                            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="11 behind | 17 ahead" Foreground="DarkGray"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="8 behind | 4 ahead" Foreground="DarkGray"/>
+                            </StackPanel>
+                            <Grid Grid.Row="5" Margin="0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="Success" Background="LawnGreen" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="T" TextAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Grid.Row="6" Text="@01.04.2022 17:36:43" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="7" Text="Log" Foreground="DodgerBlue" FontSize="16" HorizontalAlignment="Center"/>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
