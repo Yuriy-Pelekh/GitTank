@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GitTank.Loggers;
+using Serilog.Context;
 
 namespace GitTank
 {
@@ -19,6 +20,7 @@ namespace GitTank
 
         public GitProcessor(IConfiguration configuration, ILogger logger)
         {
+            LogContext.PushProperty("SourceContext", this.GetType().Name);
             _processHelper = new ProcessHelper(logger);
             _processHelper.Output += OnOutput;
 
