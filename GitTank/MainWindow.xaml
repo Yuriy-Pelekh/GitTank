@@ -78,6 +78,10 @@
                 Margin="0,5"
                 IsEnabled="{Binding IsPushButtonEnable}"
                 Command="{Binding PushCommand}"/>
+            <Button 
+                Content="Terminal" 
+                Margin="0,5"
+                Command="{Binding OpenTerminalCommand}"/>
         </StackPanel>
     </Grid>
 </Window>

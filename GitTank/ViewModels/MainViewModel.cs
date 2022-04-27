@@ -128,6 +128,14 @@ namespace GitTank.ViewModels
             }
         }
 
+        public MainViewModel(IConfiguration configuration, ILogger logger)
+        {
+            _configuration = configuration;
+            _gitProcessor = new GitProcessor(configuration, logger);
+            _gitProcessor.Output += OnOutput;
+            OnLoaded();
+        }
+
         #region Branch Command
 
         private RelayCommand _branchCommand;
@@ -241,13 +249,22 @@ namespace GitTank.ViewModels
 
         #endregion
 
-        public MainViewModel(IConfiguration configuration, ILogger logger)
+        #region OpenTerminal Command
+
+        private RelayCommand _openTerminalCommand;
+
+        public RelayCommand OpenTerminalCommand
         {
-            _configuration = configuration;
-            _gitProcessor = new GitProcessor(configuration, logger);
-            _gitProcessor.Output += OnOutput;
-            OnLoaded();
+            get { return _openTerminalCommand ??= new RelayCommand(async () => await OpenTerminal()); }
         }
+
+        private async Task OpenTerminal()
+        {
+            var selectedRepository = Repositories[int.Parse(SelectedRepoIndex)];
+            await _gitProcessor.OpenTerminal(selectedRepository);
+        }
+
+        #endregion        
 
         private void OnLoaded()
         {
