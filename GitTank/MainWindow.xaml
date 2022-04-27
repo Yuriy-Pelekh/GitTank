@@ -78,6 +78,11 @@
                 Margin="0,5"
                 IsEnabled="{Binding IsPushButtonEnable}"
                 Command="{Binding PushCommand}"/>
+            <Button
+                Content="Settings"
+                Margin="0,5"
+                IsEnabled="{Binding IsSettingsButtonEnable}"
+                Command="{Binding SettingsCommand}"/>
         </StackPanel>
     </Grid>
 </Window>
