@@ -20,6 +20,8 @@ namespace GitTank.ViewModels
         private bool _isCheckoutButtonEnable = true;
         private bool _isSyncButtonEnable = true;
         private bool _isPushButtonEnable = true;
+        private bool _isFetchButtonEnable = true;
+        private bool _isCreateButtonEnable = true;
 
         public ObservableCollection<string> Repositories { get; set; }
         public ObservableCollection<string> Branches { get; set; }
@@ -122,9 +124,49 @@ namespace GitTank.ViewModels
             get => _isPushButtonEnable;
             set
             {
-                if (IsPushButtonEnable != value)
+                if (_isPushButtonEnable != value)
                 {
                     _isPushButtonEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsFetchButtonEnable
+        {
+            get => _isFetchButtonEnable;
+            set
+            {
+                if (_isFetchButtonEnable != value)
+                {
+                    _isFetchButtonEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsCreateButtonEnable
+        {
+            get => _isCreateButtonEnable;
+            set
+            {
+                if (_isCreateButtonEnable != value)
+                {
+                    _isCreateButtonEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private string _newBranchName;
+        public string NewBranchName
+        {
+            get => _newBranchName;
+            set
+            {
+                if (_newBranchName != value)
+                {
+                    _newBranchName = value;
                     OnPropertyChanged();
                 }
             }
@@ -242,6 +284,40 @@ namespace GitTank.ViewModels
         }
 
         #endregion
+
+        private RelayCommand _fetchCommand;
+
+        public RelayCommand FetchCommand
+        {
+            get { return _fetchCommand ??= new RelayCommand(Fetch); }
+        }
+
+        private void Fetch()
+        {
+            IsFetchButtonEnable = false;
+            OutputInfo = string.Empty;
+            Task.Run(() =>
+            {
+                var currentBranch = _gitProcessor.Fetch();
+                IsFetchButtonEnable = true;
+            });
+        }
+
+        private RelayCommand _createBranchCommand;
+
+        public RelayCommand CreateBranchCommand
+        {
+            get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
+        }
+
+        private async void CreateBranch()
+        {
+            IsCreateButtonEnable = false;
+            var currentBranch = await _gitProcessor.GetBranch();
+            OutputInfo = string.Empty;
+            await _gitProcessor.CreateBranch(currentBranch, _newBranchName);
+            IsCreateButtonEnable = true;
+        }
 
         public MainViewModel(IConfiguration configuration, ILogger logger)
         {

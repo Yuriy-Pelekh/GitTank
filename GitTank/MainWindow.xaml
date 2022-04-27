@@ -9,7 +9,8 @@
         mc:Ignorable="d"
         Title="GitTank" WindowStartupLocation="CenterScreen"
         Height="450" Width="800"
-        MinHeight="450" MinWidth="450">
+        MinHeight="450" MinWidth="450"
+        x:Name="MainScreen">
     <Window.Resources>
         <valueConverters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
     </Window.Resources>
@@ -58,32 +59,80 @@
                  TextWrapping="Wrap"
                  VerticalScrollBarVisibility="Auto"
                  HorizontalScrollBarVisibility="Auto"/>
-        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="0, 10, 10, 10">
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="0, 13, 10, 10">
+            <TextBlock TextAlignment="Center" Text="Commands" FontSize="16" Margin="0, 0, 0, 10"></TextBlock>
             <Button
-                Content="Branch"
+                Content="Fetch"
                 Margin="0, 0, 0, 5"
-                IsEnabled="{Binding IsBranchButtonEnable}"
-                Command="{Binding BranchCommand}"/>
+                IsEnabled="{Binding IsFetchButtonEnable}"
+                Command="{Binding FetchCommand}"/>
             <Button
-                Content="Update"
-                Margin="0,5"
+                Content="Pull"
+                Margin="0, 5"
                 IsEnabled="{Binding IsUpdateButtonEnable}"
                 Command="{Binding UpdateCommand}"/>
             <Button
-                Content="Checkout"
-                Margin="0,5"
-                IsEnabled="{Binding IsCheckoutButtonEnable}"
-                Command="{Binding CheckoutCommand}"/>
-            <Button
-                Content="Sync"
-                Margin="0,5"
-                IsEnabled="{Binding IsSyncButtonEnable}"
-                Command="{Binding SyncCommand}"/>
-            <Button
                 Content="Push"
-                Margin="0,5"
+                Margin="0, 5"
                 IsEnabled="{Binding IsPushButtonEnable}"
                 Command="{Binding PushCommand}"/>
+            <Button x:Name="OpenPopup"
+                Content="Create branch"
+                Margin="0, 5">
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <BooleanAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="ContextPopup" 
+                                            Storyboard.TargetProperty="IsOpen">
+                                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
+                                        </BooleanAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                    </Button.Triggers>
+             </Button>
+            <Popup x:Name="ContextPopup"  PlacementTarget="{Binding ElementName=MainScreen}" Placement="Center" Width="250" Height="150" StaysOpen="False">
+                <Border BorderBrush="DarkSlateGray" BorderThickness="2" Background="#E6E9EF">
+                    <StackPanel>
+                        <Label Background="#D5D8DC" Width="250" Content="Create new branch"></Label>
+                        <TextBlock Text="Branch name:" FontSize="14" TextAlignment="Left" Margin="15, 10"></TextBlock>
+                        <TextBox x:Name="Branch" Text="{Binding NewBranchName, Mode=TwoWay}" VerticalAlignment="Center" Margin="15,0,15,0"/>
+                            <Button 
+                            Content="Create" 
+                            Height="30" Width="100" 
+                            HorizontalAlignment="Center" 
+                            Margin="0, 10"
+                            Command="{Binding CreateBranchCommand}"/>
+                        </StackPanel>
+                </Border>
+            </Popup>
+            <Button
+                Content="Delete branch"
+                Margin="0, 5"
+                IsEnabled="False"/>
+            <Button
+                Content="Branch"
+                Margin="0, 5"
+                IsEnabled="{Binding IsBranchButtonEnable}"
+                Command="{Binding BranchCommand}"/>
+            <Expander Header="Advanced commands" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0, 10">
+                <StackPanel>
+                    <Button
+                        Content="Checkout"
+                        Margin="0,5"
+                        IsEnabled="{Binding IsCheckoutButtonEnable}"
+                        Command="{Binding CheckoutCommand}"/>
+                    <Button
+                        Content="Sync"
+                        Margin="0,5"
+                        IsEnabled="{Binding IsSyncButtonEnable}"
+                        Command="{Binding SyncCommand}"/>   
+                </StackPanel>
+            </Expander>
         </StackPanel>
     </Grid>
     <Grid Visibility="{Binding Path=IsNewUI, Mode=OneTime, Converter={StaticResource BoolToVisibility}}">
@@ -95,7 +144,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Repositories}">
             <ItemsControl.ItemsPanel>
@@ -109,6 +158,42 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <StackPanel Grid.Row="1" Grid.Column="2" Margin="0, 10, 10, 10" Width="170">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="10, 5"></Setter>
+                    <Setter Property="Height" Value="40"></Setter>
+                    <Setter Property="Background" Value="White"></Setter>
+                    <Setter Property="FontSize" Value="17"></Setter>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="7">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="LightSkyBlue"/>
+                            <Setter Property="TextBlock.Foreground" Value="White"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="CornflowerBlue"/>
+                            <Setter Property="TextBlock.Foreground" Value="White"></Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+            <TextBlock TextAlignment="Center" Text="Commands" FontSize="20" FontFamily="Vernada" Margin="0, 0, 0, 10"></TextBlock>
+            <Button Content="Fetch"/>
+            <Button Content="Pull"/>
+            <Button Content="Push"/>
+            <Button Content="Create branch"/>
+            <Button Content="Delete branch"/>
+            <Button Content="Branch"/>
+        </StackPanel>
     </Grid>
     </Grid>
 </Window>
