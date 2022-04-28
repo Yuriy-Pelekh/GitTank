@@ -264,7 +264,7 @@ namespace GitTank.ViewModels
             await _gitProcessor.OpenTerminal(selectedRepository);
         }
 
-        #endregion        
+        #endregion
 
         private void OnLoaded()
         {
