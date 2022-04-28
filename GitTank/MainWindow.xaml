@@ -133,6 +133,10 @@
                         Command="{Binding SyncCommand}"/>   
                 </StackPanel>
             </Expander>
+            <Button 
+                Content="Terminal" 
+                Margin="0,5"
+                Command="{Binding OpenTerminalCommand}"/>
         </StackPanel>
     </Grid>
     <Grid Visibility="{Binding Path=IsNewUI, Mode=OneTime, Converter={StaticResource BoolToVisibility}}">

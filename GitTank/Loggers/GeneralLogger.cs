@@ -5,7 +5,7 @@ namespace GitTank.Loggers
 {
     internal class GeneralLogger : BaseLogger
     {
-        private const string LogTemplate = "[{Timestamp:HH:mm:ss} {Level:u}] {Message:lj}{NewLine}{Exception}";
+        private const string LogTemplate = "[{Timestamp:HH:mm:ss} {Level:u} {SourceContext}] {Message:lj}{NewLine}{Exception}";
 
         public GeneralLogger()
         {
@@ -16,7 +16,8 @@ namespace GitTank.Loggers
                     configuration.WriteTo.File(
                         $"{DirectoryPath}/.log",
                         outputTemplate: LogTemplate,
-                        rollingInterval: RollingInterval.Day);
+                        rollingInterval: RollingInterval.Day)
+                    .Enrich.FromLogContext();
                 })
                 .WriteTo.Logger(configuration =>
                 {
