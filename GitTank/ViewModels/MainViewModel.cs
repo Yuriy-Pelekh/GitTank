@@ -132,6 +132,14 @@ namespace GitTank.ViewModels
             }
         }
 
+        public MainViewModel(IConfiguration configuration, ILogger logger)
+        {
+            _configuration = configuration;
+            _gitProcessor = new GitProcessor(configuration, logger);
+            _gitProcessor.Output += OnOutput;
+            OnLoaded();
+        }
+
         public bool IsFetchButtonEnable
         {
             get => _isFetchButtonEnable;
@@ -285,6 +293,15 @@ namespace GitTank.ViewModels
 
         #endregion
 
+        #region OpenTerminal Command
+
+        private RelayCommand _openTerminalCommand;
+
+        public RelayCommand OpenTerminalCommand
+        {
+            get { return _openTerminalCommand ??= new RelayCommand(async () => await OpenTerminal()); }
+        }
+
         private RelayCommand _fetchCommand;
 
         public RelayCommand FetchCommand
@@ -321,13 +338,13 @@ namespace GitTank.ViewModels
             });
         }
 
-        public MainViewModel(IConfiguration configuration, ILogger logger)
+        private async Task OpenTerminal()
         {
-            _configuration = configuration;
-            _gitProcessor = new GitProcessor(configuration, logger);
-            _gitProcessor.Output += OnOutput;
-            OnLoaded();
+            var selectedRepository = Repositories[int.Parse(SelectedRepoIndex)];
+            await _gitProcessor.OpenTerminal(selectedRepository);
         }
+
+        #endregion
 
         private void OnLoaded()
         {
