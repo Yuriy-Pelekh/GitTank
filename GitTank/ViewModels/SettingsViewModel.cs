@@ -12,21 +12,19 @@ namespace GitTank.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
-        private readonly IConfiguration _configuration;
         private readonly GitProcessor _gitProcessor;
         private bool _isAddRepositoryButtonEnable = true;
-        private bool _isRemoveRepositorieButtonEnabled = true;
+        private bool _isRemoveRepositoryButtonEnabled = true;
         private bool _isSaveRepositoriesSettingsButtonEnabled = true;
 
         public SettingsViewModel(IConfiguration configuration, ILogger logger)
         {
-            _configuration = configuration;
-            _gitProcessor = new GitProcessor(_configuration, logger);
+            _gitProcessor = new GitProcessor(configuration, logger);
         }
 
         public bool IsAddRepositoryButtonEnable
         {
-            get => _isAddRepositoryButtonEnable; 
+            get => _isAddRepositoryButtonEnable;
             set
             {
                 if(IsAddRepositoryButtonEnable != value)
@@ -37,14 +35,14 @@ namespace GitTank.ViewModels
             }
         }
 
-        public bool IsRemoveRepositorieButtonEnabled
+        public bool IsRemoveRepositoryButtonEnabled
         {
-            get => _isRemoveRepositorieButtonEnabled;
+            get => _isRemoveRepositoryButtonEnabled;
             set
             {
-                if(IsAddRepositoryButtonEnable!= value)
+                if(_isAddRepositoryButtonEnable!= value)
                 {
-                    _isRemoveRepositorieButtonEnabled = value;
+                    _isRemoveRepositoryButtonEnabled = value;
                     OnPropertyChanged();
                 }
             }
@@ -55,7 +53,7 @@ namespace GitTank.ViewModels
             get => _isSaveRepositoriesSettingsButtonEnabled;
             set
             {
-                if (IsAddRepositoryButtonEnable != value)
+                if (_isSaveRepositoriesSettingsButtonEnabled != value)
                 {
                     _isSaveRepositoriesSettingsButtonEnabled = value;
                     OnPropertyChanged();
@@ -67,20 +65,20 @@ namespace GitTank.ViewModels
 
         public RelayCommand AddRepositoryCommand
         {
-            get { return _addRepositoryCommand ??= new RelayCommand(() => OpenFolderBrowserDialog()); }
+            get { return _addRepositoryCommand ??= new RelayCommand(OpenFolderBrowserDialog); }
         }
 
         private RelayCommand _removeRepositoryCommand;
 
         public RelayCommand RemoveRepositoryCommand
         {
-            get { return _removeRepositoryCommand ??= new RelayCommand(() => RemoveSelectedRepository()); }
+            get { return _removeRepositoryCommand ??= new RelayCommand(RemoveSelectedRepository); }
         }
 
         private RelayCommand _saveRepositoriesSettings;
         public RelayCommand SaveRepositoriesSettingsCommand
         {
-            get { return _saveRepositoriesSettings ??= new RelayCommand(() => SaveRepositoriesSettingToAppConfig()); }
+            get { return _saveRepositoriesSettings ??= new RelayCommand(SaveRepositoriesSettingToAppConfig); }
         }
 
         public void SaveRepositoriesSettingToAppConfig()
@@ -98,102 +96,87 @@ namespace GitTank.ViewModels
 
         private void AddRepositoryToAllSelectedRepositoryList(string repositoryPath)
         {
-            var repositories = new RepositoryDto();
-            DirectoryInfo directoryPath = new DirectoryInfo(repositoryPath);
+            var repositories = new Repository();
+            var directoryPath = new DirectoryInfo(repositoryPath);
             repositories.RepositoryName = directoryPath.Name;
             repositories.RepositoryPath = directoryPath.FullName;
             repositories.StatusForCheckBox = true;
-            if (!AllRepositoriesDataCollection.Any(path => path.RepositoryPath == repositories.RepositoryPath))
+            if (AllRepositoriesDataCollection.All(path => path.RepositoryPath != repositories.RepositoryPath))
             {
                 AllRepositoriesDataCollection.Add(repositories);
-                UpadateAvailableRepositoriesCollection();
-            }          
+                UpdateAvailableRepositoriesCollection();
+            }
         }
 
-        public void UpadateAvailableRepositoriesCollection()
+        public void UpdateAvailableRepositoriesCollection()
         {
-            foreach (RepositoryDto repository in AllRepositoriesDataCollection)
+            foreach (var repository in AllRepositoriesDataCollection)
             {
-                if (repository.StatusForCheckBox == true && !AvaliableRepositoriesCollection.Any(path => path.RepositoryPath == repository.RepositoryPath))
+                if (repository.StatusForCheckBox && AvailableRepositoriesCollection.All(path => path.RepositoryPath != repository.RepositoryPath))
                 {
-                    AvaliableRepositoriesCollection.Add(repository);
+                    AvailableRepositoriesCollection.Add(repository);
                 }
-                if (repository.StatusForCheckBox == false && AvaliableRepositoriesCollection.Any(path => path.RepositoryPath == repository.RepositoryPath))
+                if (repository.StatusForCheckBox == false && AvailableRepositoriesCollection.Any(path => path.RepositoryPath == repository.RepositoryPath))
                 {
-                    AvaliableRepositoriesCollection.Remove(repository);
+                    AvailableRepositoriesCollection.Remove(repository);
                 }
             }
         }
 
-        RepositoryDto _selectedRepositoiesData;
-        public RepositoryDto SelectedRepositoiesData
+        private Repository _selectedRepositoriesData;
+        public Repository SelectedRepositoriesData
         {
-            get => _selectedRepositoiesData;
+            get => _selectedRepositoriesData;
             set
             {
-                _selectedRepositoiesData = value;
+                _selectedRepositoriesData = value;
                 OnPropertyChanged();
             }
         }
 
         public void RemoveSelectedRepository()
         {
-            if (SelectedRepositoiesData != null)
+            if (SelectedRepositoriesData != null)
             {
-                AvaliableRepositoriesCollection.Remove(SelectedRepositoiesData);
-                AllRepositoriesDataCollection.Remove(SelectedRepositoiesData);
-            }         
-        }
-
-
-        private ObservableCollection<RepositoryDto> _allRepositoriesDataCollection;
-
-        public ObservableCollection<RepositoryDto> AllRepositoriesDataCollection
-        {
-            get
-            {
-                if (_allRepositoriesDataCollection == null)
-                {
-                    _allRepositoriesDataCollection = new ObservableCollection<RepositoryDto>();
-                }
-                return _allRepositoriesDataCollection;
-            }
-            set
-            {
-                _allRepositoriesDataCollection = value;
-                OnPropertyChanged();
+                AvailableRepositoriesCollection.Remove(SelectedRepositoriesData);
+                AllRepositoriesDataCollection.Remove(SelectedRepositoriesData);
             }
         }
 
-        private ObservableCollection<RepositoryDto> _avaliableRepositoriesCollection;
-        public ObservableCollection<RepositoryDto> AvaliableRepositoriesCollection
+
+        private ObservableCollection<Repository> _allRepositoriesDataCollection;
+
+        public ObservableCollection<Repository> AllRepositoriesDataCollection
         {
-            get
-            {
-                if (_avaliableRepositoriesCollection == null)
-                {
-                    _avaliableRepositoriesCollection = new ObservableCollection<RepositoryDto>();
-                }
-                return _avaliableRepositoriesCollection;
-            }
+            get => _allRepositoriesDataCollection ??= new ObservableCollection<Repository>();
             set
             {
-                _avaliableRepositoriesCollection = value;
-                OnPropertyChanged();
+                if (_allRepositoriesDataCollection == null || !_allRepositoriesDataCollection.Equals(value))
+                {
+                    _allRepositoriesDataCollection = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableCollection<Repository> _availableRepositoriesCollection;
+        public ObservableCollection<Repository> AvailableRepositoriesCollection
+        {
+            get => _availableRepositoriesCollection ??= new ObservableCollection<Repository>();
+            set
+            {
+                if (_allRepositoriesDataCollection == null || !_allRepositoriesDataCollection.Equals(value))
+                {
+                    _availableRepositoriesCollection = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
        private ObservableCollection<string> _defaultGitBranch;
        public ObservableCollection<string> DefaultGitBranch
         {
-            get
-            {
-                if (_defaultGitBranch == null)
-                {
-                    _defaultGitBranch = new ObservableCollection<string>();
-                }
-                return _defaultGitBranch;
-            }
+            get => _defaultGitBranch ??= new ObservableCollection<string>();
             set
             {
                 _defaultGitBranch = value;
@@ -201,8 +184,8 @@ namespace GitTank.ViewModels
             }
         }
 
-        private RepositoryDto _selectedRepository;
-        public RepositoryDto SelectedRepository
+        private Repository _selectedRepository;
+        public Repository SelectedRepository
         {
             get => _selectedRepository;
             set
@@ -212,24 +195,16 @@ namespace GitTank.ViewModels
             }
         }
 
-        private string _selectedGitBranch;
-        public string SelectedGitBranch
-        {
-            get => _selectedGitBranch;
-            set
-            {
-                _selectedGitBranch = value;
-            }
-        }
+        public string SelectedGitBranch { get; set; }
 
         public void UpdateListOfDefaultsGitBranches(string repositoryPath)
         {
             DefaultGitBranch.Clear();
             var branches = _gitProcessor.GetAllBranches(repositoryPath);
-            List<string> gitBranchesNames = new List<string>(branches.Split("\r\n").ToList());
-            foreach (string branchName in gitBranchesNames)
+            var gitBranchesNames = new List<string>(branches.Split("\r\n").ToList());
+            foreach (var branchName in gitBranchesNames)
             {
-                DefaultGitBranch.Add(branchName.Replace("*", "").Trim());
+                DefaultGitBranch.Add(branchName.Replace("*", string.Empty).Trim());
             }
         }
     }
