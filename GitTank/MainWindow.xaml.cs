@@ -13,25 +13,27 @@ namespace GitTank
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ILogger _generalLogger;
+        private readonly ILogger _logger;
+
         public MainWindow(IConfiguration configuration, ILogger logger)
         {
-            Closed += MainWindowClosed;
+            _logger = logger;
+            Closed += OnMainWindowClosed;
+
             InitializeComponent();
 
             DataContext = new MainViewModel(configuration, logger);
-            _generalLogger = logger;
         }
 
-        private void MainWindowClosed(object sender, EventArgs e)
+        private void OnMainWindowClosed(object sender, EventArgs e)
         {
             LogContext.PushProperty(Constants.SourceContext, GetType().Name);
-            _generalLogger.Information("Application was closed");
+            _logger.Information("Application was closed");
         }
 
         private void OnTextBoxOutputTextChanged(object sender, TextChangedEventArgs e)
         {
-            (sender as TextBox).ScrollToEnd();
+            ((TextBox)sender).ScrollToEnd();
         }
     }
 }
