@@ -103,26 +103,28 @@ namespace GitTank
 
         public async Task Checkout(string selectedItem)
         {
-            var remoteBranch = "ls-remote --heads origin {0}";
-            var localBranch = "branch --list {0}";
+            var remoteBranchExistsCommand = "ls-remote --heads origin {0}";
+            var localBranchExistsCommand = "branch --list {0}";
             var arguments = $"checkout -b {selectedItem}";
 
+            List<Task> runningTasks = new();
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                _processHelper.Configure(Command, string.Format(localBranch, selectedItem), workingDirectory);
+                _processHelper.Configure(Command, string.Format(localBranchExistsCommand, selectedItem), workingDirectory);
                 var localBranchExists = await _processHelper.Execute();
-                _processHelper.Configure(Command, string.Format(remoteBranch, selectedItem), workingDirectory);
+                _processHelper.Configure(Command, string.Format(remoteBranchExistsCommand, selectedItem), workingDirectory);
                 var remoteBranchExists = await _processHelper.Execute();
 
-                if (!string.IsNullOrWhiteSpace(localBranchExists) || !string.IsNullOrWhiteSpace(remoteBranchExists))
-                {
-                    arguments = $"checkout {selectedItem}";
-                }
+                arguments = !string.IsNullOrWhiteSpace(localBranchExists) || !string.IsNullOrWhiteSpace(remoteBranchExists)
+                    ? $"checkout {selectedItem}"
+                    : $"checkout -b {selectedItem}";
 
                 _processHelper.Configure(Command, arguments, workingDirectory);
-                await _processHelper.Execute();
+                runningTasks.Add(_processHelper.Execute());
             }
+
+            await Task.WhenAll(runningTasks);
         }
 
         public async Task Sync()

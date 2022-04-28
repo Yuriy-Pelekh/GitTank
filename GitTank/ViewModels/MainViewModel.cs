@@ -17,7 +17,7 @@ namespace GitTank.ViewModels
         private string _outputInfo;
         private bool _isUpdateButtonEnable = true;
         private bool _isBranchButtonEnable = true;
-        private bool _isCheckoutButtonEnable = true;
+        private bool _isCheckoutButtonEnabled = true;
         private bool _isSyncButtonEnable = true;
         private bool _isPushButtonEnable = true;
 
@@ -89,14 +89,14 @@ namespace GitTank.ViewModels
             }
         }
 
-        public bool IsCheckoutButtonEnable
+        public bool IsCheckoutButtonEnabled
         {
-            get => _isCheckoutButtonEnable;
+            get => _isCheckoutButtonEnabled;
             set
             {
-                if (_isCheckoutButtonEnable != value)
+                if (_isCheckoutButtonEnabled != value)
                 {
-                    _isCheckoutButtonEnable = value;
+                    _isCheckoutButtonEnabled = value;
                     OnPropertyChanged();
                 }
             }
@@ -175,24 +175,19 @@ namespace GitTank.ViewModels
 
         #region Checkout Command
 
-        private RelayCommand _checkoutCommand;
+        private AsyncRelayCommand _checkoutCommand;
 
-        public RelayCommand CheckoutCommand
+        public AsyncRelayCommand CheckoutCommand
         {
-            get { return _checkoutCommand ??= new RelayCommand(Checkout); }
-
+            get { return _checkoutCommand ??= new AsyncRelayCommand(Checkout, () => IsCheckoutButtonEnabled); }
         }
 
-        private void Checkout()
+        private Task Checkout()
         {
-            IsCheckoutButtonEnable = false;
             OutputInfo = string.Empty;
             var selectedItem = Branches[int.Parse(SelectedBranchIndex)];
-            Task.Run(() =>
-            {
-                var remoteBranches = _gitProcessor.Checkout(selectedItem);
-                IsCheckoutButtonEnable = true;
-            });
+
+            return _gitProcessor.Checkout(selectedItem);
         }
 
         #endregion
