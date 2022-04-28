@@ -12,12 +12,8 @@ namespace GitTank.Loggers
 
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File(
-                    $"{DirectoryPath}/{path}-.log",
-                    outputTemplate: outputTemplate,
-                    rollingInterval: RollingInterval.Day,
-                    shared: true)
-                .WriteTo.File(new JsonFormatter(), $"{DirectoryPath}/{path}-{DateTime.Now.ToString("yyyyMMdd")}.json",
+                .WriteTo.File(new JsonFormatter(),
+                $"{DirectoryPath}/{path}-{DateTime.Now.ToString("yyyyMMdd")}.json",
                  shared:true)
                 .CreateLogger();
 
