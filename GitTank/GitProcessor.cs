@@ -178,7 +178,8 @@ namespace GitTank
                 {
                     $"checkout {currentBranch}",
                     "pull --progress -v --no-rebase \"origin\"",
-                    $"checkout -b {newBranch}"
+                    $"checkout -b {newBranch}",
+                    "push -u"
                 };
 
                 foreach (var argument in arguments)
