@@ -83,6 +83,11 @@
                 Margin="0,5"
                 IsEnabled="{Binding IsSettingsButtonEnable}"
                 Command="{Binding SettingsCommand}"/>
+            <Button 
+                Content="Terminal" 
+                Margin="0,5"
+                IsEnabled="{Binding IsSettingsButtonEnable}"
+                Command="{Binding OpenTerminalCommand}"/>
         </StackPanel>
     </Grid>
 </Window>
