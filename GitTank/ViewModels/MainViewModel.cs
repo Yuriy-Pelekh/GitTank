@@ -24,6 +24,8 @@ namespace GitTank.ViewModels
         public ObservableCollection<string> Repositories { get; set; }
         public ObservableCollection<string> Branches { get; set; }
 
+        public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
+
         public string SelectedRepoIndex
         {
             get => _selectedRepoIndex;
