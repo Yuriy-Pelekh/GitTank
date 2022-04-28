@@ -13,7 +13,7 @@ namespace GitTank.ViewModels
     public class SettingsViewModel : BaseViewModel
     {
         private readonly GitProcessor _gitProcessor;
-        private bool _isAddRepositoryButtonEnable = true;
+        private bool _isAddRepositoryButtonEnabled = true;
         private bool _isRemoveRepositoryButtonEnabled = true;
         private bool _isSaveRepositoriesSettingsButtonEnabled = true;
 
@@ -22,14 +22,14 @@ namespace GitTank.ViewModels
             _gitProcessor = new GitProcessor(configuration, logger);
         }
 
-        public bool IsAddRepositoryButtonEnable
+        public bool IsAddRepositoryButtonEnabled
         {
-            get => _isAddRepositoryButtonEnable;
+            get => _isAddRepositoryButtonEnabled;
             set
             {
-                if(IsAddRepositoryButtonEnable != value)
+                if(IsAddRepositoryButtonEnabled != value)
                 {
-                    _isAddRepositoryButtonEnable = value;
+                    _isAddRepositoryButtonEnabled = value;
                     OnPropertyChanged();
                 }
             }
@@ -40,7 +40,7 @@ namespace GitTank.ViewModels
             get => _isRemoveRepositoryButtonEnabled;
             set
             {
-                if(_isAddRepositoryButtonEnable!= value)
+                if(_isAddRepositoryButtonEnabled!= value)
                 {
                     _isRemoveRepositoryButtonEnabled = value;
                     OnPropertyChanged();
