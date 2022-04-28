@@ -22,6 +22,7 @@ namespace GitTank.ViewModels
         private bool _isPushButtonEnable = true;
         private bool _isFetchButtonEnable = true;
         private bool _isCreateButtonEnable = true;
+        private bool _isSettingsButtonEnable = true;
 
         public ObservableCollection<string> Repositories { get; set; }
         public ObservableCollection<string> Branches { get; set; }
@@ -137,6 +138,7 @@ namespace GitTank.ViewModels
             _configuration = configuration;
             _gitProcessor = new GitProcessor(configuration, logger);
             _gitProcessor.Output += OnOutput;
+            _logger = logger;
             OnLoaded();
         }
 
@@ -175,6 +177,19 @@ namespace GitTank.ViewModels
                 if (_newBranchName != value)
                 {
                     _newBranchName = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsSettingsButtonEnable
+        {
+            get => _isSettingsButtonEnable;
+            set
+            {
+                if(IsSettingsButtonEnable != value)
+                {
+                    _isSettingsButtonEnable = value;
                     OnPropertyChanged();
                 }
             }
@@ -344,6 +359,22 @@ namespace GitTank.ViewModels
             await _gitProcessor.OpenTerminal(selectedRepository);
         }
 
+        #endregion
+
+        #region Settings Comand
+        private RelayCommand _settingsCommand;
+        private ILogger _logger;
+
+        public RelayCommand SettingsCommand
+        {
+            get { return _settingsCommand ??= new RelayCommand(() => OpenSettings()); }
+        }
+
+        private void OpenSettings()
+        {
+            SettingsWindow settingsWindow = new SettingsWindow(_configuration, _logger);
+            settingsWindow.Show();
+        }
         #endregion
 
         private void OnLoaded()
