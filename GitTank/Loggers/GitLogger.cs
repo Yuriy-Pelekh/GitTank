@@ -10,7 +10,7 @@ namespace GitTank.Loggers
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File(new JsonFormatter(),
-                    $"{DirectoryPath}/{path}-.json",
+                    $"{DirectoryPath}/{path}-.log",
                     rollingInterval: RollingInterval.Day,
                     shared: true)
                 .CreateLogger();
