@@ -1,6 +1,5 @@
 ﻿using Serilog;
 using Serilog.Events;
-using System;
 
 namespace GitTank.Loggers
 {

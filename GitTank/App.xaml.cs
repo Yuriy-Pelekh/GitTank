@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Threading;
 using GitTank.Loggers;
 using Serilog.Context;
-using System.Net.NetworkInformation;
 
 namespace GitTank
 {
