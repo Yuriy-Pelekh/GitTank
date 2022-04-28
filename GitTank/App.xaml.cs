@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using GitTank.Loggers;
+using Serilog.Context;
 
 namespace GitTank
 {
@@ -22,6 +23,7 @@ namespace GitTank
 
         public App()
         {
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             Logger.Debug("Starting application");
 
             // Catch exceptions from all threads in the AppDomain.
@@ -40,6 +42,7 @@ namespace GitTank
         protected override void OnStartup(StartupEventArgs e)
         {
             var serviceCollection = new ServiceCollection();
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
 
             Logger.Debug("Configuring services");
             ConfigureServices(serviceCollection);
@@ -50,6 +53,7 @@ namespace GitTank
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
 
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             Logger.Debug("Application started");
         }
 
@@ -92,7 +96,7 @@ namespace GitTank
         {
             Logger.Error("OnDispatcherUnhandledException", e.Exception);
             e.Handled = true;
-            Debugger.Break();
+            //Debugger.Break();
         }
 
         private void OnApplicationDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

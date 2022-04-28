@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GitTank.Loggers;
+using Serilog.Context;
 using System.Diagnostics;
 
 namespace GitTank
@@ -20,6 +21,7 @@ namespace GitTank
 
         public GitProcessor(IConfiguration configuration, ILogger logger)
         {
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             _processHelper = new ProcessHelper(logger);
             _processHelper.Output += OnOutput;
 
@@ -162,7 +164,7 @@ namespace GitTank
         {
             var workingDirectory = Path.Combine(_rootWorkingDirectory, selectedRepository);
 
-            var _process = new Process
+            var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -170,15 +172,15 @@ namespace GitTank
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
                     CreateNoWindow = false,
-                    
+
                     WorkingDirectory = workingDirectory,
                     FileName = @"C:\Program Files\Git\git-bash.exe",
                     WindowStyle = ProcessWindowStyle.Normal
                 }
             };
 
-            _process.Start();
-            await _process.WaitForExitAsync();
+            process.Start();
+            await process.WaitForExitAsync();
         }
     }
 }
