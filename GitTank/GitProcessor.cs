@@ -182,5 +182,37 @@ namespace GitTank
             process.Start();
             await process.WaitForExitAsync();
         }
+
+        public async Task Fetch()
+        {
+            foreach (var repository in _repositories)
+            {
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
+                string argument = "fetch -v --progress --prune \"origin\"";
+
+                _processHelper.Configure(Command, argument, workingDirectory);
+                await _processHelper.Execute();
+            }
+        }
+
+        public async Task CreateBranch(string newBranch)
+        {
+            foreach (var repository in _repositories)
+            {
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
+                string[] arguments =
+                {
+                    "pull --progress -v --no-rebase \"origin\"",
+                    $"checkout -b {newBranch}",
+                    $"push -u origin {newBranch}"
+                };
+
+                foreach (var argument in arguments)
+                {
+                    _processHelper.Configure(Command, argument, workingDirectory);
+                    await _processHelper.Execute();
+                }
+            }
+        }
     }
 }
