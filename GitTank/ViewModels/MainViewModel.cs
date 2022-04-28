@@ -310,13 +310,15 @@ namespace GitTank.ViewModels
             get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
         }
 
-        private async void CreateBranch()
+        private void CreateBranch()
         {
             IsCreateButtonEnable = false;
-            var currentBranch = await _gitProcessor.GetBranch();
             OutputInfo = string.Empty;
-            await _gitProcessor.CreateBranch(currentBranch, _newBranchName);
-            IsCreateButtonEnable = true;
+            Task.Run(() =>
+            {
+                var branch = _gitProcessor.CreateBranch(_newBranchName);
+                IsCreateButtonEnable = true;
+            });
         }
 
         public MainViewModel(IConfiguration configuration, ILogger logger)

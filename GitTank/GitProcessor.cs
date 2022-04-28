@@ -169,17 +169,16 @@ namespace GitTank
             }
         }
 
-        public async Task CreateBranch(string currentBranch, string newBranch)
+        public async Task CreateBranch(string newBranch)
         {
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
                 string[] arguments =
                 {
-                    $"checkout {currentBranch}",
                     "pull --progress -v --no-rebase \"origin\"",
                     $"checkout -b {newBranch}",
-                    "push -u"
+                    $"push -u origin {newBranch}"
                 };
 
                 foreach (var argument in arguments)
