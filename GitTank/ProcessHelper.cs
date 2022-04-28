@@ -72,7 +72,7 @@ namespace GitTank
             var commandInfo = _process.StartInfo.FileName + " " + _process.StartInfo.Arguments;
             _jsonOutput.AppendLine(commandInfo);
             OnOutput(commandInfo);
-            LogContext.PushProperty("SourceContext", GetType().Name);
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             _generalLogger.Information($"Command executed: {commandInfo}" + " in " + _process.StartInfo.WorkingDirectory);
             OnOutput("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
             _jsonOutput.AppendLine("in " + _process.StartInfo.WorkingDirectory);

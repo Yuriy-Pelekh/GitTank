@@ -23,7 +23,7 @@ namespace GitTank
 
         public App()
         {
-            LogContext.PushProperty("SourceContext", this.GetType().Name);
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             Logger.Debug("Starting application");
 
             // Catch exceptions from all threads in the AppDomain.
@@ -42,7 +42,7 @@ namespace GitTank
         protected override void OnStartup(StartupEventArgs e)
         {
             var serviceCollection = new ServiceCollection();
-            LogContext.PushProperty("SourceContext", this.GetType().Name);
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
 
             Logger.Debug("Configuring services");
             ConfigureServices(serviceCollection);
@@ -53,7 +53,7 @@ namespace GitTank
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
 
-            LogContext.PushProperty("SourceContext", GetType().Name);
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             Logger.Debug("Application started");
         }
 

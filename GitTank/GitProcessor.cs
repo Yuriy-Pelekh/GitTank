@@ -20,7 +20,7 @@ namespace GitTank
 
         public GitProcessor(IConfiguration configuration, ILogger logger)
         {
-            LogContext.PushProperty("SourceContext", this.GetType().Name);
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             _processHelper = new ProcessHelper(logger);
             _processHelper.Output += OnOutput;
 

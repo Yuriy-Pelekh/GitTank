@@ -25,7 +25,7 @@ namespace GitTank
 
         private void MainWindowClosed(object sender, EventArgs e)
         {
-            LogContext.PushProperty("SourceContext", this.GetType().Name);
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             _generalLogger.Information("Application was closed");
         }
 
