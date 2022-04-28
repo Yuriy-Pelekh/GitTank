@@ -70,9 +70,10 @@ namespace GitTank
             _jsonOutput.Clear();
             _result.Clear();
             LogContext.PushProperty(Constants.SourceContext, GetType().Name);
-            var commandInfo = $"Command executed: {_process.StartInfo.FileName} {_process.StartInfo.Arguments} in {_process.StartInfo.WorkingDirectory}";
+            var command = $"{_process.StartInfo.FileName} {_process.StartInfo.Arguments}";
+            var commandInfo = $"Command executed: {command} in {_process.StartInfo.WorkingDirectory}";
             _generalLogger.Information(commandInfo);
-            OnOutput(commandInfo);
+            OnOutput(command);
             _process.Start();
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
@@ -90,7 +91,7 @@ namespace GitTank
                 _output.Clear();
                 _linesCount = 0;
             }
-            var summary = $"{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}{Environment.NewLine})";
+            var summary = $"{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()})";
             _generalLogger.Information(summary);
             OnOutput(summary);
             OnOutput("_________________________________________________________________________________");
