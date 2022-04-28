@@ -96,7 +96,7 @@ namespace GitTank
         {
             Logger.Error("OnDispatcherUnhandledException", e.Exception);
             e.Handled = true;
-            Debugger.Break();
+            //Debugger.Break();
         }
 
         private void OnApplicationDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
