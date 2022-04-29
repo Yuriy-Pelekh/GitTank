@@ -1,6 +1,6 @@
 ﻿namespace GitTank.Dto
 {
-    public class RepositoryDto
+    public class Repository
     {
         public string RepositoryName { get; set; }
         public string RepositoryPath { get; set; }

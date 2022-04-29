@@ -20,10 +20,14 @@ namespace GitTank.ViewModels
         private bool _isCheckoutButtonEnable = true;
         private bool _isSyncButtonEnable = true;
         private bool _isPushButtonEnable = true;
+        private bool _isFetchButtonEnable = true;
+        private bool _isCreateButtonEnable = true;
         private bool _isSettingsButtonEnable = true;
 
         public ObservableCollection<string> Repositories { get; set; }
         public ObservableCollection<string> Branches { get; set; }
+
+        public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
 
         public string SelectedRepoIndex
         {
@@ -121,9 +125,58 @@ namespace GitTank.ViewModels
             get => _isPushButtonEnable;
             set
             {
-                if (IsPushButtonEnable != value)
+                if (_isPushButtonEnable != value)
                 {
                     _isPushButtonEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public MainViewModel(IConfiguration configuration, ILogger logger)
+        {
+            _configuration = configuration;
+            _gitProcessor = new GitProcessor(configuration, logger);
+            _gitProcessor.Output += OnOutput;
+            _logger = logger;
+            OnLoaded();
+        }
+
+        public bool IsFetchButtonEnable
+        {
+            get => _isFetchButtonEnable;
+            set
+            {
+                if (_isFetchButtonEnable != value)
+                {
+                    _isFetchButtonEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsCreateButtonEnable
+        {
+            get => _isCreateButtonEnable;
+            set
+            {
+                if (_isCreateButtonEnable != value)
+                {
+                    _isCreateButtonEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private string _newBranchName;
+        public string NewBranchName
+        {
+            get => _newBranchName;
+            set
+            {
+                if (_newBranchName != value)
+                {
+                    _newBranchName = value;
                     OnPropertyChanged();
                 }
             }
@@ -255,6 +308,59 @@ namespace GitTank.ViewModels
 
         #endregion
 
+        #region OpenTerminal Command
+
+        private RelayCommand _openTerminalCommand;
+
+        public RelayCommand OpenTerminalCommand
+        {
+            get { return _openTerminalCommand ??= new RelayCommand(async () => await OpenTerminal()); }
+        }
+
+        private RelayCommand _fetchCommand;
+
+        public RelayCommand FetchCommand
+        {
+            get { return _fetchCommand ??= new RelayCommand(Fetch); }
+        }
+
+        private void Fetch()
+        {
+            IsFetchButtonEnable = false;
+            OutputInfo = string.Empty;
+            Task.Run(() =>
+            {
+                var currentBranch = _gitProcessor.Fetch();
+                IsFetchButtonEnable = true;
+            });
+        }
+
+        private RelayCommand _createBranchCommand;
+
+        public RelayCommand CreateBranchCommand
+        {
+            get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
+        }
+
+        private void CreateBranch()
+        {
+            IsCreateButtonEnable = false;
+            OutputInfo = string.Empty;
+            Task.Run(() =>
+            {
+                var branch = _gitProcessor.CreateBranch(_newBranchName);
+                IsCreateButtonEnable = true;
+            });
+        }
+
+        private async Task OpenTerminal()
+        {
+            var selectedRepository = Repositories[int.Parse(SelectedRepoIndex)];
+            await _gitProcessor.OpenTerminal(selectedRepository);
+        }
+
+        #endregion
+
         #region Settings Comand
         private RelayCommand _settingsCommand;
         private ILogger _logger;
@@ -270,15 +376,6 @@ namespace GitTank.ViewModels
             settingsWindow.Show();
         }
         #endregion
-
-        public MainViewModel(IConfiguration configuration, ILogger logger)
-        {
-            _configuration = configuration;
-            _gitProcessor = new GitProcessor(configuration, logger);
-            _gitProcessor.Output += OnOutput;
-            _logger = logger;
-            OnLoaded();
-        }
 
         private void OnLoaded()
         {

@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GitTank.Loggers;
+using Serilog.Context;
+using System.Diagnostics;
 
 namespace GitTank
 {
@@ -19,6 +21,7 @@ namespace GitTank
 
         public GitProcessor(IConfiguration configuration, ILogger logger)
         {
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
             _processHelper = new ProcessHelper(logger);
             _processHelper.Output += OnOutput;
 
@@ -161,6 +164,61 @@ namespace GitTank
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
                 _processHelper.Configure(Command, arguments, workingDirectory);
                 await _processHelper.Execute();
+            }
+        }
+
+        public async Task OpenTerminal(string selectedRepository)
+        {
+            var workingDirectory = Path.Combine(_rootWorkingDirectory, selectedRepository);
+
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    RedirectStandardError = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = false,
+
+                    WorkingDirectory = workingDirectory,
+                    FileName = @"C:\Program Files\Git\git-bash.exe",
+                    WindowStyle = ProcessWindowStyle.Normal
+                }
+            };
+
+            process.Start();
+            await process.WaitForExitAsync();
+        }
+
+        public async Task Fetch()
+        {
+            foreach (var repository in _repositories)
+            {
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
+                string argument = "fetch -v --progress --prune \"origin\"";
+
+                _processHelper.Configure(Command, argument, workingDirectory);
+                await _processHelper.Execute();
+            }
+        }
+
+        public async Task CreateBranch(string newBranch)
+        {
+            foreach (var repository in _repositories)
+            {
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
+                string[] arguments =
+                {
+                    "pull --progress -v --no-rebase \"origin\"",
+                    $"checkout -b {newBranch}",
+                    $"push -u origin {newBranch}"
+                };
+
+                foreach (var argument in arguments)
+                {
+                    _processHelper.Configure(Command, argument, workingDirectory);
+                    await _processHelper.Execute();
+                }
             }
         }
     }
