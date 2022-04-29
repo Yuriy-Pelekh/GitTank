@@ -55,41 +55,49 @@ namespace GitTank
         public async Task<string> GetBranch()
         {
             const string arguments = "rev-parse --abbrev-ref HEAD"; //"git branch --show-current";
+            Task<string> defaultRepositoryCurrentBranchTask = Task.FromResult(string.Empty);
 
-            var result = string.Empty;
-
+            List<Task> runningTasks = new();
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
                 _processHelper.Configure(Command, arguments, workingDirectory);
-                var currentBranch = await _processHelper.Execute();
+
+                Task<string> task = _processHelper.Execute();
+                runningTasks.Add(task);
+                
                 if (string.Equals(repository, _defaultRepository))
                 {
-                    result = currentBranch;
+                    defaultRepositoryCurrentBranchTask = task;
                 }
             }
 
-            return result;
+            await Task.WhenAll(runningTasks);
+            return await defaultRepositoryCurrentBranchTask;
         }
 
         public async Task Update()
         {
+            string[] arguments =
+            {
+                //"fetch -v --progress --prune \"origin\"",
+                "pull --progress -v --no-rebase \"origin\"",
+                //"remote prune origin"
+            };
+
+            List<Task> runningTasks = new();
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                string[] arguments =
-                {
-                    //"fetch -v --progress --prune \"origin\"",
-                    "pull --progress -v --no-rebase \"origin\"",
-                    //"remote prune origin"
-                };
 
                 foreach (var argument in arguments)
                 {
                     _processHelper.Configure(Command, argument, workingDirectory);
-                    await _processHelper.Execute();
+                    runningTasks.Add(_processHelper.Execute());
                 }
             }
+
+            await Task.WhenAll(runningTasks);
         }
 
         public async Task<string> Branches()
@@ -105,7 +113,7 @@ namespace GitTank
         {
             var remoteBranchExistsCommand = "ls-remote --heads origin {0}";
             var localBranchExistsCommand = "branch --list {0}";
-            var arguments = $"checkout -b {selectedItem}";
+            string arguments;
 
             List<Task> runningTasks = new();
             foreach (var repository in _repositories)
@@ -129,21 +137,27 @@ namespace GitTank
 
         public async Task Sync()
         {
+            List<Task> runningTasks = new();
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                string[] arguments =
-                {
-                    "fetch -v --progress --prune \"origin\"",
-                    $"merge origin/{_defaultBranch}"
-                };
 
-                foreach (var argument in arguments)
-                {
-                    _processHelper.Configure(Command, argument, workingDirectory);
-                    await _processHelper.Execute();
-                }
+                runningTasks.Add(SyncOneRepository(workingDirectory));
             }
+
+            await Task.WhenAll(runningTasks);
+        }
+
+        private async Task SyncOneRepository(string repositoryDirectory)
+        {
+            string fetchArgument = "fetch -v --progress --prune \"origin\"";
+            string mergeArgument = $"merge origin/{_defaultBranch}";
+
+            _processHelper.Configure(Command, fetchArgument, repositoryDirectory);
+            await _processHelper.Execute();
+
+            _processHelper.Configure(Command, mergeArgument, repositoryDirectory);
+            await _processHelper.Execute();
         }
 
         public async Task Push()
@@ -151,45 +165,64 @@ namespace GitTank
             // Requires: git config --global push.default current
             const string arguments = "push -u";
 
+            List<Task> runningTasks = new();
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
                 _processHelper.Configure(Command, arguments, workingDirectory);
-                await _processHelper.Execute();
+                runningTasks.Add(_processHelper.Execute());
             }
+
+            await Task.WhenAll(runningTasks);
         }
 
         public async Task Fetch()
         {
+            const string argument = "fetch -v --progress --prune \"origin\"";
+
+            List<Task> runningTasks = new();
             foreach (var repository in _repositories)
             {
-                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                string argument = "fetch -v --progress --prune \"origin\"";
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);                
 
                 _processHelper.Configure(Command, argument, workingDirectory);
-                await _processHelper.Execute();
+                runningTasks.Add(_processHelper.Execute());
             }
+
+            await Task.WhenAll(runningTasks);
         }
 
         public async Task CreateBranch(string currentBranch, string newBranch)
         {
+            List<Task> runningTasks = new();
             foreach (var repository in _repositories)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                string[] arguments =
-                {
-                    $"checkout {currentBranch}",
-                    "pull --progress -v --no-rebase \"origin\"",
-                    $"checkout -b {newBranch}",
-                    "push -u"
-                };
 
-                foreach (var argument in arguments)
-                {
-                    _processHelper.Configure(Command, argument, workingDirectory);
-                    await _processHelper.Execute();
-                }
+                runningTasks.Add(CreateBranchOneRepository(currentBranch, newBranch, workingDirectory));
             }
+
+            await Task.WhenAll(runningTasks);
+        }
+
+        private async Task CreateBranchOneRepository(string currentBranch, string newBranch, string repositoryDirectory)
+        {
+            string checkoutCurrentBranchArgument = $"checkout {currentBranch}";
+            string pullArgument = "pull --progress -v --no-rebase \"origin\"";
+            string checkoutNewBranchArgument = $"checkout -b {newBranch}";
+            string pushArgument = "push -u";
+
+            _processHelper.Configure(Command, checkoutCurrentBranchArgument, repositoryDirectory);
+            await _processHelper.Execute();
+
+            _processHelper.Configure(Command, pullArgument, repositoryDirectory);
+            await _processHelper.Execute();
+
+            _processHelper.Configure(Command, checkoutNewBranchArgument, repositoryDirectory);
+            await _processHelper.Execute();
+
+            _processHelper.Configure(Command, pushArgument, repositoryDirectory);
+            await _processHelper.Execute();
         }
     }
 }
