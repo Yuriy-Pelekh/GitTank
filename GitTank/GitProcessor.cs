@@ -101,11 +101,11 @@ namespace GitTank
             return await _processHelper.Execute();
         }
 
-        public string GetAllBranches(string repositoryPath)
+        public async Task<string> GetAllBranches(string repositoryPath)
         {
             const string arguments = "branch -a"; // -r - only remote, -a - all
             _processHelper.Configure(Command, arguments, repositoryPath);
-            return _processHelper.Execute().Result.ToString();
+            return await _processHelper.Execute();
         }
 
         public async Task Checkout(string selectedItem)

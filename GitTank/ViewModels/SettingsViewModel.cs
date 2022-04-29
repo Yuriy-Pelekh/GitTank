@@ -14,7 +14,7 @@ namespace GitTank.ViewModels
     {
         private readonly IConfiguration _configuration;
         private readonly GitProcessor _gitProcessor;
-        private bool _isAddRepositoryButtonEnable = true;
+        private bool _isAddRepositoryButtonEnabled = true;
         private bool _isRemoveRepositorieButtonEnabled = true;
         private bool _isSaveRepositoriesSettingsButtonEnabled = true;
 
@@ -26,12 +26,12 @@ namespace GitTank.ViewModels
 
         public bool IsAddRepositoryButtonEnable
         {
-            get => _isAddRepositoryButtonEnable; 
+            get => _isAddRepositoryButtonEnabled; 
             set
             {
                 if(IsAddRepositoryButtonEnable != value)
                 {
-                    _isAddRepositoryButtonEnable = value;
+                    _isAddRepositoryButtonEnabled = value;
                     OnPropertyChanged();
                 }
             }
@@ -62,7 +62,7 @@ namespace GitTank.ViewModels
                 }
             }
         }
-
+        
         private RelayCommand _addRepositoryCommand;
 
         public RelayCommand AddRepositoryCommand
@@ -225,7 +225,7 @@ namespace GitTank.ViewModels
         public void UpdateListOfDefaultsGitBranches(string repositoryPath)
         {
             DefaultGitBranch.Clear();
-            var branches = _gitProcessor.GetAllBranches(repositoryPath);
+            var branches = _gitProcessor.GetAllBranches(repositoryPath).Result.ToString();
             List<string> gitBranchesNames = new List<string>(branches.Split("\r\n").ToList());
             foreach (string branchName in gitBranchesNames)
             {
