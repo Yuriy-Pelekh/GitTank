@@ -64,21 +64,22 @@
             <Button
                 Content="Fetch"
                 Margin="0, 0, 0, 5"
-                IsEnabled="{Binding IsFetchButtonEnable}"
+                IsEnabled="{Binding AreAllGitCommandButtonsEnabled}"
                 Command="{Binding FetchCommand}"/>
             <Button
                 Content="Pull"
                 Margin="0, 5"
-                IsEnabled="{Binding IsUpdateButtonEnable}"
+                IsEnabled="{Binding AreAllGitCommandButtonsEnabled}"
                 Command="{Binding UpdateCommand}"/>
             <Button
                 Content="Push"
                 Margin="0, 5"
-                IsEnabled="{Binding IsPushButtonEnable}"
+                IsEnabled="{Binding AreAllGitCommandButtonsEnabled}"
                 Command="{Binding PushCommand}"/>
-            <Button x:Name="OpenPopup"
+                <Button x:Name="OpenPopup"
                 Content="Create branch"
-                Margin="0, 5">
+                Margin="0, 5"
+                IsEnabled="{Binding AreAllGitCommandButtonsEnabled}">
                     <Button.Triggers>
                         <EventTrigger RoutedEvent="Button.Click">
                             <EventTrigger.Actions>
@@ -117,19 +118,19 @@
             <Button
                 Content="Branch"
                 Margin="0, 5"
-                IsEnabled="{Binding IsBranchButtonEnable}"
+                IsEnabled="{Binding AreAllGitCommandButtonsEnabled}"
                 Command="{Binding BranchCommand}"/>
             <Expander Header="Advanced commands" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0, 10">
                 <StackPanel>
                     <Button
                         Content="Checkout"
                         Margin="0,5"
-                        IsEnabled="{Binding IsCheckoutButtonEnable}"
+                        IsEnabled="{Binding AreAllGitCommandButtonsEnabled}"
                         Command="{Binding CheckoutCommand}"/>
                     <Button
                         Content="Sync"
                         Margin="0,5"
-                        IsEnabled="{Binding IsSyncButtonEnable}"
+                        IsEnabled="{Binding AreAllGitCommandButtonsEnabled}"
                         Command="{Binding SyncCommand}"/>   
                 </StackPanel>
             </Expander>

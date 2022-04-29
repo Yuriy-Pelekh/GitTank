@@ -12,22 +12,18 @@ namespace GitTank.ViewModels
     {
         private readonly IConfiguration _configuration;
         private readonly GitProcessor _gitProcessor;
+
         private string _selectedRepoIndex;
         private string _selectedBranchIndex;
         private string _outputInfo;
-        private bool _isUpdateButtonEnable = true;
-        private bool _isBranchButtonEnable = true;
-        private bool _isCheckoutButtonEnabled = true;
-        private bool _isSyncButtonEnable = true;
-        private bool _isPushButtonEnable = true;
-        private bool _isFetchButtonEnable = true;
-        private bool _isCreateButtonEnable = true;
+        private bool _areAllGitCommandButtonsEnabled = true;
 
         public ObservableCollection<string> Repositories { get; set; }
         public ObservableCollection<string> Branches { get; set; }
 
         public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
 
+        #region binding properties
         public string SelectedRepoIndex
         {
             get => _selectedRepoIndex;
@@ -67,97 +63,6 @@ namespace GitTank.ViewModels
             }
         }
 
-        public bool IsUpdateButtonEnable
-        {
-            get => _isUpdateButtonEnable;
-            set
-            {
-                if (_isUpdateButtonEnable != value)
-                {
-                    _isUpdateButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsBranchButtonEnable
-        {
-            get => _isBranchButtonEnable;
-            set
-            {
-                if (_isBranchButtonEnable != value)
-                {
-                    _isBranchButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsCheckoutButtonEnabled
-        {
-            get => _isCheckoutButtonEnabled;
-            set
-            {
-                if (_isCheckoutButtonEnabled != value)
-                {
-                    _isCheckoutButtonEnabled = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsSyncButtonEnable
-        {
-            get => _isSyncButtonEnable;
-            set
-            {
-                if (_isSyncButtonEnable != value)
-                {
-                    _isSyncButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsPushButtonEnable
-        {
-            get => _isPushButtonEnable;
-            set
-            {
-                if (_isPushButtonEnable != value)
-                {
-                    _isPushButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsFetchButtonEnable
-        {
-            get => _isFetchButtonEnable;
-            set
-            {
-                if (_isFetchButtonEnable != value)
-                {
-                    _isFetchButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsCreateButtonEnable
-        {
-            get => _isCreateButtonEnable;
-            set
-            {
-                if (_isCreateButtonEnable != value)
-                {
-                    _isCreateButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         private string _newBranchName;
         public string NewBranchName
         {
@@ -172,24 +77,39 @@ namespace GitTank.ViewModels
             }
         }
 
+        public bool AreAllGitCommandButtonsEnabled
+        {
+            get => _areAllGitCommandButtonsEnabled;
+            set
+            {
+                if (_areAllGitCommandButtonsEnabled != value)
+                {
+                    _areAllGitCommandButtonsEnabled = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
         #region Branch Command
 
         private RelayCommand _branchCommand;
 
         public RelayCommand BranchCommand
         {
-            get { return _branchCommand ??= new RelayCommand(Branch); }
+            get { return _branchCommand ??= new RelayCommand(async () => await Branch()); }
         }
 
-        private void Branch()
+        private async Task<string> Branch()
         {
-            IsBranchButtonEnable = false;
+            AreAllGitCommandButtonsEnabled = false;
             OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var currentBranch = _gitProcessor.GetBranch();
-                IsBranchButtonEnable = true;
-            });
+
+            var branch = await _gitProcessor.GetBranch();
+
+            AreAllGitCommandButtonsEnabled = true;
+
+            return branch;
         }
 
         #endregion
@@ -200,38 +120,40 @@ namespace GitTank.ViewModels
 
         public RelayCommand UpdateCommand
         {
-            get { return _updateCommand ??= new RelayCommand(() => Update()); }
-
+            get { return _updateCommand ??= new RelayCommand(async () => await Update()); }
         }
 
-        private void Update()
+        private async Task Update()
         {
-            IsUpdateButtonEnable = false;
+            AreAllGitCommandButtonsEnabled = false;
             OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var output = _gitProcessor.Update();
-                IsUpdateButtonEnable = true;
-            });
+
+            await _gitProcessor.Update();
+
+            AreAllGitCommandButtonsEnabled = true;
         }
 
         #endregion
 
         #region Checkout Command
 
-        private AsyncRelayCommand _checkoutCommand;
+        private RelayCommand _checkoutCommand;
 
-        public AsyncRelayCommand CheckoutCommand
+        public RelayCommand CheckoutCommand
         {
-            get { return _checkoutCommand ??= new AsyncRelayCommand(Checkout, () => IsCheckoutButtonEnabled); }
+            get { return _checkoutCommand ??= new RelayCommand(async () => await Checkout()); }
         }
 
-        private Task Checkout()
+        private async Task Checkout()
         {
+            AreAllGitCommandButtonsEnabled = false;
             OutputInfo = string.Empty;
+
             var selectedItem = Branches[int.Parse(SelectedBranchIndex)];
 
-            return _gitProcessor.Checkout(selectedItem);
+            await _gitProcessor.Checkout(selectedItem);
+
+            AreAllGitCommandButtonsEnabled = true;
         }
 
         #endregion
@@ -242,18 +164,17 @@ namespace GitTank.ViewModels
 
         public RelayCommand SyncCommand
         {
-            get { return _syncCommand ??= new RelayCommand(Sync); }
+            get { return _syncCommand ??= new RelayCommand(async () => await Sync()); }
         }
 
-        private void Sync()
+        private async Task Sync()
         {
-            IsSyncButtonEnable = false;
+            AreAllGitCommandButtonsEnabled = false;
             OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var remoteBranches = _gitProcessor.Sync();
-                IsSyncButtonEnable = true;
-            });
+
+            await _gitProcessor.Sync();
+
+            AreAllGitCommandButtonsEnabled = true;
         }
 
         #endregion
@@ -264,55 +185,59 @@ namespace GitTank.ViewModels
 
         public RelayCommand PushCommand
         {
-            get { return _pushCommand ??= new RelayCommand(()=>Push()); }
+            get { return _pushCommand ??= new RelayCommand(async () => await Push()); }
         }
 
-        private void Push()
+        private async Task Push()
         {
-            IsPushButtonEnable = false;
+            AreAllGitCommandButtonsEnabled = false;
             OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var remoteBranches = _gitProcessor.Push();
-                IsPushButtonEnable = true;
-            });
+
+            await _gitProcessor.Push();
+
+            AreAllGitCommandButtonsEnabled = true;
         }
 
         #endregion
 
+        #region Fetch Command
         private RelayCommand _fetchCommand;
 
         public RelayCommand FetchCommand
         {
-            get { return _fetchCommand ??= new RelayCommand(Fetch); }
+            get { return _fetchCommand ??= new RelayCommand(async () => await Fetch()); }
         }
 
-        private void Fetch()
+        private async Task Fetch()
         {
-            IsFetchButtonEnable = false;
+            AreAllGitCommandButtonsEnabled = false;
             OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var currentBranch = _gitProcessor.Fetch();
-                IsFetchButtonEnable = true;
-            });
-        }
 
+            await _gitProcessor.Fetch();
+
+            AreAllGitCommandButtonsEnabled = true;
+        }
+        #endregion
+
+        #region Create Branch Command
         private RelayCommand _createBranchCommand;
 
         public RelayCommand CreateBranchCommand
         {
-            get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
+            get { return _createBranchCommand ??= new RelayCommand(async () => await CreateBranch()); }
         }
 
-        private async void CreateBranch()
+        private async Task CreateBranch()
         {
-            IsCreateButtonEnable = false;
-            var currentBranch = await _gitProcessor.GetBranch();
+            AreAllGitCommandButtonsEnabled = false;
             OutputInfo = string.Empty;
+
+            var currentBranch = await _gitProcessor.GetBranch();
             await _gitProcessor.CreateBranch(currentBranch, _newBranchName);
-            IsCreateButtonEnable = true;
+
+            AreAllGitCommandButtonsEnabled = true;
         }
+        #endregion
 
         public MainViewModel(IConfiguration configuration, ILogger logger)
         {
