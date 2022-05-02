@@ -2,7 +2,7 @@
 
 namespace GitTank.Models
 {
-    public class SourcePaths
+    public class Sources
     {
         public string SourcePath { get; set; }
         public List<string> Repositories { get; set; }

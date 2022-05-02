@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using GitTank.Loggers;
+using GitTank.Models;
+using System.Collections.Generic;
 
 namespace GitTank.ViewModels
 {
@@ -384,11 +386,11 @@ namespace GitTank.ViewModels
                 if (Repositories == null)
                 {
                     var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
-                    var repositories = _configuration.GetSection("appSettings:repositories")
-                        .GetChildren()
-                        .Where(c => c.Value != null)
-                        .Select(c => c.Value)
-                        .ToList();
+
+                    var repositories = _configuration.GetSection("appSettings").GetSection("sources").Get<List<Sources>>()
+                    .SelectMany(c => c.Repositories)
+                    .ToList();
+
                     Repositories = new ObservableCollection<string>();
 
                     foreach (var repository in repositories)

@@ -15,25 +15,29 @@
                 </TabItem.Header>
                 <TabItem.Content>
                     <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90*"/>
+                            <ColumnDefinition Width="37*"/>
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="31*"/>
                             <RowDefinition Height="71*"/>
                         </Grid.RowDefinitions>
                         <Button
                             Content="Add..."
-                            Margin="471,9,105,0"
+                            Margin="21,9,105,0"
                             VerticalAlignment="Top"
                             IsEnabled ="{Binding IsAddRepositoryButtonEnabled}"
-                            Command="{Binding AddRepositoryCommand}" Height="25"/>
+                            Command="{Binding AddRepositoryCommand}" Height="25" Grid.Column="1"/>
                         <Button
                             Content="Remove..."
-                            Margin="471,0,105,0"
+                            Margin="21,0,105,0"
                             VerticalAlignment="Center"
                             IsEnabled ="{Binding IsRemoveRepositoryButtonEnabled}"
-                            Command="{Binding RemoveRepositoryCommand}" Height="25"/>
+                            Command="{Binding RemoveRepositoryCommand}" Height="25" Grid.Column="1"/>
                         <ListView Name="AllSelectedRepositoryList" Margin="0,0,174,246" Height="132" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="451"
                                   ItemsSource="{Binding AllRepositoriesDataCollection}"
-                                  SelectedItem="{Binding SelectedRepositoriesData}" Grid.RowSpan="2">
+                                  SelectedItem="{Binding SelectedRepositoriesData}" Grid.RowSpan="2" Grid.ColumnSpan="2">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn
@@ -58,15 +62,15 @@
                                 </GridView>
                             </ListView.View>
                         </ListView>
-                        <Label Content="Default Repository:" VerticalAlignment="Bottom" Height="26" HorizontalAlignment="Right" Width="118" Margin="0,0,507,189" FontWeight="Bold" Grid.Row="1"/>
+                        <Label Content="Default Repository:" VerticalAlignment="Bottom" Height="26" HorizontalAlignment="Right" Width="118" Margin="0,0,322,189" FontWeight="Bold" Grid.Row="1"/>
                         <ComboBox x:Name="DefaultRepository"
                             ItemsSource="{Binding AvailableRepositoriesCollection}"
                             SelectedItem="{Binding SelectedRepository}"
                             DisplayMemberPath="RepositoryName"
                             VerticalAlignment="Bottom" Height="26"
                             HorizontalAlignment="Right" Width="262"
-                            IsEditable="false" Margin="0,0,233,184" Grid.Row="1"/>
-                        <Label Content="Default Branch:" VerticalAlignment="Bottom" Height="24" HorizontalAlignment="Right" Width="128" Margin="0,0,497,139" FontWeight="Bold" Grid.Row="1"/>
+                            IsEditable="false" Margin="0,0,48,184" Grid.Row="1"/>
+                        <Label Content="Default Branch:" VerticalAlignment="Bottom" Height="24" HorizontalAlignment="Right" Width="128" Margin="0,0,312,139" FontWeight="Bold" Grid.Row="1"/>
                         <ComboBox x:Name="DefaultGitBranches"
                             ItemsSource="{Binding DefaultGitBranch}"
                             SelectedItem="{Binding SelectedGitBranch}"
@@ -74,10 +78,10 @@
                             Height="25"
                             HorizontalAlignment="Right"
                             Width="262"
-                            IsEditable="false" Margin="0,0,233,136" Grid.Row="1"/>
+                            IsEditable="false" Margin="0,0,48,136" Grid.Row="1"/>
                         <Button
                             Content="Save"
-                            Margin="0,204,541,0"
+                            Margin="0,204,356,0"
                             VerticalAlignment="Top"
                             IsEnabled ="{Binding IsSaveRepositoriesSettingsButtonEnabled}"
                             Command="{Binding SaveRepositoriesSettingsCommand}" Height="25" HorizontalAlignment="Right" Width="75" Grid.Row="1"/>
