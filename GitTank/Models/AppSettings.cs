@@ -7,5 +7,6 @@ namespace GitTank.Models
         public List<Sources> Sources { get; set; }
         public string DefaultRepository { get; set; }
         public string DefaultBranch { get; set; }
+        public bool newUI { get; set; }
     }
 }

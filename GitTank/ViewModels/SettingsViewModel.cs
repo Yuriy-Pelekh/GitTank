@@ -1,9 +1,14 @@
 ﻿using GitTank.Dto;
 using GitTank.Loggers;
+using GitTank.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -16,9 +21,13 @@ namespace GitTank.ViewModels
         private bool _isAddRepositoryButtonEnabled = true;
         private bool _isRemoveRepositoryButtonEnabled = true;
         private bool _isSaveRepositoriesSettingsButtonEnabled = true;
+        private IConfiguration _configuration;
+        private ILogger _logger;
 
         public SettingsViewModel(IConfiguration configuration, ILogger logger)
         {
+            _logger = logger;
+            _configuration = configuration;
             _gitProcessor = new GitProcessor(configuration, logger);
         }
 
@@ -83,7 +92,51 @@ namespace GitTank.ViewModels
 
         public void SaveRepositoriesSettingToAppConfig()
         {
+            var appSettingsPath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "appsettings.json");
+            var appSettingsPathDevelopment = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "appsettings.Development.json");
+            var json = File.ReadAllText(appSettingsPath);
 
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new ExpandoObjectConverter());
+            jsonSettings.Converters.Add(new StringEnumConverter());
+
+            dynamic config = JsonConvert.DeserializeObject<ExpandoObject>(json, jsonSettings);
+
+            config.appSettings.sources = getAllRepositoriesPathesAndRepo();
+            config.appSettings.defaultRepository = SelectedRepository.RepositoryName;
+            config.appSettings.defaultBranch = SelectedGitBranch;
+            var newJson = JsonConvert.SerializeObject(config, Formatting.Indented, jsonSettings);
+
+            File.WriteAllText(appSettingsPath, newJson);
+            File.WriteAllText(appSettingsPathDevelopment, newJson);
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                _configuration = builder.Build();
+
+            MainWindow mainWindow = new MainWindow(_configuration, _logger);
+ 
+            System.Windows.Application.Current.MainWindow.Close();
+            mainWindow.Show();
+            this.OnClosingRequest();
+        }
+
+        private List<Sources> getAllRepositoriesPathesAndRepo()
+        {
+            List<Sources> sources = new List<Sources>();
+            List<string> uniqPathes = (AllRepositoriesDataCollection.Select(item => item.RepositoryPath.Replace($"\\{item.RepositoryName}", ""))).Distinct().ToList();
+            foreach (var path in uniqPathes)
+            {
+                Sources source = new Sources()
+                {
+                    SourcePath = path,
+                    Repositories = new List<string>()
+                };
+                source.Repositories.AddRange(AllRepositoriesDataCollection.Where(item => item.RepositoryPath.Contains(path)).Select(item => item.RepositoryName));
+                sources.Add(source);
+            }
+            return sources;
         }
 
         private void OpenFolderBrowserDialog()

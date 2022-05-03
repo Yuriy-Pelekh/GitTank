@@ -10,7 +10,9 @@ namespace GitTank
         public SettingsWindow(IConfiguration configuration, ILogger logger)
         {
             InitializeComponent();
-            DataContext = new SettingsViewModel(configuration, logger);
+            var settingsViewModel = new SettingsViewModel(configuration, logger);
+            this.DataContext = settingsViewModel;
+            settingsViewModel.ClosingRequest += (sender, e) => this.Close();
         }
     }
 }
