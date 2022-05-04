@@ -24,8 +24,8 @@ namespace GitTank.ViewModels
         private bool _isCreateButtonEnable = true;
         private bool _isSettingsButtonEnable = true;
 
-        public ObservableCollection<string> Repositories { get; set; }
-        public ObservableCollection<string> Branches { get; set; }
+        public ObservableCollection<string> Repositories { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> Branches { get; set; } = new ObservableCollection<string>();
 
         public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
 
@@ -168,26 +168,14 @@ namespace GitTank.ViewModels
             }
         }
 
-        private string _newBranchName;
-        public string NewBranchName
-        {
-            get => _newBranchName;
-            set
-            {
-                if (_newBranchName != value)
-                {
-                    _newBranchName = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+
 
         public bool IsSettingsButtonEnable
         {
             get => _isSettingsButtonEnable;
             set
             {
-                if(IsSettingsButtonEnable != value)
+                if (IsSettingsButtonEnable != value)
                 {
                     _isSettingsButtonEnable = value;
                     OnPropertyChanged();
@@ -292,7 +280,7 @@ namespace GitTank.ViewModels
 
         public RelayCommand PushCommand
         {
-            get { return _pushCommand ??= new RelayCommand(()=>Push()); }
+            get { return _pushCommand ??= new RelayCommand(() => Push()); }
         }
 
         private void Push()
@@ -335,24 +323,6 @@ namespace GitTank.ViewModels
             });
         }
 
-        private RelayCommand _createBranchCommand;
-
-        public RelayCommand CreateBranchCommand
-        {
-            get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
-        }
-
-        private void CreateBranch()
-        {
-            IsCreateButtonEnable = false;
-            OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var branch = _gitProcessor.CreateBranch(_newBranchName);
-                IsCreateButtonEnable = true;
-            });
-        }
-
         private async Task OpenTerminal()
         {
             var selectedRepository = Repositories[int.Parse(SelectedRepoIndex)];
@@ -377,56 +347,96 @@ namespace GitTank.ViewModels
         }
         #endregion
 
+        private RelayCommand _openCreateBranchWindowCommand;
+        private bool _showShadow;
+
+        public RelayCommand OpenCreateBranchWindowCommand
+        {
+            get { return _openCreateBranchWindowCommand ??= new RelayCommand(() => OpenCreateBranchWindow()); }
+        }
+
+        public bool ShowShadow
+        {
+            get => _showShadow; 
+            set
+            {
+                if (_showShadow != value)
+                {
+                    _showShadow = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private void OpenCreateBranchWindow()
+        {
+            CreateBranchWindow createBranchWindow = new(_configuration, _logger);
+            createBranchWindow.Closing += OnCreateBranchWindowClosing;
+            ShowShadow = true;
+            createBranchWindow.ShowDialog();
+        }
+
+        private void OnCreateBranchWindowClosing(object sender, EventArgs e)
+        {
+            ((CreateBranchWindow)sender).Closing -= OnCreateBranchWindowClosing;
+            ShowShadow = false;
+            App.Current.Dispatcher.Invoke(new Action(() => { UpdateBranches(); }));
+        }
+
         private void OnLoaded()
         {
             Task.Run(() =>
             {
-                if (Repositories == null)
-                {
-                    var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
-                    var repositories = _configuration.GetSection("appSettings:repositories")
-                        .GetChildren()
-                        .Where(c => c.Value != null)
-                        .Select(c => c.Value)
-                        .ToList();
-                    Repositories = new ObservableCollection<string>();
-
-                    foreach (var repository in repositories)
-                    {
-                        Repositories.Add(repository);
-
-                        if (repository.Equals(defaultRepository, StringComparison.OrdinalIgnoreCase))
-                        {
-                            SelectedRepoIndex = (Repositories.Count - 1).ToString();
-                        }
-                    }
-                }
+                UpdateRepositories();
             });
 
             Task.Run(() =>
             {
-                if (Branches == null)
+                UpdateBranches();
+            });
+        }
+
+        private void UpdateBranches()
+        {
+            var remoteBranches = _gitProcessor.Branches().Result;
+            Branches?.Clear();
+            foreach (var remoteBranch in remoteBranches.Split(Environment.NewLine))
+            {
+                if (!string.IsNullOrWhiteSpace(remoteBranch.Trim()))
                 {
-                    var remoteBranches = _gitProcessor.Branches().Result;
-                    Branches = new ObservableCollection<string>();
-                    foreach (var remoteBranch in remoteBranches.Split(Environment.NewLine))
+                    if (remoteBranch.StartsWith("*"))
                     {
-                        if (!string.IsNullOrWhiteSpace(remoteBranch.Trim()))
-                        {
-                            if (remoteBranch.StartsWith("*"))
-                            {
-                                var currentBranch = remoteBranch.Replace("*", string.Empty);
-                                Branches.Add(currentBranch.Trim());
-                                SelectedBranchIndex = (Branches.Count - 1).ToString();
-                            }
-                            else
-                            {
-                                Branches.Add(remoteBranch.Trim());
-                            }
-                        }
+                        var currentBranch = remoteBranch.Replace("*", string.Empty);
+                        Branches.Add(currentBranch.Trim());
+                        SelectedBranchIndex = (Branches.Count - 1).ToString();
+                    }
+                    else
+                    {
+                        Branches.Add(remoteBranch.Trim());
                     }
                 }
-            });
+            }
+        }
+
+        private void UpdateRepositories()
+        {
+            var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
+            var repositories = _configuration.GetSection("appSettings:repositories")
+                .GetChildren()
+                .Where(c => c.Value != null)
+                .Select(c => c.Value)
+                .ToList();
+            Repositories.Clear();
+
+            foreach (var repository in repositories)
+            {
+                Repositories.Add(repository);
+
+                if (repository.Equals(defaultRepository, StringComparison.OrdinalIgnoreCase))
+                {
+                    SelectedRepoIndex = (Repositories.Count - 1).ToString();
+                }
+            }
         }
 
         private void OnOutput(string line)
