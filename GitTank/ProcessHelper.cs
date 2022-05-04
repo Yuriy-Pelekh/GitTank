@@ -10,14 +10,16 @@ namespace GitTank
     internal class ProcessHelper : IDisposable
     {
         public event OutputEventHandler Output;
+
         private readonly Process _process;
         private readonly StringBuilder _output = new();
         private readonly StringBuilder _result = new();
         private int _linesCount;
+
         private ILogger _gitLogger;
         private readonly ILogger _generalLogger;
 
-        public ProcessHelper(ILogger logger)
+        public ProcessHelper(ILogger logger, string workingDirectory = "")
         {
             _process = new Process
             {
@@ -27,10 +29,14 @@ namespace GitTank
                     RedirectStandardError = true,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
-                    CreateNoWindow = true
+                    CreateNoWindow = true,
+                    WorkingDirectory = workingDirectory
                 }
             };
+
             _generalLogger = logger;
+            _gitLogger = new GitLogger(Path.GetFileName(workingDirectory));
+
             _process.OutputDataReceived += OnDataReceived;
             _process.ErrorDataReceived += OnDataReceived;
         }
@@ -41,9 +47,11 @@ namespace GitTank
             {
                 _output.AppendLine(e.Data);
                 _result.AppendLine(e.Data);
+
                 if (_linesCount > 10000)
                 {
                     OnOutput(_output.ToString());
+
                     _output.Clear();
                     _linesCount = 0;
                 }
@@ -54,25 +62,29 @@ namespace GitTank
             }
         }
 
-        public void Configure(string command, string arguments, string workingDirectory = "")
+        private void ConfigureCommand(string command, string arguments)
         {
             _process.StartInfo.FileName = command;
             _process.StartInfo.Arguments = arguments;
-            _process.StartInfo.WorkingDirectory = workingDirectory;
-            _gitLogger = new GitLogger(Path.GetFileName(workingDirectory));
         }
 
-        public async Task<string> Execute()
+        public async Task<string> Execute(string command, string arguments)
         {
             _output.Clear();
             _result.Clear();
+
+            ConfigureCommand(command, arguments);
+
             var commandInfo = _process.StartInfo.FileName + " " + _process.StartInfo.Arguments;
             OnOutput(commandInfo);
             _generalLogger.Information($"Command executed: {commandInfo}");
+
             OnOutput("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
+
             _process.Start();
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
+
             // Throws an exception on some machines. Suspect it is because of some policies configurations. Requires more attention.
             // See
             //     Dispatcher.UnhandledException += OnDispatcherUnhandledException;
@@ -90,6 +102,7 @@ namespace GitTank
 
             OnOutput($"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}");
             OnOutput("_________________________________________________________________________________");
+
             return _result.ToString();
         }
 
