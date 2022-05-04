@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,11 +16,12 @@ namespace GitTank.ViewModels
 
         private string _selectedRepoIndex;
         private string _selectedBranchIndex;
-        private string _outputInfo;
         private bool _areAllGitCommandButtonsEnabled = true;
 
         public ObservableCollection<string> Repositories { get; set; }
         public ObservableCollection<string> Branches { get; set; }
+
+        public ObservableCollection<TabWithLogsViewModel> TabsWithLogs { get; set; }
 
         public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
 
@@ -45,19 +47,6 @@ namespace GitTank.ViewModels
                 if (value != _selectedBranchIndex)
                 {
                     _selectedBranchIndex = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string OutputInfo
-        {
-            get => _outputInfo;
-            set
-            {
-                if (value is not null)
-                {
-                    _outputInfo = value;
                     OnPropertyChanged();
                 }
             }
@@ -103,7 +92,7 @@ namespace GitTank.ViewModels
         private async Task<string> Branch()
         {
             AreAllGitCommandButtonsEnabled = false;
-            OutputInfo = string.Empty;
+            ClearGitLogs();
 
             var branch = await _gitProcessor.GetBranch();
 
@@ -126,7 +115,7 @@ namespace GitTank.ViewModels
         private async Task Update()
         {
             AreAllGitCommandButtonsEnabled = false;
-            OutputInfo = string.Empty;
+            ClearGitLogs();
 
             await _gitProcessor.Update();
 
@@ -147,7 +136,7 @@ namespace GitTank.ViewModels
         private async Task Checkout()
         {
             AreAllGitCommandButtonsEnabled = false;
-            OutputInfo = string.Empty;
+            ClearGitLogs();
 
             var selectedItem = Branches[int.Parse(SelectedBranchIndex)];
 
@@ -170,7 +159,7 @@ namespace GitTank.ViewModels
         private async Task Sync()
         {
             AreAllGitCommandButtonsEnabled = false;
-            OutputInfo = string.Empty;
+            ClearGitLogs();
 
             await _gitProcessor.Sync();
 
@@ -191,7 +180,7 @@ namespace GitTank.ViewModels
         private async Task Push()
         {
             AreAllGitCommandButtonsEnabled = false;
-            OutputInfo = string.Empty;
+            ClearGitLogs();
 
             await _gitProcessor.Push();
 
@@ -211,7 +200,7 @@ namespace GitTank.ViewModels
         private async Task Fetch()
         {
             AreAllGitCommandButtonsEnabled = false;
-            OutputInfo = string.Empty;
+            ClearGitLogs();
 
             await _gitProcessor.Fetch();
 
@@ -230,7 +219,7 @@ namespace GitTank.ViewModels
         private async Task CreateBranch()
         {
             AreAllGitCommandButtonsEnabled = false;
-            OutputInfo = string.Empty;
+            ClearGitLogs();
 
             var currentBranch = await _gitProcessor.GetBranch();
             await _gitProcessor.CreateBranch(currentBranch, _newBranchName);
@@ -259,6 +248,7 @@ namespace GitTank.ViewModels
                         .Where(c => c.Value != null)
                         .Select(c => c.Value)
                         .ToList();
+
                     Repositories = new ObservableCollection<string>();
 
                     foreach (var repository in repositories)
@@ -270,6 +260,8 @@ namespace GitTank.ViewModels
                             SelectedRepoIndex = (Repositories.Count - 1).ToString();
                         }
                     }
+
+                    GenerateTabsForLogs(repositories);
                 }
             });
 
@@ -299,9 +291,30 @@ namespace GitTank.ViewModels
             });
         }
 
-        private void OnOutput(string line)
+        private void GenerateTabsForLogs(List<string> repositories)
         {
-            OutputInfo += line + Environment.NewLine;
+            ObservableCollection<TabWithLogsViewModel> tabs = new();
+
+            foreach (var repository in repositories)
+            {
+                TabWithLogsViewModel tab = new() { Header = repository };
+                tabs.Add(tab);
+            }
+
+            TabsWithLogs = tabs;
+        }
+
+        private void OnOutput(int repositoryIndex, string line)
+        {
+            TabsWithLogs[repositoryIndex].OutputInfo += line + Environment.NewLine;
+        }
+
+        private void ClearGitLogs()
+        {
+            foreach (var tab in TabsWithLogs)
+            {
+                tab.OutputInfo = string.Empty;
+            }
         }
     }
 }

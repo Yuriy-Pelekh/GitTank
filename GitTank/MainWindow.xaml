@@ -49,17 +49,26 @@
                       IsTextSearchEnabled="True"
                       IsEditable="false"/>
         </Grid>
-        <TextBox Grid.Column="0"
-                 Grid.Row="1"
-                 x:Name="TextBoxOutput"
-                 Text="{Binding OutputInfo}"
-                 TextChanged="OnTextBoxOutputTextChanged"
-                 IsReadOnly="True"
-                 Margin="10,0,10,10"
-                 TextWrapping="Wrap"
-                 VerticalScrollBarVisibility="Auto"
-                 HorizontalScrollBarVisibility="Auto"/>
-        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="0, 13, 10, 10">
+            <TabControl Grid.Column="0" Grid.Row="1" Name="tabsWithLogs" ItemsSource="{Binding TabsWithLogs}" SelectedIndex="0" BorderThickness="0">
+                <TabControl.ItemTemplate>
+                    <DataTemplate DataType="local:TabWithLogsViewModel">
+                        <TextBlock Text="{Binding Header}"/>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate DataType="local:TabWithLogsViewModel">
+                        <TextBox
+                         Text="{Binding OutputInfo}"
+                         TextChanged="OnTextBoxOutputTextChanged"
+                         IsReadOnly="True"
+                         Margin="10,0,10,10"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto"/>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+            <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="0, 13, 10, 10">
             <TextBlock TextAlignment="Center" Text="Commands" FontSize="16" Margin="0, 0, 0, 10"></TextBlock>
             <Button
                 Content="Fetch"

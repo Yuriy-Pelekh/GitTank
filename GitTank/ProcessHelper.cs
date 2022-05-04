@@ -9,7 +9,7 @@ namespace GitTank
 {
     internal class ProcessHelper : IDisposable
     {
-        public event OutputEventHandler Output;
+        public event OutputPerRepositoryEventHandler Output;
 
         private readonly Process _process;
         private TaskCompletionSource<bool> _processCompletionSource;
@@ -17,10 +17,12 @@ namespace GitTank
         private readonly StringBuilder _result = new();
         private int _linesCount;
 
+        private int _senderIndex;
+
         private ILogger _gitLogger;
         private readonly ILogger _generalLogger;
 
-        public ProcessHelper(ILogger logger, string workingDirectory = "")
+        public ProcessHelper(ILogger logger, string workingDirectory, int senderIndex)
         {
             _process = new Process
             {
@@ -35,6 +37,8 @@ namespace GitTank
                 },
                 EnableRaisingEvents = true
             };
+
+            _senderIndex = senderIndex;
 
             _generalLogger = logger;
             _gitLogger = new GitLogger(Path.GetFileName(workingDirectory));
@@ -54,7 +58,7 @@ namespace GitTank
 
                 if (_linesCount > 10000)
                 {
-                    OnOutput(_output.ToString());
+                    OnOutput(_senderIndex, _output.ToString());
 
                     _output.Clear();
                     _linesCount = 0;
@@ -86,10 +90,10 @@ namespace GitTank
             ConfigureCommand(command, arguments);
 
             var commandInfo = _process.StartInfo.FileName + " " + _process.StartInfo.Arguments;
-            OnOutput(commandInfo);
+            OnOutput(_senderIndex, commandInfo);
             _generalLogger.Information($"Command executed: {commandInfo}");
 
-            OnOutput("in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
+            OnOutput(_senderIndex, "in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
 
             _process.Start();
             _process.BeginOutputReadLine();
@@ -107,13 +111,13 @@ namespace GitTank
 
             if (_output.Length > 0)
             {
-                OnOutput(_output.ToString());
+                OnOutput(_senderIndex, _output.ToString());
                 _output.Clear();
                 _linesCount = 0;
             }
 
-            OnOutput($"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}");
-            OnOutput("_________________________________________________________________________________");
+            OnOutput(_senderIndex, $"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}");
+            OnOutput(_senderIndex, "_________________________________________________________________________________");
 
             return _result.ToString();
         }
@@ -146,9 +150,9 @@ namespace GitTank
             Dispose(false);
         }
 
-        protected virtual void OnOutput(string line)
+        protected virtual void OnOutput(int senderIndex, string line)
         {
-            Output?.Invoke(line);
+            Output?.Invoke(senderIndex, line);
             _gitLogger.Information(line);
         }
     }
