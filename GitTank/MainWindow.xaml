@@ -36,13 +36,13 @@
             <Label Grid.Column="0" Grid.Row="0" Content="Repository:" VerticalAlignment="Bottom" Margin="5,0,0,0"/>
             <Label Grid.Column="0" Grid.Row="1"  Content="Branch:" VerticalAlignment="Center" Margin="5,0,0,0"/>
             <ComboBox ItemsSource="{Binding Repositories}"
-                      SelectedIndex="{Binding SelectedRepoIndex}"
+                      SelectedItem="{Binding SelectedRepo}"
                       Grid.Row="0" Grid.Column="1"
                       Margin="0,10,10,0"
                       IsTextSearchEnabled="True"
                       IsEditable="false"/>
             <ComboBox ItemsSource="{Binding Branches}"
-                      SelectedIndex="{Binding SelectedBranchIndex}"
+                      SelectedItem="{Binding SelectedBranch}"
                       Grid.Row="1"
                       Grid.Column="1"
                       Margin="0,10, 10,10"

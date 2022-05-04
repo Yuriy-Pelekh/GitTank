@@ -14,8 +14,8 @@ namespace GitTank.ViewModels
         private readonly IConfiguration _configuration;
         private readonly GitProcessor _gitProcessor;
 
-        private string _selectedRepoIndex;
-        private string _selectedBranchIndex;
+        private string _selectedRepo;
+        private string _selectedBranch;
         private bool _areAllGitCommandButtonsEnabled = true;
 
         public ObservableCollection<string> Repositories { get; set; }
@@ -26,27 +26,27 @@ namespace GitTank.ViewModels
         public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
 
         #region binding properties
-        public string SelectedRepoIndex
+        public string SelectedRepo
         {
-            get => _selectedRepoIndex;
+            get => _selectedRepo;
             set
             {
-                if (_selectedRepoIndex != value)
+                if (_selectedRepo != value)
                 {
-                    _selectedRepoIndex = value;
+                    _selectedRepo = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public string SelectedBranchIndex
+        public string SelectedBranch
         {
-            get => _selectedBranchIndex;
+            get => _selectedBranch;
             set
             {
-                if (value != _selectedBranchIndex)
+                if (value != _selectedBranch)
                 {
-                    _selectedBranchIndex = value;
+                    _selectedBranch = value;
                     OnPropertyChanged();
                 }
             }
@@ -138,9 +138,7 @@ namespace GitTank.ViewModels
             AreAllGitCommandButtonsEnabled = false;
             ClearGitLogs();
 
-            var selectedItem = Branches[int.Parse(SelectedBranchIndex)];
-
-            await _gitProcessor.Checkout(selectedItem);
+            await _gitProcessor.Checkout(SelectedBranch);
 
             AreAllGitCommandButtonsEnabled = true;
         }
@@ -249,17 +247,8 @@ namespace GitTank.ViewModels
                         .Select(c => c.Value)
                         .ToList();
 
-                    Repositories = new ObservableCollection<string>();
-
-                    foreach (var repository in repositories)
-                    {
-                        Repositories.Add(repository);
-
-                        if (repository.Equals(defaultRepository, StringComparison.OrdinalIgnoreCase))
-                        {
-                            SelectedRepoIndex = (Repositories.Count - 1).ToString();
-                        }
-                    }
+                    Repositories = new ObservableCollection<string>(repositories);
+                    SelectedRepo = defaultRepository;
 
                     GenerateTabsForLogs(repositories);
                 }
@@ -277,9 +266,9 @@ namespace GitTank.ViewModels
                         {
                             if (remoteBranch.StartsWith("*"))
                             {
-                                var currentBranch = remoteBranch.Replace("*", string.Empty);
-                                Branches.Add(currentBranch.Trim());
-                                SelectedBranchIndex = (Branches.Count - 1).ToString();
+                                var currentBranch = remoteBranch.Replace("*", string.Empty).Trim();
+                                Branches.Add(currentBranch);
+                                SelectedBranch = currentBranch;
                             }
                             else
                             {
