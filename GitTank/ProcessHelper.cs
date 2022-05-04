@@ -12,6 +12,7 @@ namespace GitTank
         public event OutputEventHandler Output;
 
         private readonly Process _process;
+        private TaskCompletionSource<bool> _processCompletionSource;
         private readonly StringBuilder _output = new();
         private readonly StringBuilder _result = new();
         private int _linesCount;
@@ -31,7 +32,8 @@ namespace GitTank
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
                     WorkingDirectory = workingDirectory
-                }
+                },
+                EnableRaisingEvents = true
             };
 
             _generalLogger = logger;
@@ -39,6 +41,8 @@ namespace GitTank
 
             _process.OutputDataReceived += OnDataReceived;
             _process.ErrorDataReceived += OnDataReceived;
+
+            _process.Exited += OnExited;
         }
 
         private void OnDataReceived(object sender, DataReceivedEventArgs e)
@@ -62,6 +66,11 @@ namespace GitTank
             }
         }
 
+        private void OnExited(object sender, EventArgs e)
+        {
+            _processCompletionSource.TrySetResult(true);
+        }
+
         private void ConfigureCommand(string command, string arguments)
         {
             _process.StartInfo.FileName = command;
@@ -72,6 +81,7 @@ namespace GitTank
         {
             _output.Clear();
             _result.Clear();
+            _processCompletionSource = new();
 
             ConfigureCommand(command, arguments);
 
@@ -85,11 +95,13 @@ namespace GitTank
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
 
+            await _processCompletionSource.Task;
+
             // Throws an exception on some machines. Suspect it is because of some policies configurations. Requires more attention.
             // See
             //     Dispatcher.UnhandledException += OnDispatcherUnhandledException;
             // in App.xaml.cs for reference
-            _process.WaitForExit();
+            //_process.WaitForExit();
             _process.CancelErrorRead();
             _process.CancelOutputRead();
 
@@ -108,9 +120,10 @@ namespace GitTank
 
         private void ReleaseUnmanagedResources()
         {
-            // TODO: release unmanaged resources here
             _process.OutputDataReceived -= OnDataReceived;
             _process.ErrorDataReceived -= OnDataReceived;
+
+            _process.Exited -= OnExited;
         }
 
         private void Dispose(bool disposing)
