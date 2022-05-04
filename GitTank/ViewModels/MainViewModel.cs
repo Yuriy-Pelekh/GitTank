@@ -234,10 +234,41 @@ namespace GitTank.ViewModels
             AreAllGitCommandButtonsEnabled = false;
             ClearGitLogs();
 
-            var currentBranch = await _gitProcessor.GetBranch();
-            await _gitProcessor.CreateBranch(currentBranch, _newBranchName);
+            await _gitProcessor.CreateBranch(_newBranchName);
 
             AreAllGitCommandButtonsEnabled = true;
+        }
+        #endregion
+
+        #region OpenTerminal Command
+
+        private RelayCommand _openTerminalCommand;
+
+        public RelayCommand OpenTerminalCommand
+        {
+            get { return _openTerminalCommand ??= new RelayCommand(async () => await OpenTerminal()); }
+        }
+
+        private async Task OpenTerminal()
+        {
+            await _gitProcessor.OpenTerminal(SelectedRepo);
+        }
+
+        #endregion
+
+        #region Settings Comand
+        private RelayCommand _settingsCommand;
+        private ILogger _logger;
+
+        public RelayCommand SettingsCommand
+        {
+            get { return _settingsCommand ??= new RelayCommand(() => OpenSettings()); }
+        }
+
+        private void OpenSettings()
+        {
+            SettingsWindow settingsWindow = new SettingsWindow(_configuration, _logger);
+            settingsWindow.Show();
         }
         #endregion
 
@@ -246,6 +277,7 @@ namespace GitTank.ViewModels
             _configuration = configuration;
             _gitProcessor = new GitProcessor(configuration, logger);
             _gitProcessor.Output += OnOutput;
+            _logger = logger;
             OnLoaded();
         }
 

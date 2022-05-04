@@ -1,4 +1,5 @@
 ﻿using GitTank.Loggers;
+using Serilog.Context;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,6 +15,7 @@ namespace GitTank
         private readonly Process _process;
         private TaskCompletionSource<bool> _processCompletionSource;
         private readonly StringBuilder _output = new();
+        private readonly StringBuilder _jsonOutput = new();
         private readonly StringBuilder _result = new();
         private int _linesCount;
 
@@ -84,16 +86,17 @@ namespace GitTank
         public async Task<string> Execute(string command, string arguments)
         {
             _output.Clear();
+            _jsonOutput.Clear();
             _result.Clear();
             _processCompletionSource = new();
 
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
+
             ConfigureCommand(command, arguments);
 
-            var commandInfo = _process.StartInfo.FileName + " " + _process.StartInfo.Arguments;
-            OnOutput(_senderIndex, commandInfo);
-            _generalLogger.Information($"Command executed: {commandInfo}");
-
-            OnOutput(_senderIndex, "in " + _process.StartInfo.WorkingDirectory + Environment.NewLine);
+            var commandLog = $"Command executed: {_process.StartInfo.FileName} {_process.StartInfo.Arguments} in {_process.StartInfo.WorkingDirectory}";
+            _generalLogger.Information(commandLog);
+            OnOutput(_senderIndex, commandLog + Environment.NewLine);
 
             _process.Start();
             _process.BeginOutputReadLine();
@@ -116,8 +119,11 @@ namespace GitTank
                 _linesCount = 0;
             }
 
-            OnOutput(_senderIndex, $"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}");
+            var summary = $"{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()})";
+            _generalLogger.Information(summary);
+            OnOutput(_senderIndex, summary);
             OnOutput(_senderIndex, "_________________________________________________________________________________");
+            _gitLogger.Information(_jsonOutput.ToString());
 
             return _result.ToString();
         }
@@ -153,7 +159,7 @@ namespace GitTank
         protected virtual void OnOutput(int senderIndex, string line)
         {
             Output?.Invoke(senderIndex, line);
-            _gitLogger.Information(line);
+            _jsonOutput.AppendLine(line);
         }
     }
 }

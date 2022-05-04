@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using Serilog.Formatting.Json;
 
 namespace GitTank.Loggers
 {
@@ -6,13 +7,10 @@ namespace GitTank.Loggers
     {
         public GitLogger(string path)
         {
-            const string outputTemplate = "[{Timestamp:HH:mm:ss}] {Message:l} {NewLine}{Exception}";
-
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File(
+                .WriteTo.File(new JsonFormatter(),
                     $"{DirectoryPath}/{path}-.log",
-                    outputTemplate: outputTemplate,
                     rollingInterval: RollingInterval.Day,
                     shared: true)
                 .CreateLogger();

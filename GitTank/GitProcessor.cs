@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GitTank.Loggers;
+using Serilog.Context;
+using System.Diagnostics;
 
 namespace GitTank
 {
@@ -21,6 +23,8 @@ namespace GitTank
         public GitProcessor(IConfiguration configuration, ILogger logger)
         {
             _logger = logger;
+
+            LogContext.PushProperty(Constants.SourceContext, GetType().Name);
 
             _rootWorkingDirectory = configuration.GetValue<string>("appSettings:sourcePath");
             logger.Debug($"Original source path: {_rootWorkingDirectory ?? "null"}");
@@ -142,6 +146,20 @@ namespace GitTank
             return taskResult;
         }
 
+        public async Task<string> GetAllBranches(string repositoryPath)
+        {
+            const string arguments = "branch -a"; // -r - only remote, -a - all
+
+            int index = _repositories.ToList().IndexOf(_defaultRepository);
+            var processHelper = GetProcessHelper(index, repositoryPath);
+
+            var taskResult = await processHelper.Execute(Command, arguments);
+
+            ReleaseProcessHelperUnmanagedResources(processHelper);
+
+            return taskResult;
+        }
+
         public async Task Checkout(string selectedItem)
         {
             var remoteBranchExistsCommand = "ls-remote --heads origin {0}";
@@ -221,6 +239,29 @@ namespace GitTank
             ReleaseProcessHelperUnmanagedResources(processHelpers);
         }
 
+        public async Task OpenTerminal(string selectedRepository)
+        {
+            var workingDirectory = Path.Combine(_rootWorkingDirectory, selectedRepository);
+
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    RedirectStandardError = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = false,
+
+                    WorkingDirectory = workingDirectory,
+                    FileName = @"C:\Program Files\Git\git-bash.exe",
+                    WindowStyle = ProcessWindowStyle.Normal
+                }
+            };
+
+            process.Start();
+            await process.WaitForExitAsync();
+        }
+
         public async Task Fetch()
         {
             const string argument = "fetch -v --progress --prune \"origin\"";
@@ -242,7 +283,7 @@ namespace GitTank
             ReleaseProcessHelperUnmanagedResources(processHelpers);
         }
 
-        public async Task CreateBranch(string currentBranch, string newBranch)
+        public async Task CreateBranch(string newBranch)
         {
             List<Task> runningTasks = new();
             List<string> repositories = _repositories.ToList();
@@ -250,22 +291,20 @@ namespace GitTank
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
 
-                runningTasks.Add(CreateBranchOneRepository(currentBranch, newBranch, i, workingDirectory));
+                runningTasks.Add(CreateBranchOneRepository(newBranch, i, workingDirectory));
             }
 
             await Task.WhenAll(runningTasks);
         }
 
-        private async Task CreateBranchOneRepository(string currentBranch, string newBranch, int repositoryIndex, string repositoryDirectory)
+        private async Task CreateBranchOneRepository(string newBranch, int repositoryIndex, string repositoryDirectory)
         {
-            string checkoutCurrentBranchArgument = $"checkout {currentBranch}";
             string pullArgument = "pull --progress -v --no-rebase \"origin\"";
             string checkoutNewBranchArgument = $"checkout -b {newBranch}";
-            string pushArgument = "push -u";
+            string pushArgument = $"push -u origin {newBranch}";
 
             var processHelper = GetProcessHelper(repositoryIndex, repositoryDirectory);
 
-            await processHelper.Execute(Command, checkoutCurrentBranchArgument);
             await processHelper.Execute(Command, pullArgument);
             await processHelper.Execute(Command, checkoutNewBranchArgument);
             await processHelper.Execute(Command, pushArgument);
