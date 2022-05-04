@@ -17,6 +17,7 @@ namespace GitTank.ViewModels
         private string _selectedRepo;
         private string _selectedBranch;
         private bool _areAllGitCommandButtonsEnabled = true;
+        private TabWithLogsViewModel _selectedTab;
 
         public ObservableCollection<string> Repositories { get; set; }
         public ObservableCollection<string> Branches { get; set; }
@@ -34,6 +35,7 @@ namespace GitTank.ViewModels
                 if (_selectedRepo != value)
                 {
                     _selectedRepo = value;
+                    SelectedTab = TabsWithLogs.FirstOrDefault(t => t.Header == _selectedRepo);
                     OnPropertyChanged();
                 }
             }
@@ -47,6 +49,19 @@ namespace GitTank.ViewModels
                 if (value != _selectedBranch)
                 {
                     _selectedBranch = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public TabWithLogsViewModel SelectedTab
+        {
+            get => _selectedTab;
+            set
+            {
+                if (_selectedTab != value)
+                {
+                    _selectedTab = value;
                     OnPropertyChanged();
                 }
             }
@@ -247,14 +262,12 @@ namespace GitTank.ViewModels
                         .Select(c => c.Value)
                         .ToList();
 
+                    GenerateTabsForLogs(repositories);
+
                     Repositories = new ObservableCollection<string>(repositories);
                     SelectedRepo = defaultRepository;
-
-                    GenerateTabsForLogs(repositories);
                 }
-            });
-
-            Task.Run(() =>
+            }).ContinueWith(t =>
             {
                 if (Branches == null)
                 {
