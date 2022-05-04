@@ -11,6 +11,9 @@ using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace GitTank.ViewModels
@@ -92,8 +95,20 @@ namespace GitTank.ViewModels
 
         public void SaveRepositoriesSettingToAppConfig()
         {
+            setSettingsToAppsettingsFiles();
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            _configuration = builder.Build();
+
+            openMainWindow(_configuration, _logger);
+            this.OnClosingRequest();
+        }
+
+        private void setSettingsToAppsettingsFiles()
+        {
             var appSettingsPath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "appsettings.json");
-            var appSettingsPathDevelopment = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "appsettings.Development.json");
             var json = File.ReadAllText(appSettingsPath);
 
             var jsonSettings = new JsonSerializerSettings();
@@ -108,18 +123,22 @@ namespace GitTank.ViewModels
             var newJson = JsonConvert.SerializeObject(config, Formatting.Indented, jsonSettings);
 
             File.WriteAllText(appSettingsPath, newJson);
-            File.WriteAllText(appSettingsPathDevelopment, newJson);
+        }
 
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                _configuration = builder.Build();
-
-            MainWindow mainWindow = new MainWindow(_configuration, _logger);
- 
-            System.Windows.Application.Current.MainWindow.Close();
+        private void openMainWindow(IConfiguration configuration, ILogger logger)
+        {
+            
+            MainWindow mainWindow = new MainWindow(configuration, logger);
+            foreach (Window window in System.Windows.Application.Current.Windows)
+            {
+                if (window is MainWindow)
+                {
+                    window.Close();
+                    break;
+                }
+            }
+            Thread.Sleep(100);
             mainWindow.Show();
-            this.OnClosingRequest();
         }
 
         private List<Sources> getAllRepositoriesPathesAndRepo()
@@ -253,7 +272,7 @@ namespace GitTank.ViewModels
         public void UpdateListOfDefaultsGitBranches(string repositoryPath)
         {
             DefaultGitBranch.Clear();
-            var branches = _gitProcessor.GetAllBranches(repositoryPath);
+            var branches = _gitProcessor.GetAllBranches(repositoryPath).Result.ToString();
             var gitBranchesNames = new List<string>(branches.Split("\r\n").ToList());
             foreach (var branchName in gitBranchesNames)
             {
