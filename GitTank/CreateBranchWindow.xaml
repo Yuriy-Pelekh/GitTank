@@ -3,12 +3,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:valueConverters="clr-namespace:GitTank.ValueConverters"
         xmlns:local="clr-namespace:GitTank"
         mc:Ignorable="d"
         WindowStyle="None"
         Width="250" Height="150"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Spinner.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <valueConverters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <Border BorderBrush="DarkSlateGray" BorderThickness="2" Background="#E6E9EF" IsEnabled="{Binding IsCreateButtonEnabled}">
             <Grid>
@@ -55,5 +64,6 @@
                 </Button>
             </Grid>
         </Border>
+        <Control Style="{StaticResource BusyAnimationStyle}" Visibility="{Binding IsCreateButtonEnabled, Converter={StaticResource BoolToVisibility}, ConverterParameter=INVERSE}"/>
     </Grid>
 </Window>

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using GitTank.Loggers;
+﻿using GitTank.Loggers;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Extensions.Configuration;
 
@@ -49,10 +48,10 @@ namespace GitTank.ViewModels
 
         public RelayCommand CreateBranchCommand
         {
-            get { return _createBranchCommand ??= new RelayCommand(async () => await CreateBranch()); }
+            get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
         }
 
-        private async Task CreateBranch()
+        private async void CreateBranch()
         {
             IsCreateButtonEnabled = false;
             await _gitProcessor.CreateBranch(NewBranchName);

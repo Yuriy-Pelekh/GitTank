@@ -25,7 +25,7 @@ namespace GitTank
 
         private void CreateBranchWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            BranchNameTextBox.Focus();    
+            BranchNameTextBox.Focus();
         }
     }
 }

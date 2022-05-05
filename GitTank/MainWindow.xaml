@@ -188,6 +188,6 @@
             <Button Content="Branch"/>
         </StackPanel>
     </Grid>
-    <Border Background="#CC000000" Visibility="{Binding ShowShadow, Converter={StaticResource BoolToVisibility}}"/>
+    <Border Background="#7F000000" Visibility="{Binding ShowShadow, Converter={StaticResource BoolToVisibility}}"/>
     </Grid>
 </Window>

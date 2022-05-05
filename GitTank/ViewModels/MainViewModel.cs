@@ -236,7 +236,7 @@ namespace GitTank.ViewModels
 
         private void OpenSettings()
         {
-            SettingsWindow settingsWindow = new SettingsWindow(_configuration, _logger);
+            SettingsWindow settingsWindow = new(_configuration, _logger);
             settingsWindow.Show();
         }
         #endregion
@@ -274,7 +274,7 @@ namespace GitTank.ViewModels
         {
             ((CreateBranchWindow)sender).Closing -= OnCreateBranchWindowClosing;
             ShowShadow = false;
-            App.Current.Dispatcher.Invoke(new Action(() => { UpdateBranches(); }));
+            App.Current.Dispatcher.Invoke(async () => { await UpdateBranches(); });
         }
 
         public MainViewModel(IConfiguration configuration, ILogger logger)
@@ -293,15 +293,12 @@ namespace GitTank.ViewModels
                 var result = ReadReposFromConfig();
                 GenerateTabsForLogs(result);
                 UpdateRepositories(result);
-            }).ContinueWith(task =>
-            {
-                UpdateBranches();
-            });
+            }).ContinueWith(async task => { await UpdateBranches(); });
         }
 
-        private void UpdateBranches()
+        private async Task UpdateBranches()
         {
-            var remoteBranches = _gitProcessor.Branches().Result;
+            var remoteBranches = await _gitProcessor.Branches();
             Branches?.Clear();
             foreach (var remoteBranch in remoteBranches.Split(Environment.NewLine))
             {
@@ -360,6 +357,5 @@ namespace GitTank.ViewModels
             }
         }
     }
-
 }
 
