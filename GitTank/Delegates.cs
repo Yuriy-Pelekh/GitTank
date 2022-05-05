@@ -1,4 +1,4 @@
 ﻿namespace GitTank
 {
-    public delegate void OutputEventHandler(string line);
+    public delegate void OutputPerRepositoryEventHandler(int repositoryIndex, string line);
 }

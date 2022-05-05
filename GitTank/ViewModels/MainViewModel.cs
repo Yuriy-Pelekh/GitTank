@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,157 +13,55 @@ namespace GitTank.ViewModels
     {
         private readonly IConfiguration _configuration;
         private readonly GitProcessor _gitProcessor;
-        private string _selectedRepoIndex;
-        private string _selectedBranchIndex;
-        private string _outputInfo;
-        private bool _isUpdateButtonEnable = true;
-        private bool _isBranchButtonEnable = true;
-        private bool _isCheckoutButtonEnable = true;
-        private bool _isSyncButtonEnable = true;
-        private bool _isPushButtonEnable = true;
-        private bool _isFetchButtonEnable = true;
-        private bool _isCreateButtonEnable = true;
-        private bool _isSettingsButtonEnable = true;
+
+        private string _selectedRepo;
+        private string _selectedBranch;
+        private bool _areAllGitCommandButtonsEnabled = true;
+        private TabWithLogsViewModel _selectedTab;
 
         public ObservableCollection<string> Repositories { get; set; }
         public ObservableCollection<string> Branches { get; set; }
 
+        public ObservableCollection<TabWithLogsViewModel> TabsWithLogs { get; set; }
+
         public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
 
-        public string SelectedRepoIndex
+        #region binding properties
+        public string SelectedRepo
         {
-            get => _selectedRepoIndex;
+            get => _selectedRepo;
             set
             {
-                if (_selectedRepoIndex != value)
+                if (_selectedRepo != value)
                 {
-                    _selectedRepoIndex = value;
+                    _selectedRepo = value;
+                    SelectedTab = TabsWithLogs.FirstOrDefault(t => t.Header == _selectedRepo);
                     OnPropertyChanged();
                 }
             }
         }
 
-        public string SelectedBranchIndex
+        public string SelectedBranch
         {
-            get => _selectedBranchIndex;
+            get => _selectedBranch;
             set
             {
-                if (value != _selectedBranchIndex)
+                if (value != _selectedBranch)
                 {
-                    _selectedBranchIndex = value;
+                    _selectedBranch = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public string OutputInfo
+        public TabWithLogsViewModel SelectedTab
         {
-            get => _outputInfo;
+            get => _selectedTab;
             set
             {
-                if (value is not null)
+                if (_selectedTab != value)
                 {
-                    _outputInfo = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsUpdateButtonEnable
-        {
-            get => _isUpdateButtonEnable;
-            set
-            {
-                if (_isUpdateButtonEnable != value)
-                {
-                    _isUpdateButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsBranchButtonEnable
-        {
-            get => _isBranchButtonEnable;
-            set
-            {
-                if (_isBranchButtonEnable != value)
-                {
-                    _isBranchButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsCheckoutButtonEnable
-        {
-            get => _isCheckoutButtonEnable;
-            set
-            {
-                if (_isCheckoutButtonEnable != value)
-                {
-                    _isCheckoutButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsSyncButtonEnable
-        {
-            get => _isSyncButtonEnable;
-            set
-            {
-                if (_isSyncButtonEnable != value)
-                {
-                    _isSyncButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsPushButtonEnable
-        {
-            get => _isPushButtonEnable;
-            set
-            {
-                if (_isPushButtonEnable != value)
-                {
-                    _isPushButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public MainViewModel(IConfiguration configuration, ILogger logger)
-        {
-            _configuration = configuration;
-            _gitProcessor = new GitProcessor(configuration, logger);
-            _gitProcessor.Output += OnOutput;
-            _logger = logger;
-            OnLoaded();
-        }
-
-        public bool IsFetchButtonEnable
-        {
-            get => _isFetchButtonEnable;
-            set
-            {
-                if (_isFetchButtonEnable != value)
-                {
-                    _isFetchButtonEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsCreateButtonEnable
-        {
-            get => _isCreateButtonEnable;
-            set
-            {
-                if (_isCreateButtonEnable != value)
-                {
-                    _isCreateButtonEnable = value;
+                    _selectedTab = value;
                     OnPropertyChanged();
                 }
             }
@@ -182,18 +81,19 @@ namespace GitTank.ViewModels
             }
         }
 
-        public bool IsSettingsButtonEnable
+        public bool AreAllGitCommandButtonsEnabled
         {
-            get => _isSettingsButtonEnable;
+            get => _areAllGitCommandButtonsEnabled;
             set
             {
-                if(IsSettingsButtonEnable != value)
+                if (_areAllGitCommandButtonsEnabled != value)
                 {
-                    _isSettingsButtonEnable = value;
+                    _areAllGitCommandButtonsEnabled = value;
                     OnPropertyChanged();
                 }
             }
         }
+        #endregion
 
         #region Branch Command
 
@@ -201,18 +101,19 @@ namespace GitTank.ViewModels
 
         public RelayCommand BranchCommand
         {
-            get { return _branchCommand ??= new RelayCommand(Branch); }
+            get { return _branchCommand ??= new RelayCommand(async () => await Branch()); }
         }
 
-        private void Branch()
+        private async Task<string> Branch()
         {
-            IsBranchButtonEnable = false;
-            OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var currentBranch = _gitProcessor.GetBranch();
-                IsBranchButtonEnable = true;
-            });
+            AreAllGitCommandButtonsEnabled = false;
+            ClearGitLogs();
+
+            var branch = await _gitProcessor.GetBranch();
+
+            AreAllGitCommandButtonsEnabled = true;
+
+            return branch;
         }
 
         #endregion
@@ -223,19 +124,17 @@ namespace GitTank.ViewModels
 
         public RelayCommand UpdateCommand
         {
-            get { return _updateCommand ??= new RelayCommand(() => Update()); }
-
+            get { return _updateCommand ??= new RelayCommand(async () => await Update()); }
         }
 
-        private void Update()
+        private async Task Update()
         {
-            IsUpdateButtonEnable = false;
-            OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var output = _gitProcessor.Update();
-                IsUpdateButtonEnable = true;
-            });
+            AreAllGitCommandButtonsEnabled = false;
+            ClearGitLogs();
+
+            await _gitProcessor.Update();
+
+            AreAllGitCommandButtonsEnabled = true;
         }
 
         #endregion
@@ -246,20 +145,17 @@ namespace GitTank.ViewModels
 
         public RelayCommand CheckoutCommand
         {
-            get { return _checkoutCommand ??= new RelayCommand(Checkout); }
-
+            get { return _checkoutCommand ??= new RelayCommand(async () => await Checkout()); }
         }
 
-        private void Checkout()
+        private async Task Checkout()
         {
-            IsCheckoutButtonEnable = false;
-            OutputInfo = string.Empty;
-            var selectedItem = Branches[int.Parse(SelectedBranchIndex)];
-            Task.Run(() =>
-            {
-                var remoteBranches = _gitProcessor.Checkout(selectedItem);
-                IsCheckoutButtonEnable = true;
-            });
+            AreAllGitCommandButtonsEnabled = false;
+            ClearGitLogs();
+
+            await _gitProcessor.Checkout(SelectedBranch);
+
+            AreAllGitCommandButtonsEnabled = true;
         }
 
         #endregion
@@ -270,18 +166,17 @@ namespace GitTank.ViewModels
 
         public RelayCommand SyncCommand
         {
-            get { return _syncCommand ??= new RelayCommand(Sync); }
+            get { return _syncCommand ??= new RelayCommand(async () => await Sync()); }
         }
 
-        private void Sync()
+        private async Task Sync()
         {
-            IsSyncButtonEnable = false;
-            OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var remoteBranches = _gitProcessor.Sync();
-                IsSyncButtonEnable = true;
-            });
+            AreAllGitCommandButtonsEnabled = false;
+            ClearGitLogs();
+
+            await _gitProcessor.Sync();
+
+            AreAllGitCommandButtonsEnabled = true;
         }
 
         #endregion
@@ -292,20 +187,57 @@ namespace GitTank.ViewModels
 
         public RelayCommand PushCommand
         {
-            get { return _pushCommand ??= new RelayCommand(()=>Push()); }
+            get { return _pushCommand ??= new RelayCommand(async () => await Push()); }
         }
 
-        private void Push()
+        private async Task Push()
         {
-            IsPushButtonEnable = false;
-            OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var remoteBranches = _gitProcessor.Push();
-                IsPushButtonEnable = true;
-            });
+            AreAllGitCommandButtonsEnabled = false;
+            ClearGitLogs();
+
+            await _gitProcessor.Push();
+
+            AreAllGitCommandButtonsEnabled = true;
         }
 
+        #endregion
+
+        #region Fetch Command
+        private RelayCommand _fetchCommand;
+
+        public RelayCommand FetchCommand
+        {
+            get { return _fetchCommand ??= new RelayCommand(async () => await Fetch()); }
+        }
+
+        private async Task Fetch()
+        {
+            AreAllGitCommandButtonsEnabled = false;
+            ClearGitLogs();
+
+            await _gitProcessor.Fetch();
+
+            AreAllGitCommandButtonsEnabled = true;
+        }
+        #endregion
+
+        #region Create Branch Command
+        private RelayCommand _createBranchCommand;
+
+        public RelayCommand CreateBranchCommand
+        {
+            get { return _createBranchCommand ??= new RelayCommand(async () => await CreateBranch()); }
+        }
+
+        private async Task CreateBranch()
+        {
+            AreAllGitCommandButtonsEnabled = false;
+            ClearGitLogs();
+
+            await _gitProcessor.CreateBranch(_newBranchName);
+
+            AreAllGitCommandButtonsEnabled = true;
+        }
         #endregion
 
         #region OpenTerminal Command
@@ -317,53 +249,16 @@ namespace GitTank.ViewModels
             get { return _openTerminalCommand ??= new RelayCommand(async () => await OpenTerminal()); }
         }
 
-        private RelayCommand _fetchCommand;
-
-        public RelayCommand FetchCommand
-        {
-            get { return _fetchCommand ??= new RelayCommand(Fetch); }
-        }
-
-        private void Fetch()
-        {
-            IsFetchButtonEnable = false;
-            OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var currentBranch = _gitProcessor.Fetch();
-                IsFetchButtonEnable = true;
-            });
-        }
-
-        private RelayCommand _createBranchCommand;
-
-        public RelayCommand CreateBranchCommand
-        {
-            get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
-        }
-
-        private void CreateBranch()
-        {
-            IsCreateButtonEnable = false;
-            OutputInfo = string.Empty;
-            Task.Run(() =>
-            {
-                var branch = _gitProcessor.CreateBranch(_newBranchName);
-                IsCreateButtonEnable = true;
-            });
-        }
-
         private async Task OpenTerminal()
         {
-            var selectedRepository = Repositories[int.Parse(SelectedRepoIndex)];
-            await _gitProcessor.OpenTerminal(selectedRepository);
+            await _gitProcessor.OpenTerminal(SelectedRepo);
         }
 
         #endregion
 
-        #region Settings Comand
+        #region Settings Command
         private RelayCommand _settingsCommand;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public RelayCommand SettingsCommand
         {
@@ -377,6 +272,15 @@ namespace GitTank.ViewModels
         }
         #endregion
 
+        public MainViewModel(IConfiguration configuration, ILogger logger)
+        {
+            _configuration = configuration;
+            _gitProcessor = new GitProcessor(configuration, logger);
+            _gitProcessor.Output += OnOutput;
+            _logger = logger;
+            OnLoaded();
+        }
+
         private void OnLoaded()
         {
             Task.Run(() =>
@@ -389,21 +293,13 @@ namespace GitTank.ViewModels
                         .Where(c => c.Value != null)
                         .Select(c => c.Value)
                         .ToList();
-                    Repositories = new ObservableCollection<string>();
 
-                    foreach (var repository in repositories)
-                    {
-                        Repositories.Add(repository);
+                    GenerateTabsForLogs(repositories);
 
-                        if (repository.Equals(defaultRepository, StringComparison.OrdinalIgnoreCase))
-                        {
-                            SelectedRepoIndex = (Repositories.Count - 1).ToString();
-                        }
-                    }
+                    Repositories = new ObservableCollection<string>(repositories);
+                    SelectedRepo = defaultRepository;
                 }
-            });
-
-            Task.Run(() =>
+            }).ContinueWith(t =>
             {
                 if (Branches == null)
                 {
@@ -415,9 +311,9 @@ namespace GitTank.ViewModels
                         {
                             if (remoteBranch.StartsWith("*"))
                             {
-                                var currentBranch = remoteBranch.Replace("*", string.Empty);
-                                Branches.Add(currentBranch.Trim());
-                                SelectedBranchIndex = (Branches.Count - 1).ToString();
+                                var currentBranch = remoteBranch.Replace("*", string.Empty).Trim();
+                                Branches.Add(currentBranch);
+                                SelectedBranch = currentBranch;
                             }
                             else
                             {
@@ -429,9 +325,30 @@ namespace GitTank.ViewModels
             });
         }
 
-        private void OnOutput(string line)
+        private void GenerateTabsForLogs(List<string> repositories)
         {
-            OutputInfo += line + Environment.NewLine;
+            ObservableCollection<TabWithLogsViewModel> tabs = new();
+
+            foreach (var repository in repositories)
+            {
+                TabWithLogsViewModel tab = new() { Header = repository };
+                tabs.Add(tab);
+            }
+
+            TabsWithLogs = tabs;
+        }
+
+        private void OnOutput(int repositoryIndex, string line)
+        {
+            TabsWithLogs[repositoryIndex].OutputInfo += line + Environment.NewLine;
+        }
+
+        private void ClearGitLogs()
+        {
+            foreach (var tab in TabsWithLogs)
+            {
+                tab.OutputInfo = string.Empty;
+            }
         }
     }
 }

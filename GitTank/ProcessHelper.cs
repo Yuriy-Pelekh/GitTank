@@ -10,16 +10,21 @@ namespace GitTank
 {
     internal class ProcessHelper : IDisposable
     {
-        public event OutputEventHandler Output;
+        public event OutputPerRepositoryEventHandler Output;
+
         private readonly Process _process;
+        private TaskCompletionSource<bool> _processCompletionSource;
         private readonly StringBuilder _output = new();
         private readonly StringBuilder _jsonOutput = new();
         private readonly StringBuilder _result = new();
         private int _linesCount;
+
+        private int _senderIndex;
+
         private ILogger _gitLogger;
         private readonly ILogger _generalLogger;
 
-        public ProcessHelper(ILogger logger)
+        public ProcessHelper(ILogger logger, string workingDirectory, int senderIndex)
         {
             _process = new Process
             {
@@ -29,12 +34,21 @@ namespace GitTank
                     RedirectStandardError = true,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
-                    CreateNoWindow = true
-                }
+                    CreateNoWindow = true,
+                    WorkingDirectory = workingDirectory
+                },
+                EnableRaisingEvents = true
             };
+
+            _senderIndex = senderIndex;
+
             _generalLogger = logger;
+            _gitLogger = new GitLogger(Path.GetFileName(workingDirectory));
+
             _process.OutputDataReceived += OnDataReceived;
             _process.ErrorDataReceived += OnDataReceived;
+
+            _process.Exited += OnExited;
         }
 
         private void OnDataReceived(object sender, DataReceivedEventArgs e)
@@ -43,9 +57,11 @@ namespace GitTank
             {
                 _output.AppendLine(e.Data);
                 _result.AppendLine(e.Data);
+
                 if (_linesCount > 10000)
                 {
-                    OnOutput(_output.ToString());
+                    OnOutput(_senderIndex, _output.ToString());
+
                     _output.Clear();
                     _linesCount = 0;
                 }
@@ -56,54 +72,68 @@ namespace GitTank
             }
         }
 
-        public void Configure(string command, string arguments, string workingDirectory = "")
+        private void OnExited(object sender, EventArgs e)
+        {
+            _processCompletionSource.TrySetResult(true);
+        }
+
+        private void ConfigureCommand(string command, string arguments)
         {
             _process.StartInfo.FileName = command;
             _process.StartInfo.Arguments = arguments;
-            _process.StartInfo.WorkingDirectory = workingDirectory;
-            _gitLogger = new GitLogger(Path.GetFileName(workingDirectory));
         }
 
-        public async Task<string> Execute()
+        public async Task<string> Execute(string command, string arguments)
         {
             _output.Clear();
             _jsonOutput.Clear();
             _result.Clear();
+            _processCompletionSource = new();
+
             LogContext.PushProperty(Constants.SourceContext, GetType().Name);
-            var command = $"{_process.StartInfo.FileName} {_process.StartInfo.Arguments}";
-            var commandInfo = $"Command executed: {command} in {_process.StartInfo.WorkingDirectory}";
-            _generalLogger.Information(commandInfo);
-            OnOutput(command);
+
+            ConfigureCommand(command, arguments);
+
+            var commandLog = $"Command executed: {_process.StartInfo.FileName} {_process.StartInfo.Arguments} in {_process.StartInfo.WorkingDirectory}";
+            _generalLogger.Information(commandLog);
+            OnOutput(_senderIndex, commandLog + Environment.NewLine);
+
             _process.Start();
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
+
+            await _processCompletionSource.Task;
+
             // Throws an exception on some machines. Suspect it is because of some policies configurations. Requires more attention.
             // See
             //     Dispatcher.UnhandledException += OnDispatcherUnhandledException;
             // in App.xaml.cs for reference
-            _process.WaitForExit();
+            //_process.WaitForExit();
             _process.CancelErrorRead();
             _process.CancelOutputRead();
 
             if (_output.Length > 0)
             {
-                OnOutput(_output.ToString());
+                OnOutput(_senderIndex, _output.ToString());
                 _output.Clear();
                 _linesCount = 0;
             }
+
             var summary = $"{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()})";
             _generalLogger.Information(summary);
-            OnOutput(summary);
-            OnOutput("_________________________________________________________________________________");
+            OnOutput(_senderIndex, summary);
+            OnOutput(_senderIndex, "_________________________________________________________________________________");
             _gitLogger.Information(_jsonOutput.ToString());
+
             return _result.ToString();
         }
 
         private void ReleaseUnmanagedResources()
         {
-            // TODO: release unmanaged resources here
             _process.OutputDataReceived -= OnDataReceived;
             _process.ErrorDataReceived -= OnDataReceived;
+
+            _process.Exited -= OnExited;
         }
 
         private void Dispose(bool disposing)
@@ -126,9 +156,9 @@ namespace GitTank
             Dispose(false);
         }
 
-        protected virtual void OnOutput(string line)
+        protected virtual void OnOutput(int senderIndex, string line)
         {
-            Output?.Invoke(line);
+            Output?.Invoke(senderIndex, line);
             _jsonOutput.AppendLine(line);
         }
     }

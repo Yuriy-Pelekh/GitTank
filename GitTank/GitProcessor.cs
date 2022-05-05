@@ -11,19 +11,20 @@ namespace GitTank
 {
     internal class GitProcessor
     {
-        public event OutputEventHandler Output;
-        private readonly ProcessHelper _processHelper;
+        public event OutputPerRepositoryEventHandler Output;
         private const string Command = "git";
         private readonly string _rootWorkingDirectory;
         private readonly string _defaultRepository;
         private readonly string _defaultBranch;
         private readonly IEnumerable<string> _repositories;
 
+        private readonly ILogger _logger;
+
         public GitProcessor(IConfiguration configuration, ILogger logger)
         {
+            _logger = logger;
+
             LogContext.PushProperty(Constants.SourceContext, GetType().Name);
-            _processHelper = new ProcessHelper(logger);
-            _processHelper.Output += OnOutput;
 
             _rootWorkingDirectory = configuration.GetValue<string>("appSettings:sourcePath");
             logger.Debug($"Original source path: {_rootWorkingDirectory ?? "null"}");
@@ -45,113 +46,175 @@ namespace GitTank
             logger.Debug($"Repositories: {string.Join(", ", _repositories)}");
         }
 
-        ~GitProcessor()
+        private void OnOutput(int repositoryIndex, string line)
         {
-            _processHelper.Output -= OnOutput;
+            Output?.Invoke(repositoryIndex, line);
         }
 
-        private void OnOutput(string line)
+        private ProcessHelper GetProcessHelper(int repositoryIndex, string workingDirectory)
         {
-            Output?.Invoke(line);
+            var processHelper = new ProcessHelper(_logger, workingDirectory, repositoryIndex);
+            processHelper.Output += OnOutput;
+
+            return processHelper;
+        }
+
+        private void ReleaseProcessHelperUnmanagedResources(List<ProcessHelper> processHelpers)
+        {
+            foreach (var processHelper in processHelpers)
+            {
+                ReleaseProcessHelperUnmanagedResources(processHelper);
+            }
+        }
+
+        private void ReleaseProcessHelperUnmanagedResources(ProcessHelper processHelper)
+        {
+            processHelper.Output -= OnOutput;
         }
 
         public async Task<string> GetBranch()
         {
             const string arguments = "rev-parse --abbrev-ref HEAD"; //"git branch --show-current";
+            Task<string> defaultRepositoryCurrentBranchTask = Task.FromResult(string.Empty);
 
-            var result = string.Empty;
-
-            foreach (var repository in _repositories)
+            List<Task> runningTasks = new();
+            List<ProcessHelper> processHelpers = new();
+            List<string> repositories = _repositories.ToList();
+            for (int i = 0; i < repositories.Count; i++)
             {
-                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                _processHelper.Configure(Command, arguments, workingDirectory);
-                var currentBranch = await _processHelper.Execute();
-                if (string.Equals(repository, _defaultRepository))
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
+                var processHelper = GetProcessHelper(i, workingDirectory);
+
+                Task<string> task = processHelper.Execute(Command, arguments);
+                runningTasks.Add(task);
+                processHelpers.Add(processHelper);
+
+                if (string.Equals(repositories[i], _defaultRepository))
                 {
-                    result = currentBranch;
+                    defaultRepositoryCurrentBranchTask = task;
                 }
             }
 
-            return result;
+            await Task.WhenAll(runningTasks);
+
+            ReleaseProcessHelperUnmanagedResources(processHelpers);
+
+            return await defaultRepositoryCurrentBranchTask;
         }
 
         public async Task Update()
         {
-            foreach (var repository in _repositories)
+            string[] arguments =
             {
-                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                string[] arguments =
-                {
-                    //"fetch -v --progress --prune \"origin\"",
-                    "pull --progress -v --no-rebase \"origin\"",
-                    //"remote prune origin"
-                };
+                //"fetch -v --progress --prune \"origin\"",
+                "pull --progress -v --no-rebase \"origin\"",
+                //"remote prune origin"
+            };
+
+            List<Task> runningTasks = new();
+            List<ProcessHelper> processHelpers = new();
+            List<string> repositories = _repositories.ToList();
+            for (var i = 0; i < repositories.Count; i++)
+            {
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
+                var processHelper = GetProcessHelper(i, workingDirectory);
 
                 foreach (var argument in arguments)
                 {
-                    _processHelper.Configure(Command, argument, workingDirectory);
-                    await _processHelper.Execute();
+                    runningTasks.Add(processHelper.Execute(Command, argument));
+                    processHelpers.Add(processHelper);
                 }
             }
+
+            await Task.WhenAll(runningTasks);
+
+            ReleaseProcessHelperUnmanagedResources(processHelpers);
         }
 
         public async Task<string> Branches()
         {
             const string arguments = "branch"; // -r - only remote, -a - all
-            var workingDirectory = Path.Combine(_rootWorkingDirectory, _defaultRepository);
 
-            _processHelper.Configure(Command, arguments, workingDirectory);
-            return await _processHelper.Execute();
+            var workingDirectory = Path.Combine(_rootWorkingDirectory, _defaultRepository);
+            int index = _repositories.ToList().IndexOf(_defaultRepository);
+            var processHelper = GetProcessHelper(index, workingDirectory);
+
+            var taskResult = await processHelper.Execute(Command, arguments);
+
+            ReleaseProcessHelperUnmanagedResources(processHelper);
+
+            return taskResult;
         }
 
-        public string GetAllBranches(string repositoryPath)
+        public async Task<string> GetAllBranches(string repositoryPath)
         {
             const string arguments = "branch -a"; // -r - only remote, -a - all
-            _processHelper.Configure(Command, arguments, repositoryPath);
-            return _processHelper.Execute().Result.ToString();
+
+            int index = _repositories.ToList().IndexOf(_defaultRepository);
+            var processHelper = GetProcessHelper(index, repositoryPath);
+
+            var taskResult = await processHelper.Execute(Command, arguments);
+
+            ReleaseProcessHelperUnmanagedResources(processHelper);
+
+            return taskResult;
         }
 
         public async Task Checkout(string selectedItem)
         {
-            var remoteBranch = "ls-remote --heads origin {0}";
-            var localBranch = "branch --list {0}";
-            var arguments = $"checkout -b {selectedItem}";
+            var remoteBranchExistsCommand = "ls-remote --heads origin {0}";
+            var localBranchExistsCommand = "branch --list {0}";
+            string arguments;
 
-            foreach (var repository in _repositories)
+            List<Task> runningTasks = new();
+            List<ProcessHelper> processHelpers = new();
+            List<string> repositories = _repositories.ToList();
+            for (int i = 0; i < repositories.Count; i++)
             {
-                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                _processHelper.Configure(Command, string.Format(localBranch, selectedItem), workingDirectory);
-                var localBranchExists = await _processHelper.Execute();
-                _processHelper.Configure(Command, string.Format(remoteBranch, selectedItem), workingDirectory);
-                var remoteBranchExists = await _processHelper.Execute();
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
+                var processHelper = GetProcessHelper(i, workingDirectory);
 
-                if (!string.IsNullOrWhiteSpace(localBranchExists) || !string.IsNullOrWhiteSpace(remoteBranchExists))
-                {
-                    arguments = $"checkout {selectedItem}";
-                }
+                var localBranchExists = await processHelper.Execute(Command, string.Format(localBranchExistsCommand, selectedItem));
+                var remoteBranchExists = await processHelper.Execute(Command, string.Format(remoteBranchExistsCommand, selectedItem));
 
-                _processHelper.Configure(Command, arguments, workingDirectory);
-                await _processHelper.Execute();
+                arguments = !string.IsNullOrWhiteSpace(localBranchExists) || !string.IsNullOrWhiteSpace(remoteBranchExists)
+                    ? $"checkout {selectedItem}"
+                    : $"checkout -b {selectedItem}";
+
+                runningTasks.Add(processHelper.Execute(Command, arguments));
+                processHelpers.Add(processHelper);
             }
+
+            await Task.WhenAll(runningTasks);
+
+            ReleaseProcessHelperUnmanagedResources(processHelpers);
         }
 
         public async Task Sync()
         {
-            foreach (var repository in _repositories)
+            List<Task> runningTasks = new();
+            List<string> repositories = _repositories.ToList();
+            for (int i = 0; i < repositories.Count; i++)
             {
-                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                string[] arguments =
-                {
-                    "fetch -v --progress --prune \"origin\"",
-                    $"merge origin/{_defaultBranch}"
-                };
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
 
-                foreach (var argument in arguments)
-                {
-                    _processHelper.Configure(Command, argument, workingDirectory);
-                    await _processHelper.Execute();
-                }
+                runningTasks.Add(SyncOneRepository(i, workingDirectory));
             }
+
+            await Task.WhenAll(runningTasks);
+        }
+
+        private async Task SyncOneRepository(int repositoryIndex, string repositoryDirectory)
+        {
+            var fetchArgument = "fetch -v --progress --prune \"origin\"";
+            var mergeArgument = $"merge origin/{_defaultBranch}";
+
+            var processHelper = GetProcessHelper(repositoryIndex, repositoryDirectory);
+
+            await processHelper.Execute(Command, fetchArgument);
+            await processHelper.Execute(Command, mergeArgument);
+
+            ReleaseProcessHelperUnmanagedResources(processHelper);
         }
 
         public async Task Push()
@@ -159,12 +222,21 @@ namespace GitTank
             // Requires: git config --global push.default current
             const string arguments = "push -u";
 
-            foreach (var repository in _repositories)
+            List<Task> runningTasks = new();
+            List<ProcessHelper> processHelpers = new();
+            List<string> repositories = _repositories.ToList();
+            for (int i = 0; i < repositories.Count; i++)
             {
-                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                _processHelper.Configure(Command, arguments, workingDirectory);
-                await _processHelper.Execute();
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
+                var processHelper = GetProcessHelper(i, workingDirectory);
+
+                runningTasks.Add(processHelper.Execute(Command, arguments));
+                processHelpers.Add(processHelper);
             }
+
+            await Task.WhenAll(runningTasks);
+
+            ReleaseProcessHelperUnmanagedResources(processHelpers);
         }
 
         public async Task OpenTerminal(string selectedRepository)
@@ -192,34 +264,52 @@ namespace GitTank
 
         public async Task Fetch()
         {
-            foreach (var repository in _repositories)
-            {
-                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                string argument = "fetch -v --progress --prune \"origin\"";
+            const string argument = "fetch -v --progress --prune \"origin\"";
 
-                _processHelper.Configure(Command, argument, workingDirectory);
-                await _processHelper.Execute();
+            List<Task> runningTasks = new();
+            List<ProcessHelper> processHelpers = new();
+            List<string> repositories = _repositories.ToList();
+            for (int i = 0; i < repositories.Count; i++)
+            {
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
+                var processHelper = GetProcessHelper(i, workingDirectory);
+
+                runningTasks.Add(processHelper.Execute(Command, argument));
+                processHelpers.Add(processHelper);
             }
+
+            await Task.WhenAll(runningTasks);
+
+            ReleaseProcessHelperUnmanagedResources(processHelpers);
         }
 
         public async Task CreateBranch(string newBranch)
         {
-            foreach (var repository in _repositories)
+            List<Task> runningTasks = new();
+            List<string> repositories = _repositories.ToList();
+            for (int i = 0; i < repositories.Count; i++)
             {
-                var workingDirectory = Path.Combine(_rootWorkingDirectory, repository);
-                string[] arguments =
-                {
-                    "pull --progress -v --no-rebase \"origin\"",
-                    $"checkout -b {newBranch}",
-                    $"push -u origin {newBranch}"
-                };
+                var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
 
-                foreach (var argument in arguments)
-                {
-                    _processHelper.Configure(Command, argument, workingDirectory);
-                    await _processHelper.Execute();
-                }
+                runningTasks.Add(CreateBranchOneRepository(newBranch, i, workingDirectory));
             }
+
+            await Task.WhenAll(runningTasks);
+        }
+
+        private async Task CreateBranchOneRepository(string newBranch, int repositoryIndex, string repositoryDirectory)
+        {
+            string pullArgument = "pull --progress -v --no-rebase \"origin\"";
+            string checkoutNewBranchArgument = $"checkout -b {newBranch}";
+            string pushArgument = $"push -u origin {newBranch}";
+
+            var processHelper = GetProcessHelper(repositoryIndex, repositoryDirectory);
+
+            await processHelper.Execute(Command, pullArgument);
+            await processHelper.Execute(Command, checkoutNewBranchArgument);
+            await processHelper.Execute(Command, pushArgument);
+
+            ReleaseProcessHelperUnmanagedResources(processHelper);
         }
     }
 }
