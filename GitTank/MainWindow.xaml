@@ -15,7 +15,12 @@
         MinWidth="450"
         x:Name="MainScreen">
     <Window.Resources>
-        <valueConverters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Spinner.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <valueConverters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid Visibility="{Binding Path=IsNewUI, Mode=OneTime, Converter={StaticResource BoolToVisibility}, ConverterParameter=INVERSE}">
@@ -191,5 +196,6 @@
             </StackPanel>
         </Grid>
         <Border Background="#7F000000" Visibility="{Binding ShowShadow, Converter={StaticResource BoolToVisibility}}"/>
+        <Control Style="{StaticResource BusyAnimationStyle}" Visibility="{Binding AreAllGitCommandButtonsEnabled, Converter={StaticResource BoolToVisibility}, ConverterParameter=INVERSE}"/>
     </Grid>
 </Window>
