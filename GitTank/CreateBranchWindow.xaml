@@ -21,15 +21,15 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock 
+                <TextBlock
                     Grid.Row="0"
                     Grid.Column="0"
-                    Grid.ColumnSpan="2" 
+                    Grid.ColumnSpan="2"
                     Text="Branch name:"
                     FontSize="14"
                     TextAlignment="Left"
                     Margin="15,10"/>
-                <TextBox 
+                <TextBox
                     Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
@@ -41,7 +41,7 @@
                     Grid.Column="0"
                     Grid.Row="2"
                     Content="Create"
-                    Height="25" 
+                    Height="25"
                     Width="80"
                     Command="{Binding CreateBranchCommand}"
                     IsDefault="True"/>
@@ -49,7 +49,7 @@
                     Grid.Column="1"
                     Grid.Row="2"
                     Content="Cancel"
-                    Height="25" 
+                    Height="25"
                     Width="80"
                     IsCancel="True">
                 </Button>

@@ -62,20 +62,5 @@ namespace GitTank.ViewModels
                 OnClick?.Invoke();
             });
         }
-
-        private RelayCommand _checkTextBoxCommand;
-
-        public RelayCommand CheckTextBoxCommand
-        {
-            get { return _checkTextBoxCommand ??= new RelayCommand(CheckTextBox); }
-        }
-
-        private void CheckTextBox()
-        {
-            if (!string.IsNullOrEmpty(NewBranchName))
-            {
-                IsCreateButtonEnabled = true;
-            }
-        }
     }
 }

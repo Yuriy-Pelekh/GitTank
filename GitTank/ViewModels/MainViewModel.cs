@@ -305,6 +305,14 @@ namespace GitTank.ViewModels
             get { return _openTerminalCommand ??= new RelayCommand(async () => await OpenTerminal()); }
         }
 
+        private async Task OpenTerminal()
+        {
+            var selectedRepository = Repositories[int.Parse(SelectedRepoIndex)];
+            await _gitProcessor.OpenTerminal(selectedRepository);
+        }
+
+        #endregion
+
         private RelayCommand _fetchCommand;
 
         public RelayCommand FetchCommand
@@ -322,14 +330,6 @@ namespace GitTank.ViewModels
                 IsFetchButtonEnable = true;
             });
         }
-
-        private async Task OpenTerminal()
-        {
-            var selectedRepository = Repositories[int.Parse(SelectedRepoIndex)];
-            await _gitProcessor.OpenTerminal(selectedRepository);
-        }
-
-        #endregion
 
         #region Settings Comand
         private RelayCommand _settingsCommand;
@@ -357,7 +357,7 @@ namespace GitTank.ViewModels
 
         public bool ShowShadow
         {
-            get => _showShadow; 
+            get => _showShadow;
             set
             {
                 if (_showShadow != value)
