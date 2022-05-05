@@ -13,6 +13,7 @@ namespace GitTank.Loggers
                     $"{DirectoryPath}/{path}-.log",
                     rollingInterval: RollingInterval.Day,
                     shared: true)
+                .Enrich.FromLogContext()
                 .CreateLogger();
 
             Log = logger;
