@@ -49,18 +49,15 @@ namespace GitTank.ViewModels
 
         public RelayCommand CreateBranchCommand
         {
-            get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
+            get { return _createBranchCommand ??= new RelayCommand(async () => await CreateBranch()); }
         }
 
-        private void CreateBranch()
+        private async Task CreateBranch()
         {
-            Task.Run(() =>
-            {
-                IsCreateButtonEnabled = false;
-                var branch = _gitProcessor.CreateBranch(NewBranchName);
-                IsCreateButtonEnabled = true;
-                OnClick?.Invoke();
-            });
+            IsCreateButtonEnabled = false;
+            await _gitProcessor.CreateBranch(NewBranchName);
+            IsCreateButtonEnabled = true;
+            OnClick?.Invoke();
         }
     }
 }

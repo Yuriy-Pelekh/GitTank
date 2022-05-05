@@ -200,7 +200,7 @@ namespace GitTank.ViewModels
         public void UpdateListOfDefaultsGitBranches(string repositoryPath)
         {
             DefaultGitBranch.Clear();
-            var branches = _gitProcessor.GetAllBranches(repositoryPath);
+            var branches = _gitProcessor.GetAllBranches(repositoryPath).Result;
             var gitBranchesNames = new List<string>(branches.Split("\r\n").ToList());
             foreach (var branchName in gitBranchesNames)
             {
