@@ -12,16 +12,14 @@ namespace GitTank
     {
         public event OutputPerRepositoryEventHandler Output;
 
-        private readonly Process _process;
         private TaskCompletionSource<bool> _processCompletionSource;
+        private int _linesCount;
+        private readonly Process _process;
         private readonly StringBuilder _output = new();
         private readonly StringBuilder _jsonOutput = new();
         private readonly StringBuilder _result = new();
-        private int _linesCount;
-
-        private int _senderIndex;
-
-        private ILogger _gitLogger;
+        private readonly int _senderIndex;
+        private readonly ILogger _gitLogger;
         private readonly ILogger _generalLogger;
 
         public ProcessHelper(ILogger logger, string workingDirectory, int senderIndex)
@@ -88,7 +86,7 @@ namespace GitTank
             _output.Clear();
             _jsonOutput.Clear();
             _result.Clear();
-            _processCompletionSource = new();
+            _processCompletionSource = new TaskCompletionSource<bool>();
 
             LogContext.PushProperty(Constants.SourceContext, GetType().Name);
 

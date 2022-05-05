@@ -299,7 +299,7 @@ namespace GitTank.ViewModels
                     Repositories = new ObservableCollection<string>(repositories);
                     SelectedRepo = defaultRepository;
                 }
-            }).ContinueWith(t =>
+            }).ContinueWith(task =>
             {
                 if (Branches == null)
                 {
