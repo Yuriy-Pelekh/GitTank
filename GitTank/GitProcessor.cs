@@ -114,7 +114,7 @@ namespace GitTank
             List<Task> runningTasks = new();
             List<ProcessHelper> processHelpers = new();
             List<string> repositories = _repositories.ToList();
-            for (int i = 0; i < repositories.Count; i++)
+            for (var i = 0; i < repositories.Count; i++)
             {
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
                 var processHelper = GetProcessHelper(i, workingDirectory);
@@ -206,8 +206,8 @@ namespace GitTank
 
         private async Task SyncOneRepository(int repositoryIndex, string repositoryDirectory)
         {
-            string fetchArgument = "fetch -v --progress --prune \"origin\"";
-            string mergeArgument = $"merge origin/{_defaultBranch}";
+            var fetchArgument = "fetch -v --progress --prune \"origin\"";
+            var mergeArgument = $"merge origin/{_defaultBranch}";
 
             var processHelper = GetProcessHelper(repositoryIndex, repositoryDirectory);
 

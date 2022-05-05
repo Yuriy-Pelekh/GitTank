@@ -256,9 +256,9 @@ namespace GitTank.ViewModels
 
         #endregion
 
-        #region Settings Comand
+        #region Settings Command
         private RelayCommand _settingsCommand;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public RelayCommand SettingsCommand
         {
