@@ -8,7 +8,7 @@ namespace GitTank.Tests.ValueConverters
     [TestFixture]
     public class BoolToVisibilityConverterTest
     {
-        private BoolToVisibilityConverter _target;
+        private BoolToVisibilityConverter _target = null!;
 
         [SetUp]
         public void SetUp()
