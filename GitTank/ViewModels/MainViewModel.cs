@@ -358,4 +358,3 @@ namespace GitTank.ViewModels
         }
     }
 }
-
