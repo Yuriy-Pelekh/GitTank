@@ -17,32 +17,16 @@ dotnet_csproj:
   assembly_version: '{version}'
   file_version: '{version}'
   informational_version: '{version}'
-install:
-- pwsh: >-
-    $url = "http://speed.transip.nl/10mb.bin"
-
-    $dest = "InstallerProjects.vsix"
-
-    Invoke-WebRequest -Uri $url -OutFile $dest
-
-    $VSInstallDir = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\ServiceHub\Services\Microsoft.VisualStudio.Setup.Service"
-
-    $VsixLocation = "InstallerProjects.vsix"
-
-    Start-Process -Filepath "$($VSInstallDir)\VSIXInstaller" -ArgumentList "/q /a $($VsixLocation)" -Wait
 before_build:
 - pwsh: dotnet restore
-#build:
-#  project: GitTank.sln
-#  publish_core_console: true
-#  parallel: true
-#  verbosity: minimal
 build_script:
 - pwsh: dotnet build
 after_build:
 - pwsh: dotnet publish
-after_test:
+test_script:
 - pwsh: dotnet test
+after_test:
+- pwsh: echo "Upload test report"
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
