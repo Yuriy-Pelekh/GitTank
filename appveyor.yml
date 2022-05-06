@@ -18,14 +18,14 @@ dotnet_csproj:
   file_version: '{version}'
   informational_version: '{version}'
 install:
-- choco install opencover.portable
-- choco install codecov
+- pwsh: choco install opencover.portable
+- pwsh: choco install codecov
 before_build:
 - pwsh: dotnet restore
 build_script:
-- pwsh: dotnet build --no-restore 
+- pwsh: dotnet build --no-restore
 after_build:
-- pwsh: dotnet publish --no-build --no-restore 
+- pwsh: dotnet publish --no-build --no-restore
 before_test:
   - cd GitTank.Tests
   - nuget install Appveyor.TestLogger
