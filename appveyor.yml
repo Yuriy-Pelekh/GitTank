@@ -23,8 +23,12 @@ build_script:
 - pwsh: dotnet build
 after_build:
 - pwsh: dotnet publish
+before_test:
+  - cd GitTank.Tests
+  - nuget install Appveyor.TestLogger
+  - cd ..
 test_script:
-- pwsh: dotnet test
+- pwsh: dotnet test --test-adapter-path:. --logger:Appveyor
 after_test:
 - pwsh: echo "Upload test report"
 artifacts:
