@@ -32,7 +32,9 @@ test_script:
 after_test:
 - pwsh: >-
     $ProgressPreference = "SilentlyContinue"
+
     Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
+
     .\codecov.exe
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
