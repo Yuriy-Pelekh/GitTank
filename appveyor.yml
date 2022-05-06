@@ -17,9 +17,9 @@ dotnet_csproj:
   assembly_version: '{version}'
   file_version: '{version}'
   informational_version: '{version}'
-#install:
-#- choco install opencover.portable
-#- choco install codecov
+install:
+- choco install opencover.portable
+- choco install codecov
 before_build:
 - pwsh: dotnet restore
 build_script:
