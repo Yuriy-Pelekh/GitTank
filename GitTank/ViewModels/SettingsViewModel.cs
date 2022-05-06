@@ -93,7 +93,6 @@ namespace GitTank.ViewModels
             AddRepositoryToAllSelectedRepositoryList(dialog.SelectedPath);
         }
 
-
         private void AddRepositoryToAllSelectedRepositoryList(string repositoryPath)
         {
             var repositories = new Repository();
