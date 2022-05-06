@@ -33,7 +33,7 @@ before_test:
 test_script:
 - pwsh: dotnet test --no-build --no-restore --test-adapter-path:. --logger:Appveyor
 after_test:
-- pwsh: dotnet test .\GitTank.Tests\ --no-restore --no-build --logger:trx
+#- pwsh: dotnet test .\GitTank.Tests\ --no-restore --no-build --logger:trx
 - pwsh: OpenCover.Console.exe -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test --no-restore --no-build --logger:trx" -filter:"+[*]* -[*.Tests*]*" -oldStyle -output:"TestCoverage.xml"
 - pwsh: . "C:\ProgramData\chocolatey\lib\codecov\tools\codecov.exe" -f "TestCoverage.xml"
 # - pwsh: >-
