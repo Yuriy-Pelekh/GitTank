@@ -30,7 +30,7 @@ before_test:
 test_script:
 - pwsh: dotnet test --no-build --no-restore --test-adapter-path:. --logger:Appveyor
 after_test:
-- pwsh: $ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\codecov.exe
+- ps: $ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\codecov.exe
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
