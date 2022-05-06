@@ -17,11 +17,11 @@ namespace GitTank.Tests.ValueConverters
         }
 
         [Test]
-        [TestCase(true, null, ExpectedResult = Visibility.Visible)]
-        [TestCase(false, null, ExpectedResult = Visibility.Collapsed)]
-        [TestCase(true, "INVERSE", ExpectedResult = Visibility.Collapsed)]
-        [TestCase(false, "INVERSE", ExpectedResult = Visibility.Visible)]
-        [TestCase(true, "inverse", ExpectedResult = Visibility.Collapsed)]
+        //[TestCase(true, null, ExpectedResult = Visibility.Visible)]
+        //[TestCase(false, null, ExpectedResult = Visibility.Collapsed)]
+        //[TestCase(true, "INVERSE", ExpectedResult = Visibility.Collapsed)]
+        //[TestCase(false, "INVERSE", ExpectedResult = Visibility.Visible)]
+        //[TestCase(true, "inverse", ExpectedResult = Visibility.Collapsed)]
         [TestCase(false, "inverse", ExpectedResult = Visibility.Visible)]
         [TestCase(true, "true", ExpectedResult = Visibility.Visible)]
         [TestCase(false, "true", ExpectedResult = Visibility.Collapsed)]
