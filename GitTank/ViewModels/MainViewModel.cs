@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GitTank.Loggers;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace GitTank.ViewModels
 {
@@ -19,14 +20,13 @@ namespace GitTank.ViewModels
         private bool _areAllGitCommandButtonsEnabled = true;
         private TabWithLogsViewModel _selectedTab;
 
-        public ObservableCollection<string> Repositories { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<string> Branches { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> Repositories { get; set; } = new();
+        public ObservableCollection<string> Branches { get; set; } = new();
 
         public ObservableCollection<TabWithLogsViewModel> TabsWithLogs { get; set; }
 
         public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
 
-        #region binding properties
         public string SelectedRepo
         {
             get => _selectedRepo;
@@ -80,7 +80,6 @@ namespace GitTank.ViewModels
                 }
             }
         }
-        #endregion
 
         #region Branch Command
 
@@ -88,7 +87,11 @@ namespace GitTank.ViewModels
 
         public RelayCommand BranchCommand
         {
-            get { return _branchCommand ??= new RelayCommand(async () => await Branch()); }
+            get
+            {
+                async void Execute() => await Branch();
+                return _branchCommand ??= new RelayCommand(Execute);
+            }
         }
 
         private async Task<string> Branch()
@@ -111,7 +114,11 @@ namespace GitTank.ViewModels
 
         public RelayCommand UpdateCommand
         {
-            get { return _updateCommand ??= new RelayCommand(async () => await Update()); }
+            get
+            {
+                async void Execute() => await Update();
+                return _updateCommand ??= new RelayCommand(Execute);
+            }
         }
 
         private async Task Update()
@@ -132,7 +139,11 @@ namespace GitTank.ViewModels
 
         public RelayCommand CheckoutCommand
         {
-            get { return _checkoutCommand ??= new RelayCommand(async () => await Checkout()); }
+            get
+            {
+                async void Execute() => await Checkout();
+                return _checkoutCommand ??= new RelayCommand(Execute);
+            }
         }
 
         private async Task Checkout()
@@ -153,7 +164,11 @@ namespace GitTank.ViewModels
 
         public RelayCommand SyncCommand
         {
-            get { return _syncCommand ??= new RelayCommand(async () => await Sync()); }
+            get
+            {
+                async void Execute() => await Sync();
+                return _syncCommand ??= new RelayCommand(Execute);
+            }
         }
 
         private async Task Sync()
@@ -174,7 +189,11 @@ namespace GitTank.ViewModels
 
         public RelayCommand PushCommand
         {
-            get { return _pushCommand ??= new RelayCommand(async () => await Push()); }
+            get
+            {
+                async void Execute() => await Push();
+                return _pushCommand ??= new RelayCommand(Execute);
+            }
         }
 
         private async Task Push()
@@ -194,7 +213,11 @@ namespace GitTank.ViewModels
 
         public RelayCommand FetchCommand
         {
-            get { return _fetchCommand ??= new RelayCommand(async () => await Fetch()); }
+            get
+            {
+                async void Execute() => await Fetch();
+                return _fetchCommand ??= new RelayCommand(Execute);
+            }
         }
 
         private async Task Fetch()
@@ -208,14 +231,17 @@ namespace GitTank.ViewModels
         }
         #endregion
 
-
         #region OpenTerminal Command
 
         private RelayCommand _openTerminalCommand;
 
         public RelayCommand OpenTerminalCommand
         {
-            get { return _openTerminalCommand ??= new RelayCommand(async () => await OpenTerminal()); }
+            get
+            {
+                async void Execute() => await OpenTerminal();
+                return _openTerminalCommand ??= new RelayCommand(Execute);
+            }
         }
 
         private async Task OpenTerminal()
@@ -246,7 +272,7 @@ namespace GitTank.ViewModels
 
         public RelayCommand OpenCreateBranchWindowCommand
         {
-            get { return _openCreateBranchWindowCommand ??= new RelayCommand(() => OpenCreateBranchWindow()); }
+            get { return _openCreateBranchWindowCommand ??= new RelayCommand(OpenCreateBranchWindow); }
         }
 
         public bool ShowShadow
@@ -274,7 +300,7 @@ namespace GitTank.ViewModels
         {
             ((CreateBranchWindow)sender).Closing -= OnCreateBranchWindowClosing;
             ShowShadow = false;
-            App.Current.Dispatcher.Invoke(async () => { await UpdateBranches(); });
+            Application.Current.Dispatcher.Invoke(async () => { await UpdateBranches(); });
         }
 
         public MainViewModel(IConfiguration configuration, ILogger logger)
@@ -293,7 +319,7 @@ namespace GitTank.ViewModels
                 var result = ReadReposFromConfig();
                 GenerateTabsForLogs(result);
                 UpdateRepositories(result);
-            }).ContinueWith(async task => { await UpdateBranches(); });
+            }).ContinueWith(async _ => { await UpdateBranches(); });
         }
 
         private async Task UpdateBranches()
@@ -307,12 +333,12 @@ namespace GitTank.ViewModels
                     if (remoteBranch.StartsWith("*"))
                     {
                         var currentBranch = remoteBranch.Replace("*", string.Empty).Trim();
-                        Branches.Add(currentBranch);
+                        Branches?.Add(currentBranch);
                         SelectedBranch = currentBranch;
                     }
                     else
                     {
-                        Branches.Add(remoteBranch.Trim());
+                        Branches?.Add(remoteBranch.Trim());
                     }
                 }
             }
@@ -337,10 +363,9 @@ namespace GitTank.ViewModels
             return repositories;
         }
 
-        private void GenerateTabsForLogs(List<string> repositories)
+        private void GenerateTabsForLogs(IEnumerable<string> repositories)
         {
-            ObservableCollection<TabWithLogsViewModel> tabs = new();
-            tabs = new(repositories.Select(r => new TabWithLogsViewModel() { Header = r }));
+            ObservableCollection<TabWithLogsViewModel> tabs = new(repositories.Select(repositoryName => new TabWithLogsViewModel { Header = repositoryName }));
             TabsWithLogs = tabs;
         }
 
