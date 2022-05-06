@@ -20,15 +20,15 @@ dotnet_csproj:
 before_build:
 - pwsh: dotnet restore
 build_script:
-- pwsh: dotnet build
+- pwsh: dotnet build --no-restore 
 after_build:
-- pwsh: dotnet publish
+- pwsh: dotnet publish --no-build --no-restore 
 before_test:
   - cd GitTank.Tests
   - nuget install Appveyor.TestLogger
   - cd ..
 test_script:
-- pwsh: dotnet test --test-adapter-path:. --logger:Appveyor
+- pwsh: dotnet test --no-build --no-restore --test-adapter-path:. --logger:Appveyor
 after_test:
 - pwsh: echo "Upload test report"
 artifacts:
