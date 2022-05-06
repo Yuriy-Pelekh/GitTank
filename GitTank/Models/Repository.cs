@@ -1,4 +1,4 @@
-﻿namespace GitTank.Dto
+﻿namespace GitTank.Models
 {
     public class Repository
     {

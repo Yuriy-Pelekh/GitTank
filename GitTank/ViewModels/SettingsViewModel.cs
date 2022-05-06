@@ -1,5 +1,4 @@
-﻿using GitTank.Dto;
-using GitTank.Loggers;
+﻿using GitTank.Loggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using GitTank.Models;
 
 namespace GitTank.ViewModels
 {
