@@ -17,14 +17,18 @@ dotnet_csproj:
   assembly_version: '{version}'
   file_version: '{version}'
   informational_version: '{version}'
-build_script:
-- pwsh: >-
-    dotnet restore
-
-    dotnet build
-
-    dotnet publish
-test_script:
+before_build:
+- pwsh: dotnet restore
+build:
+  project: GitTank.sln
+  publish_core_console: true
+  parallel: true
+  verbosity: minimal
+before_package:
+- pwsh: dotnet build
+after_build:
+- pwsh: dotnet publish
+after_test:
 - pwsh: dotnet test
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
