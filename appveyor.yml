@@ -37,7 +37,7 @@ before_build:
 #  publish_core_console: true
 #  parallel: true
 #  verbosity: minimal
-before_package:
+build_script:
 - pwsh: dotnet build
 after_build:
 - pwsh: dotnet publish
