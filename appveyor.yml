@@ -32,23 +32,16 @@ before_test:
   - cd ..
 test_script:
 - pwsh: dotnet test --no-build --no-restore --test-adapter-path:. --logger:Appveyor
-#- pwsh: .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"YourTestDll -noshadow" -output:"coverage.xml" -filter:"+[YourSUTNamepace*]* -[YourTestNamespace*]*"
-- ps: dotnet test --no-restore --no-build --logger:trx
-- ps: OpenCover.Console.exe -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test src --configuration %configuration% --no-restore --no-build --logger:trx" -filter:"+[*]* -[*.Tests*]*" -oldStyle -output:"TestCoverage.xml"
-- ps: . "C:\ProgramData\chocolatey\lib\codecov\tools\codecov.exe" -f "TestCoverage.xml"
 after_test:
-- pwsh: >-
-    $ProgressPreference = "SilentlyContinue"
+- pwsh: dotnet test --no-restore --no-build --logger:trx
+- pwsh: OpenCover.Console.exe -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test src --no-restore --no-build --logger:trx" -filter:"+[*]* -[*.Tests*]*" -oldStyle -output:"TestCoverage.xml"
+- pwsh: . "C:\ProgramData\chocolatey\lib\codecov\tools\codecov.exe" -f "TestCoverage.xml"
+# - pwsh: >-
+#     $ProgressPreference = "SilentlyContinue"
 
-    Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
+#     Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
 
-    .\codecov.exe
-# - pswh: >-
-#     $env:PATH = "C:\msys64\usr\bin;" + $env:PATH
-
-#     Invoke-WebRequest -Uri "https://codecov.io/bash" -OutFile codecov.sh
-
-#     bash codecov.sh -f "coverage.xml" -t YourUploadToken
+#     .\codecov.exe
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
