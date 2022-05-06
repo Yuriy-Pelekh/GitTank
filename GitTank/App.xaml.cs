@@ -65,10 +65,10 @@ namespace GitTank
 
 #if DEBUG
             Logger.Debug("Use development configuring");
-            builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            builder.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
 #else
             Logger.Debug("Use production configuring");
-            builder.AddJsonFile("appsettings.Production.json", optional: false, reloadOnChange: true);
+            builder.AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
 #endif
 
             return builder.Build();
