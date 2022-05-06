@@ -21,7 +21,7 @@ install:
 - pwsh: choco install opencover.portable
 - pwsh: choco install codecov
 - pwsh: >-
-    $url = "http://speed.transip.nl/10mb.bin"
+    $url = "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/VisualStudioClient/vsextensions/MicrosoftVisualStudio2022InstallerProjects/2.0.0/vspackage"
 
     $dest = "InstallerProjects.vsix"
 
@@ -34,15 +34,15 @@ install:
     Start-Process -Filepath "$($VSInstallDir)\VSIXInstaller" -ArgumentList "/q /a $($VsixLocation)" -Wait
 before_build:
 - pwsh: dotnet restore
-#build:
-#  project: GitTank.sln
-#  publish_core_console: true
-#  parallel: true
-#  verbosity: minimal
-build_script:
-- pwsh: dotnet build --no-restore
+build:
+  project: GitTank.sln
+  publish_core_console: true
+  parallel: true
+  verbosity: minimal
+#build_script:
+#- pwsh: dotnet build --no-restore
 after_build:
-- pwsh: dotnet publish --no-build --no-restore
+- pwsh: dotnet publish
 before_test:
   - cd GitTank.Tests
   - nuget install Appveyor.TestLogger
