@@ -28,11 +28,11 @@ install:
     & 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\VSIXInstaller.exe' /quiet InstallerProjects.vsix
 before_build:
 - pwsh: dotnet restore
-build:
-  project: GitTank.sln
-  publish_core_console: true
-  parallel: true
-  verbosity: minimal
+#build:
+#  project: GitTank.sln
+#  publish_core_console: true
+#  parallel: true
+#  verbosity: minimal
 before_package:
 - pwsh: dotnet build
 after_build:
