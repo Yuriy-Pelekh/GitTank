@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitTank", "GitTank\GitTank.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitTank.Tests", "GitTank.Tests\GitTank.Tests.csproj", "{D4DA7B0E-C6CD-4C9D-8828-E8F8705A9967}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "GitTankSetup", "GitTankSetup\GitTankSetup.vdproj", "{29EBAC10-B22E-4358-BC95-59A0F415C04D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D2604155-2698-4614-870F-EEB6AAD7FF6C} = {D2604155-2698-4614-870F-EEB6AAD7FF6C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +26,10 @@ Global
 		{D4DA7B0E-C6CD-4C9D-8828-E8F8705A9967}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4DA7B0E-C6CD-4C9D-8828-E8F8705A9967}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4DA7B0E-C6CD-4C9D-8828-E8F8705A9967}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29EBAC10-B22E-4358-BC95-59A0F415C04D}.Debug|Any CPU.ActiveCfg = Debug
+		{29EBAC10-B22E-4358-BC95-59A0F415C04D}.Debug|Any CPU.Build.0 = Debug
+		{29EBAC10-B22E-4358-BC95-59A0F415C04D}.Release|Any CPU.ActiveCfg = Release
+		{29EBAC10-B22E-4358-BC95-59A0F415C04D}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

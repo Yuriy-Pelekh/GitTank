@@ -55,3 +55,5 @@ after_test:
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
+- path: GitTankSetup\Release
+  name: Installer-$(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
