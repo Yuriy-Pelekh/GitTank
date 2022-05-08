@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GitTank.Loggers;
 using System.Collections.Generic;
+using GitTank.Helpers;
+using GitTank.Models;
 
 namespace GitTank.ViewModels
 {
@@ -20,7 +22,7 @@ namespace GitTank.ViewModels
         private TabWithLogsViewModel _selectedTab;
 
         public ObservableCollection<string> Repositories { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<string> Branches { get; set; } = new ObservableCollection<string>();
+        public DispatcherObservableCollection<string> Branches { get; set; } = new DispatcherObservableCollection<string>();
 
         public ObservableCollection<TabWithLogsViewModel> TabsWithLogs { get; set; }
 
@@ -322,18 +324,15 @@ namespace GitTank.ViewModels
         {
             var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
             Repositories.Clear();
-
             Repositories = new ObservableCollection<string>(repositories);
             SelectedRepo = defaultRepository;
         }
 
         private List<string> ReadReposFromConfig()
         {
-            var repositories = _configuration.GetSection("appSettings:repositories")
-                .GetChildren()
-                .Where(c => c.Value != null)
-                .Select(c => c.Value)
-                .ToList();
+            var repositories = _configuration.GetSection("appSettings").GetSection("sources").Get<List<Sources>>()
+                                .SelectMany(c => c.repositories)
+                                .ToList();
             return repositories;
         }
 

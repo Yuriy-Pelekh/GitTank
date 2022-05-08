@@ -1,25 +1,40 @@
 ﻿using GitTank.Dto;
+using GitTank.Helpers;
 using GitTank.Loggers;
+using GitTank.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace GitTank.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
+        public delegate void OnClickEventHandler();
+        public event OnClickEventHandler OnClick;
         private readonly GitProcessor _gitProcessor;
         private bool _isAddRepositoryButtonEnabled = true;
         private bool _isRemoveRepositoryButtonEnabled = true;
         private bool _isSaveRepositoriesSettingsButtonEnabled = true;
+        private IConfiguration _configuration;
+        private ILogger _logger;
 
         public SettingsViewModel(IConfiguration configuration, ILogger logger)
         {
             _gitProcessor = new GitProcessor(configuration, logger);
+            _logger = logger;
+            _configuration = configuration;
+            OnLoaded();
         }
 
         public bool IsAddRepositoryButtonEnabled
@@ -83,7 +98,61 @@ namespace GitTank.ViewModels
 
         public void SaveRepositoriesSettingToAppConfig()
         {
+            setSettingsToAppsettingsFiles();
 
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName)
+                .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            _configuration = builder.Build();
+
+            MainWindow mainWindow = new MainWindow(_configuration, _logger);
+            mainWindow.Show();
+            foreach (Window window in System.Windows.Application.Current.Windows)
+            {
+                if (window is MainWindow)
+                {
+                    window.Close();
+                    break;
+                }
+            }
+            OnClick?.Invoke();
+        }
+
+        private void setSettingsToAppsettingsFiles()
+        {
+            var appSettingsPath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "appsettings.Development.json");
+            var json = File.ReadAllText(appSettingsPath);
+
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new ExpandoObjectConverter());
+            jsonSettings.Converters.Add(new StringEnumConverter());
+
+            dynamic config = JsonConvert.DeserializeObject<ExpandoObject>(json, jsonSettings);
+
+            config.appSettings.sources = getAllRepositoriesPathesAndRepo();
+            config.appSettings.defaultRepository = SelectedRepository.RepositoryName;
+            config.appSettings.defaultBranch = SelectedGitBranch;
+
+            var newJson = JsonConvert.SerializeObject(config, Formatting.Indented, jsonSettings);
+
+            File.WriteAllText(appSettingsPath, newJson);
+        }
+
+        private List<Sources> getAllRepositoriesPathesAndRepo()
+        {
+            List<Sources> sources = new List<Sources>();
+            List<string> uniqPathes = (AllRepositoriesDataCollection.Select(item => item.RepositoryPath.Replace($"\\{item.RepositoryName}", ""))).Distinct().ToList();
+            foreach (var path in uniqPathes)
+            {
+                Sources source = new Sources()
+                {
+                    sourcePath = path,
+                    repositories = new List<string>()
+                };
+                source.repositories.AddRange(AllRepositoriesDataCollection.Where(item => item.RepositoryPath.Contains(path)).Select(item => item.RepositoryName));
+                sources.Add(source);
+            }
+            return sources;
         }
 
         private void OpenFolderBrowserDialog()
@@ -96,6 +165,8 @@ namespace GitTank.ViewModels
         private void AddRepositoryToAllSelectedRepositoryList(string repositoryPath)
         {
             var repositories = new Repository();
+            try
+            {
             var directoryPath = new DirectoryInfo(repositoryPath);
             repositories.RepositoryName = directoryPath.Name;
             repositories.RepositoryPath = directoryPath.FullName;
@@ -105,6 +176,12 @@ namespace GitTank.ViewModels
                 AllRepositoriesDataCollection.Add(repositories);
                 UpdateAvailableRepositoriesCollection();
             }
+            }
+            catch(Exception ex)
+            {
+                _logger.Error("Failed to add repository",ex);
+            }
+
         }
 
         public void UpdateAvailableRepositoriesCollection()
@@ -142,12 +219,53 @@ namespace GitTank.ViewModels
             }
         }
 
-
-        private ObservableCollection<Repository> _allRepositoriesDataCollection;
-
-        public ObservableCollection<Repository> AllRepositoriesDataCollection
+        private void OnLoaded()
         {
-            get => _allRepositoriesDataCollection ??= new ObservableCollection<Repository>();
+            Task.Run(() =>
+            {
+                var result = ReadSourcesFromConfig();
+                UpdateAllRepositories(result);
+            });
+        }
+
+        private List<Sources> ReadSourcesFromConfig()
+        {
+            var repositories = _configuration.GetSection("appSettings").GetSection("sources").Get<List<Sources>>()
+                                .ToList();
+            return repositories;
+        }
+
+        private void UpdateAllRepositories(List<Sources> sources)
+        {
+            var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
+            var defaultGitBranch = _configuration.GetValue<string>("appSettings:defaultBranch");
+            foreach (var item in sources)
+            {
+                foreach(var repo in item.repositories)
+                {
+                    var repository = new Repository();
+                    repository.RepositoryPath = $"{item.sourcePath}\\{repo}";
+                    repository.RepositoryName = repo;
+                    repository.StatusForCheckBox = true;
+                    if (AllRepositoriesDataCollection.All(path => path.RepositoryPath != repository.RepositoryPath))
+                    {
+                        AllRepositoriesDataCollection.Add(repository);
+                        UpdateAvailableRepositoriesCollection();
+                        if (repository.RepositoryName.Equals(defaultRepository))
+                        {
+                            SelectedRepository = repository;
+                        }
+                    }
+                }              
+            }
+            SelectedGitBranch = defaultGitBranch;
+        }
+
+        private DispatcherObservableCollection<Repository> _allRepositoriesDataCollection;
+
+        public DispatcherObservableCollection<Repository> AllRepositoriesDataCollection
+        {
+            get => _allRepositoriesDataCollection ??= new DispatcherObservableCollection<Repository>();
             set
             {
                 if (_allRepositoriesDataCollection == null || !_allRepositoriesDataCollection.Equals(value))
@@ -158,10 +276,10 @@ namespace GitTank.ViewModels
             }
         }
 
-        private ObservableCollection<Repository> _availableRepositoriesCollection;
-        public ObservableCollection<Repository> AvailableRepositoriesCollection
+        private DispatcherObservableCollection<Repository> _availableRepositoriesCollection;
+        public DispatcherObservableCollection<Repository> AvailableRepositoriesCollection
         {
-            get => _availableRepositoriesCollection ??= new ObservableCollection<Repository>();
+            get => _availableRepositoriesCollection ??= new DispatcherObservableCollection<Repository>();
             set
             {
                 if (_allRepositoriesDataCollection == null || !_allRepositoriesDataCollection.Equals(value))
@@ -172,10 +290,10 @@ namespace GitTank.ViewModels
             }
         }
 
-       private ObservableCollection<string> _defaultGitBranch;
-       public ObservableCollection<string> DefaultGitBranch
+       private DispatcherObservableCollection<string> _defaultGitBranch;
+       public DispatcherObservableCollection<string> DefaultGitBranch
         {
-            get => _defaultGitBranch ??= new ObservableCollection<string>();
+            get => _defaultGitBranch ??= new DispatcherObservableCollection<string>();
             set
             {
                 _defaultGitBranch = value;
@@ -190,21 +308,21 @@ namespace GitTank.ViewModels
             set
             {
                 _selectedRepository = value;
-                UpdateListOfDefaultsGitBranches(SelectedRepository.RepositoryPath);
+                Task.Run(async () => { await UpdateListOfDefaultsGitBranches(SelectedRepository.RepositoryPath); });              
             }
         }
 
         public string SelectedGitBranch { get; set; }
 
-        public void UpdateListOfDefaultsGitBranches(string repositoryPath)
+        public async Task UpdateListOfDefaultsGitBranches(string repositoryPath)
         {
-            DefaultGitBranch.Clear();
-            var branches = _gitProcessor.GetAllBranches(repositoryPath).Result;
-            var gitBranchesNames = new List<string>(branches.Split("\r\n").ToList());
-            foreach (var branchName in gitBranchesNames)
-            {
-                DefaultGitBranch.Add(branchName.Replace("*", string.Empty).Trim());
-            }
+                var branches = await _gitProcessor.GetAllBranches(repositoryPath);
+                var gitBranchesNames = new List<string>(branches.Split("\r\n").ToList());
+                DefaultGitBranch.Clear();
+                foreach (var branchName in gitBranchesNames)
+                {
+                    DefaultGitBranch.Add(branchName.Replace("*", string.Empty).Trim());
+                }
         }
     }
 }
