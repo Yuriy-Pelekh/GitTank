@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitTank", "GitTank\GitTank.csproj", "{D2604155-2698-4614-870F-EEB6AAD7FF6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitTank.Tests", "GitTank.Tests\GitTank.Tests.csproj", "{D4DA7B0E-C6CD-4C9D-8828-E8F8705A9967}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitTank.Tests", "GitTank.Tests\GitTank.Tests.csproj", "{D4DA7B0E-C6CD-4C9D-8828-E8F8705A9967}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,5 @@
-﻿using GitTank.Loggers;
+﻿using System.Threading.Tasks;
+using GitTank.Loggers;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Extensions.Configuration;
 
@@ -6,8 +7,9 @@ namespace GitTank.ViewModels
 {
     public class CreateBranchViewModel : BaseViewModel
     {
-        public delegate void OnClickEventHandler();
-        public event OnClickEventHandler OnClick;
+        public event CreateBranchEventHandler CreateBranch;
+
+        private RelayCommand _createBranchCommand;
 
         private readonly GitProcessor _gitProcessor;
         private bool _isCreateButtonEnabled = true;
@@ -44,19 +46,21 @@ namespace GitTank.ViewModels
             }
         }
 
-        private RelayCommand _createBranchCommand;
-
         public RelayCommand CreateBranchCommand
         {
-            get { return _createBranchCommand ??= new RelayCommand(CreateBranch); }
+            get
+            {
+                async void Execute() => await OnCreateBranch();
+                return _createBranchCommand ??= new RelayCommand(Execute);
+            }
         }
 
-        private async void CreateBranch()
+        private async Task OnCreateBranch()
         {
             IsCreateButtonEnabled = false;
             await _gitProcessor.CreateBranch(NewBranchName);
             IsCreateButtonEnabled = true;
-            OnClick?.Invoke();
+            CreateBranch?.Invoke();
         }
     }
 }

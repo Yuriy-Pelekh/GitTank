@@ -1,5 +1,4 @@
-﻿using System;
-using GitTank.Loggers;
+﻿using GitTank.Loggers;
 using GitTank.ViewModels;
 using Microsoft.Extensions.Configuration;
 using System.Windows;
@@ -9,15 +8,15 @@ namespace GitTank
     /// <summary>
     /// Interaction logic for CreateBranchWindow.xaml
     /// </summary>
-    public partial class CreateBranchWindow : Window
+    public partial class CreateBranchWindow
     {
         public CreateBranchWindow(IConfiguration configuration, ILogger logger)
         {
             InitializeComponent();
             DataContext = new CreateBranchViewModel(configuration, logger);
-            ((CreateBranchViewModel)DataContext).OnClick += () =>
+            ((CreateBranchViewModel)DataContext).CreateBranch += () =>
             {
-                Application.Current.Dispatcher.Invoke(new Action(() => { Close(); }));
+                Application.Current.Dispatcher.Invoke(Close);
             };
 
             Loaded += CreateBranchWindow_Loaded;

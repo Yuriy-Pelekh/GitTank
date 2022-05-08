@@ -1,5 +1,4 @@
-﻿using GitTank.Dto;
-using GitTank.Helpers;
+﻿using GitTank.Helpers;
 using GitTank.Loggers;
 using GitTank.Models;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using GitTank.Models;
 
 namespace GitTank.ViewModels
 {
