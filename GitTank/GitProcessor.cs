@@ -47,14 +47,12 @@ namespace GitTank
         private string GetWorkingDirectoryByRepositoryName(string repositoryName)
         {
             string workingDirectory = null;
-            foreach (var r in _sources)
+            foreach (var source in _sources.Where(source => source.repositories.Contains(repositoryName)))
             {
-                if (r.repositories.Contains(repositoryName))
-                {
-                    workingDirectory = Path.GetFullPath(r.sourcePath);
-                    break;
-                }
+                workingDirectory = Path.GetFullPath(source.sourcePath);
+                break;
             }
+
             return workingDirectory;
         }
 
