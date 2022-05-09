@@ -42,6 +42,16 @@ build:
 #build_script:
 #- pwsh: dotnet build --no-restore
 after_build:
+- ps: >-
+    # first way
+    #&${Env:ProgramFiles(x86)}'\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe' C:\projects\GitTank\GitTankSetup\GitTankSetup.vdproj /build Debug
+
+    #second way
+    &${Env:ProgramFiles(x86)}'\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe' src\my_installer\my_installer.sln /build Debug /project C:\projects\GitTank\GitTankSetup\GitTankSetup.vdproj /projectconfig Debug
+    
+- ps: >-
+    ls C:\projects\GitTank\GitTankSetup
+
 - pwsh: dotnet publish
 before_test:
   - cd GitTank.Tests
