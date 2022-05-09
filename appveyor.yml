@@ -20,13 +20,10 @@ dotnet_csproj:
 install:
 - pwsh: choco install opencover.portable
 - pwsh: choco install codecov
-before_build:
+#before_build:
 #- pwsh: dotnet restore
-build:
-  project: GitTank.sln
-  publish_core_console: true
-  parallel: true
-  verbosity: minimal
+build_script:
+- pwsh: dotnet build --no-restore
 #build_script:
 #- pwsh: dotnet build --no-restore
 after_build:
