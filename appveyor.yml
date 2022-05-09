@@ -21,7 +21,7 @@ install:
 - pwsh: choco install opencover.portable
 - pwsh: choco install codecov
 before_build:
-- pwsh: dotnet restore
+#- pwsh: dotnet restore
 build:
   project: GitTank.sln
   publish_core_console: true
