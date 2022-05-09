@@ -20,18 +20,6 @@ dotnet_csproj:
 install:
 - pwsh: choco install opencover.portable
 - pwsh: choco install codecov
-- pwsh: >-
-    $url = "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/VisualStudioClient/vsextensions/MicrosoftVisualStudio2022InstallerProjects/2.0.0/vspackage"
-
-    $dest = "InstallerProjects.vsix"
-
-    Invoke-WebRequest -Uri $url -OutFile $dest
-
-    $VSInstallDir = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\ServiceHub\Services\Microsoft.VisualStudio.Setup.Service"
-
-    $VsixLocation = "InstallerProjects.vsix"
-
-    Start-Process -Filepath "$($VSInstallDir)\VSIXInstaller" -ArgumentList "/q /a $($VsixLocation)" -Wait
 before_build:
 - pwsh: dotnet restore
 build:
