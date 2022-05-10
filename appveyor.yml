@@ -2,6 +2,8 @@ version: 1.0.{build}
 image: Visual Studio 2022
 configuration: Release
 platform: Any CPU
+init:
+- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -38,3 +40,6 @@ after_test:
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
+#on_finish:
+# https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
+#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
