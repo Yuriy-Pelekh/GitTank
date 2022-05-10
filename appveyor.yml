@@ -21,11 +21,12 @@ install:
 - pwsh: choco install opencover.portable
 - pwsh: choco install codecov
 - pwsh: >-
-    $url = "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/VisualStudioClient/vsextensions/MicrosoftVisualStudio2022InstallerProjects/2.0.0/vspackage"
+    # Used downloaded file due to rate limit error from Microsoft's website.
+    #$url = "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/VisualStudioClient/vsextensions/MicrosoftVisualStudio2022InstallerProjects/2.0.0/vspackage"
 
-    $VsixLocation = "InstallerProjects.vsix"
+    $VsixLocation = "Build\InstallerProjects.vsix"
 
-    Invoke-WebRequest -Uri $url -OutFile $VsixLocation
+    #Invoke-WebRequest -Uri $url -OutFile $VsixLocation
 
     $VSInstallDir = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\ServiceHub\Services\Microsoft.VisualStudio.Setup.Service"
 
