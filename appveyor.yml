@@ -2,6 +2,8 @@ version: 1.0.{build}
 image: Visual Studio 2022
 configuration: Release
 platform: Any CPU
+init:
+- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -39,7 +41,7 @@ after_build:
 - pwsh: dotnet publish --no-build --no-restore
 - pwsh: ls GitTankSetup
 - pwsh: >-
-    & "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" "GitTank.sln" /build "$($env:CONFIGURATION)" /project "GitTankSetup\GitTankSetup.vdproj" /log "build.log"
+    & "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" "GitTank.sln" /build "$($env:CONFIGURATION)" /project "GitTankSetup\GitTankSetup.vdproj" /out "build.log"
 - pwsh: Get-Content "build.log"
 - pwsh: ls GitTankSetup
 - pwsh: ls "GitTankSetup\$($env:CONFIGURATION)"
@@ -57,3 +59,6 @@ artifacts:
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
 - path: GitTankSetup\$(configuration)
   name: Installer-$(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
+#on_finish:
+# https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
+#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
