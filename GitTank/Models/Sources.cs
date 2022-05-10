@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace GitTank.Models
 {
     public class Sources
     {
-        public string sourcePath { get; set; }
-        public List<string> repositories { get; set; }
+        [JsonProperty("sourcePath")]
+        public string SourcePath { get; set; }
+
+        [JsonProperty("repositories")]
+        public List<string> Repositories { get; set; }
     }
 }

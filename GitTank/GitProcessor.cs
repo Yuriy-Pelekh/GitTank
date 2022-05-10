@@ -19,7 +19,7 @@ namespace GitTank
         private readonly string _defaultRepository;
         private readonly string _defaultBranch;
         private readonly IEnumerable<string> _repositories;
-        private List<Sources> _sources;
+        private readonly List<Sources> _sources;
         private readonly ILogger _logger;
 
         public GitProcessor(IConfiguration configuration, ILogger logger)
@@ -34,10 +34,19 @@ namespace GitTank
             _defaultBranch = configuration.GetValue<string>("appSettings:defaultBranch");
             logger.Debug($"Default branch: {_defaultBranch}");
 
-            _sources = configuration.GetSection("appSettings").GetSection("sources").Get<List<Sources>>();
+            _sources = configuration
+                .GetSection("appSettings")
+                .GetSection("sources")
+                .Get<List<Sources>>();
 
-            _repositories = _sources.SelectMany(c => c.repositories).ToList();
-            logger.Debug($"Repositories: {string.Join(", ", _repositories)}");
+            _repositories = _sources.SelectMany(c => c.Repositories).ToList();
+
+            var sources = _sources.Select(source =>
+                $"SourcePath: {source.SourcePath}. Repositories: {string.Join(", ", source.Repositories)}{Environment.NewLine}");
+            foreach (var source in sources)
+            {
+                logger.Debug(source);
+            }
         }
 
         private void OnOutput(int repositoryIndex, string line)
@@ -47,14 +56,10 @@ namespace GitTank
 
         private string GetWorkingDirectoryByRepositoryName(string repositoryName)
         {
-            string workingDirectory = null;
-            foreach (var source in _sources.Where(source => source.repositories.Contains(repositoryName)))
-            {
-                workingDirectory = Path.GetFullPath(source.sourcePath);
-                break;
-            }
-
-            return workingDirectory;
+            return _sources
+                .Where(source => source.Repositories.Contains(repositoryName))
+                .Select(source => Path.GetFullPath(source.SourcePath))
+                .FirstOrDefault();
         }
 
         private ProcessHelper GetProcessHelper(int repositoryIndex, string workingDirectory)
@@ -251,7 +256,7 @@ namespace GitTank
             _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(selectedRepository);
             var workingDirectory = Path.Combine(_rootWorkingDirectory, selectedRepository);
 
-            ProcessStartInfo terminalStartInfo = new ProcessStartInfo
+            var terminalStartInfo = new ProcessStartInfo
             {
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
@@ -266,13 +271,13 @@ namespace GitTank
 
             try
             {
-                Process terminalProcess = Process.Start(terminalStartInfo);
-                _logger.Information($"{commandLog}, PID: {terminalProcess.Id}, Process Name: {terminalProcess.ProcessName}");
-                await terminalProcess.WaitForExitAsync();
+                var terminalProcess = Process.Start(terminalStartInfo);
+                _logger.Information($"{commandLog}, PID: {terminalProcess?.Id}, Process Name: {terminalProcess?.ProcessName}");
+                await terminalProcess?.WaitForExitAsync()!;
             }
             catch (Exception ex)
             {
-                _logger.Error("Faild to open terminal", ex);
+                _logger.Error("Failed to open terminal", ex);
             }
         }
 

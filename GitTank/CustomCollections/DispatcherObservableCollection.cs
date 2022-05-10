@@ -3,32 +3,37 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows.Threading;
 
-namespace GitTank.Helpers
+namespace GitTank.CustomCollections
 {
     public class DispatcherObservableCollection<T> : ObservableCollection<T>
     {
         public override event NotifyCollectionChangedEventHandler CollectionChanged;
+
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler CollectionChanged = this.CollectionChanged;
-            if (CollectionChanged != null)
-                foreach (NotifyCollectionChangedEventHandler nh in CollectionChanged.GetInvocationList())
+            var collectionChanged = CollectionChanged;
+            if (collectionChanged != null)
+            {
+                foreach (var @delegate in collectionChanged.GetInvocationList())
                 {
-                    DispatcherObject dispObj = nh.Target as DispatcherObject;
-                    if (dispObj != null)
+                    var handler = (NotifyCollectionChangedEventHandler)@delegate;
+                    if (handler.Target is DispatcherObject dispatcherObject)
                     {
-                        Dispatcher dispatcher = dispObj.Dispatcher;
+                        var dispatcher = dispatcherObject.Dispatcher;
                         if (dispatcher != null && !dispatcher.CheckAccess())
                         {
                             dispatcher.BeginInvoke(
-                                (Action)(() => nh.Invoke(this,
+                                (Action)(() => handler.Invoke(
+                                    this,
                                     new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset))),
                                 DispatcherPriority.DataBind);
                             continue;
                         }
                     }
-                    nh.Invoke(this, e);
+
+                    handler.Invoke(this, e);
                 }
+            }
         }
     }
 }
