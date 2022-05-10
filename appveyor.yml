@@ -39,8 +39,8 @@ after_build:
 - pwsh: dotnet publish --no-build --no-restore
 - pwsh: ls GitTankSetup
 - pwsh: >-
-    & 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe' GitTank.sln /build "$($env:CONFIGURATION)" /project GitTankSetup\GitTankSetup.vdproj /log build.log
-- pwsh: Get-Content build.log
+    & "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" "GitTank.sln" /build "$($env:CONFIGURATION)" /project "GitTankSetup\GitTankSetup.vdproj" /log "build.log"
+- pwsh: Get-Content "build.log"
 - pwsh: ls GitTankSetup
 - pwsh: ls "GitTankSetup\$($env:CONFIGURATION)"
 before_test:
