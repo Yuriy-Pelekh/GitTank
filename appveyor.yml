@@ -25,7 +25,7 @@ before_build:
 build_script:
 - pwsh: dotnet build --no-restore
 after_build:
-- pwsh: 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe' GitTank.sln /build Release /project GitTankSetup\GitTankSetup.vdproj
+- pwsh: & 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe' GitTank.sln /build Release /project GitTankSetup\GitTankSetup.vdproj
 - pwsh: ls C:\projects\GitTank\GitTankSetup
 - pwsh: dotnet publish
 before_test:
