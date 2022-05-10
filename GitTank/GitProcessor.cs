@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using GitTank.Models;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +8,6 @@ using System.Threading.Tasks;
 using GitTank.Loggers;
 using Serilog.Context;
 using System.Diagnostics;
-using GitTank.Models;
 
 namespace GitTank
 {
@@ -250,23 +251,29 @@ namespace GitTank
             _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(selectedRepository);
             var workingDirectory = Path.Combine(_rootWorkingDirectory, selectedRepository);
 
-            var process = new Process
+            ProcessStartInfo terminalStartInfo = new ProcessStartInfo
             {
-                StartInfo = new ProcessStartInfo
-                {
-                    RedirectStandardError = true,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = false,
-
-                    WorkingDirectory = workingDirectory,
-                    FileName = @"C:\Program Files\Git\git-bash.exe",
-                    WindowStyle = ProcessWindowStyle.Normal
-                }
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = false,
+                WorkingDirectory = workingDirectory,
+                FileName = @"C:\Program Files\Git\git-bash.exe",
+                WindowStyle = ProcessWindowStyle.Normal
             };
 
-            process.Start();
-            await process.WaitForExitAsync();
+            var commandLog = $"Terminal started: {terminalStartInfo.FileName} {terminalStartInfo.Arguments} in {terminalStartInfo.WorkingDirectory}";
+
+            try
+            {
+                Process terminalProcess = Process.Start(terminalStartInfo);
+                _logger.Information($"{commandLog}, PID: {terminalProcess.Id}, Process Name: {terminalProcess.ProcessName}");
+                await terminalProcess.WaitForExitAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Faild to open terminal", ex);
+            }
         }
 
         public async Task Fetch()
