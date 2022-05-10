@@ -26,9 +26,11 @@ build_script:
 - pwsh: dotnet build --no-restore
 after_build:
 - pwsh: dotnet publish --no-build --no-restore
+- pwsh: ls GitTankSetup
+- pwsh: ls "GitTankSetup\$(CONFIGURATION)"
 - pwsh: >-
-    & 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe' GitTank.sln /build $(CONFIGURATION) /project GitTankSetup\GitTankSetup.vdproj
-- pwsh: ls C:\projects\GitTank\GitTankSetup\$(CONFIGURATION)
+    & 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe' GitTank.sln /build "$(CONFIGURATION)" /project GitTankSetup\GitTankSetup.vdproj
+- pwsh: ls "GitTankSetup\$(CONFIGURATION)"
 before_test:
   - cd GitTank.Tests
   - nuget install Appveyor.TestLogger
