@@ -1023,7 +1023,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Xaml.Behaviors.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Xaml.Behaviors.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1074,7 +1074,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Newtonsoft.Json.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Newtonsoft.Json.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1094,7 +1094,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0F8848E28F344920B39B7E4F57FB9C5C"
             {
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\GitTank.exe"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\GitTank.exe"
             "TargetName" = "8:GitTank.exe"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1156,7 +1156,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Serilog.Enrichers.Process.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Serilog.Enrichers.Process.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1269,7 +1269,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_280D3C5C0CD04A0A97E43FF6582896F0"
             {
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\GitTank.runtimeconfig.json"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\GitTank.runtimeconfig.json"
             "TargetName" = "8:GitTank.runtimeconfig.json"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1331,7 +1331,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.FileSystemGlobbing.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.FileSystemGlobbing.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1362,7 +1362,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Serilog.Sinks.Console.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Serilog.Sinks.Console.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1393,7 +1393,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Serilog.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Serilog.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1548,7 +1548,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1610,7 +1610,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.DependencyInjection.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.DependencyInjection.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1672,7 +1672,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.FileExtensions.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.FileExtensions.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1703,7 +1703,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Options.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Options.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1796,7 +1796,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Serilog.Settings.Configuration.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Serilog.Settings.Configuration.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1847,7 +1847,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5E33F7074CDE43E687D4323F3C5D0DDF"
             {
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\appsettings.Development.json"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\appsettings.Development.json"
             "TargetName" = "8:appsettings.Development.json"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1878,7 +1878,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\WinRT.Runtime.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\WinRT.Runtime.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1909,7 +1909,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.Json.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.Json.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1940,7 +1940,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.DependencyInjection.Abstractions.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.DependencyInjection.Abstractions.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -1971,7 +1971,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Options.ConfigurationExtensions.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Options.ConfigurationExtensions.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2095,7 +2095,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.Binder.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.Binder.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2126,7 +2126,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Serilog.Sinks.File.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Serilog.Sinks.File.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2157,7 +2157,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.Abstractions.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Configuration.Abstractions.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2188,7 +2188,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.FileProviders.Physical.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.FileProviders.Physical.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2374,7 +2374,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Windows.SDK.NET.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Windows.SDK.NET.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2487,7 +2487,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AB844643D8544D198ED9D1FD71EDDD58"
             {
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\GitTank.deps.json"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\GitTank.deps.json"
             "TargetName" = "8:GitTank.deps.json"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2549,7 +2549,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\GitTank.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\GitTank.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2611,7 +2611,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Serilog.Enrichers.Environment.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Serilog.Enrichers.Environment.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2642,7 +2642,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Serilog.Enrichers.Thread.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Serilog.Enrichers.Thread.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2724,7 +2724,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD3F94B4AC8841ACBF6678E8028C258D"
             {
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\appsettings.json"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\appsettings.json"
             "TargetName" = "8:appsettings.json"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2868,7 +2868,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Serilog.Enrichers.Context.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Serilog.Enrichers.Context.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2930,7 +2930,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.DependencyModel.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.DependencyModel.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2961,7 +2961,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Toolkit.Mvvm.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Toolkit.Mvvm.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -2992,7 +2992,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Primitives.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.Primitives.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -3054,7 +3054,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.FileProviders.Abstractions.dll"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\Microsoft.Extensions.FileProviders.Abstractions.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -3074,7 +3074,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F52D908A3CFD483EAA19D7F555912FAA"
             {
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\GitTank.pdb"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\GitTank.pdb"
             "TargetName" = "8:GitTank.pdb"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
@@ -3094,7 +3094,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE3043D011A24A2BA2F13564C0C7FBBC"
             {
-            "SourcePath" = "8:..\\GitTank\\bin\\Debug\\net6.0-windows10.0.22000.0\\appsettings.Production.json"
+            "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\appsettings.Production.json"
             "TargetName" = "8:appsettings.Production.json"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
