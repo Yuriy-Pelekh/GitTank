@@ -24,7 +24,7 @@ namespace GitTank.ViewModels
         private readonly GitProcessor _gitProcessor;
         private bool _isAddRepositoryButtonEnabled = true;
         private bool _isRemoveRepositoryButtonEnabled = true;
-        private bool _isSaveRepositoriesSettingsButtonEnabled = true;
+        private bool _isSaveRepositoriesSettingsButtonEnabled = false;
         private IConfiguration _configuration;
         private readonly ILogger _logger;
 
@@ -333,7 +333,19 @@ namespace GitTank.ViewModels
             }
         }
 
-        public string SelectedGitBranch { get; set; }
+        public string _selectedGitBranch;
+
+        public string SelectedGitBranch {
+            get => _selectedGitBranch; 
+            set
+            {
+                _selectedGitBranch = value;
+                if(SelectedGitBranch != null)
+                {
+                    IsSaveRepositoriesSettingsButtonEnabled = true;
+                }
+            } 
+        }
 
         public async Task UpdateListOfDefaultsGitBranches(string repositoryPath)
         {
@@ -350,6 +362,7 @@ namespace GitTank.ViewModels
             else
             {
                 DefaultGitBranch.Clear();
+                IsSaveRepositoriesSettingsButtonEnabled = false; 
             }
 
         }
