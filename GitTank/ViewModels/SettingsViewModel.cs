@@ -316,8 +316,11 @@ namespace GitTank.ViewModels
             get => _defaultGitBranch ??= new DispatcherObservableCollection<string>();
             set
             {
-                _defaultGitBranch = value;
-                OnPropertyChanged();
+                if (_defaultGitBranch != value)
+                {
+                    _defaultGitBranch = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -328,9 +331,13 @@ namespace GitTank.ViewModels
             get => _selectedRepository;
             set
             {
-                _selectedRepository = value;
-                var repositoryPath = _selectedRepository != null ? SelectedRepository.RepositoryPath : string.Empty;
-                Task.Run(async () => { await UpdateListOfDefaultsGitBranches(repositoryPath); });
+                if (_selectedRepository != value)
+                {
+                    _selectedRepository = value;
+                    var repositoryPath = _selectedRepository != null ? SelectedRepository.RepositoryPath : string.Empty;
+                    Task.Run(async () => { await UpdateListOfDefaultsGitBranches(repositoryPath); });
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -341,9 +348,10 @@ namespace GitTank.ViewModels
             get => _selectedGitBranch;
             set
             {
-                _selectedGitBranch = value;
-                if (_selectedGitBranch != null)
+                if (_selectedGitBranch != value)
                 {
+                    _selectedGitBranch = value;
+                    OnPropertyChanged();
                     IsSaveRepositoriesSettingsButtonEnabled = true;
                 }
             }
