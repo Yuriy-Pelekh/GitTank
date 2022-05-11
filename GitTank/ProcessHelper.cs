@@ -18,7 +18,7 @@ namespace GitTank
         private readonly StringBuilder _output = new();
         private readonly StringBuilder _jsonOutput = new();
         private readonly StringBuilder _result = new();
-        private readonly StringBuilder detailsOutput = new();
+        private readonly StringBuilder _detailsOutput = new();
         private readonly int _senderIndex;
         private readonly ILogger _gitLogger;
         private readonly ILogger _generalLogger;
@@ -111,12 +111,13 @@ namespace GitTank
             if (_output.Length > 0)
             {
                 OnOutput(_senderIndex, _output.ToString());
-                detailsOutput.AppendLine(_output.ToString());
+                _detailsOutput.AppendLine(_output.ToString());
                 _output.Clear();
                 _linesCount = 0;
             }
+
             LogContext.Reset();
-            LogContext.PushProperty("Details", detailsOutput.ToString());
+            LogContext.PushProperty("Details", _detailsOutput.ToString());
 
             var summary = $"{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()})";
             OnOutput(_senderIndex, summary);
