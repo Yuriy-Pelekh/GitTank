@@ -627,12 +627,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D1CF8C2D06C74E439E350D2FB490768A"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_DC14AA6F947A98CD32437E644B72C8FA"
         "OwnerKey" = "8:_6CB8A645BE2A46169E71C7E898E1C401"
         "MsmSig" = "8:_UNDEFINED"
@@ -2636,26 +2630,6 @@
             {
             "SourcePath" = "8:..\\GitTank\\bin\\Release\\net6.0-windows10.0.22000.0\\appsettings.json"
             "TargetName" = "8:appsettings.json"
-            "Tag" = "8:"
-            "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D1CF8C2D06C74E439E350D2FB490768A"
-            {
-            "SourcePath" = "8:C:\\Users\\user\\Downloads\\gittank demo small.ico"
-            "TargetName" = "8:gitTankIcon.ico"
             "Tag" = "8:"
             "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
             "Condition" = "8:"
