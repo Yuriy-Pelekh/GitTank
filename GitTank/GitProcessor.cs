@@ -39,7 +39,9 @@ namespace GitTank
                 .GetSection("sources")
                 .Get<List<Sources>>();
 
-            _repositories = _sources.SelectMany(c => c.Repositories).ToList();
+            _repositories = _sources
+                .SelectMany(source => source.Repositories)
+                .ToList();
 
             var sources = _sources.Select(source =>
                 $"SourcePath: {source.SourcePath}. Repositories: {string.Join(", ", source.Repositories)}{Environment.NewLine}");

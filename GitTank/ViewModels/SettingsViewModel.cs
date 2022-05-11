@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using GitTank.CustomCollections;
+using Application = System.Windows.Application;
 
 namespace GitTank.ViewModels
 {
@@ -24,7 +25,7 @@ namespace GitTank.ViewModels
         private readonly GitProcessor _gitProcessor;
         private bool _isAddRepositoryButtonEnabled = true;
         private bool _isRemoveRepositoryButtonEnabled = true;
-        private bool _isSaveRepositoriesSettingsButtonEnabled = false;
+        private bool _isSaveRepositoriesSettingsButtonEnabled;
         private IConfiguration _configuration;
         private readonly ILogger _logger;
 
@@ -107,7 +108,7 @@ namespace GitTank.ViewModels
 
             var mainWindow = new MainWindow(_configuration, _logger);
             mainWindow.Show();
-            foreach (Window window in System.Windows.Application.Current.Windows)
+            foreach (Window window in Application.Current.Windows)
             {
                 if (window is MainWindow)
                 {
@@ -328,28 +329,29 @@ namespace GitTank.ViewModels
             set
             {
                 _selectedRepository = value;
-                string repositoryPath = _selectedRepository != null ? SelectedRepository.RepositoryPath : String.Empty;
+                var repositoryPath = _selectedRepository != null ? SelectedRepository.RepositoryPath : string.Empty;
                 Task.Run(async () => { await UpdateListOfDefaultsGitBranches(repositoryPath); });
             }
         }
 
-        public string _selectedGitBranch;
+        private string _selectedGitBranch;
 
-        public string SelectedGitBranch {
-            get => _selectedGitBranch; 
+        public string SelectedGitBranch
+        {
+            get => _selectedGitBranch;
             set
             {
                 _selectedGitBranch = value;
-                if(SelectedGitBranch != null)
+                if (_selectedGitBranch != null)
                 {
                     IsSaveRepositoriesSettingsButtonEnabled = true;
                 }
-            } 
+            }
         }
 
         public async Task UpdateListOfDefaultsGitBranches(string repositoryPath)
         {
-            if (repositoryPath != String.Empty)
+            if (repositoryPath != string.Empty)
             {
                 var branches = await _gitProcessor.GetAllBranches(repositoryPath);
                 var gitBranchesNames = new List<string>(branches.Split(Environment.NewLine).ToList());
@@ -362,9 +364,8 @@ namespace GitTank.ViewModels
             else
             {
                 DefaultGitBranch.Clear();
-                IsSaveRepositoriesSettingsButtonEnabled = false; 
+                IsSaveRepositoriesSettingsButtonEnabled = false;
             }
-
         }
     }
 }
