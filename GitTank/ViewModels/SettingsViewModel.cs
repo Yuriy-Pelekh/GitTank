@@ -328,7 +328,8 @@ namespace GitTank.ViewModels
             set
             {
                 _selectedRepository = value;
-                Task.Run(async () => { await UpdateListOfDefaultsGitBranches(SelectedRepository.RepositoryPath); });
+                string repositoryPath = _selectedRepository != null ? SelectedRepository.RepositoryPath : String.Empty;
+                Task.Run(async () => { await UpdateListOfDefaultsGitBranches(repositoryPath); });
             }
         }
 
@@ -336,13 +337,21 @@ namespace GitTank.ViewModels
 
         public async Task UpdateListOfDefaultsGitBranches(string repositoryPath)
         {
-            var branches = await _gitProcessor.GetAllBranches(repositoryPath);
-            var gitBranchesNames = new List<string>(branches.Split(Environment.NewLine).ToList());
-            DefaultGitBranch.Clear();
-            foreach (var branchName in gitBranchesNames)
+            if (repositoryPath != String.Empty)
             {
-                DefaultGitBranch.Add(branchName.Replace("*", string.Empty).Trim());
+                var branches = await _gitProcessor.GetAllBranches(repositoryPath);
+                var gitBranchesNames = new List<string>(branches.Split(Environment.NewLine).ToList());
+                DefaultGitBranch.Clear();
+                foreach (var branchName in gitBranchesNames)
+                {
+                    DefaultGitBranch.Add(branchName.Replace("*", string.Empty).Trim());
+                }
             }
+            else
+            {
+                DefaultGitBranch.Clear();
+            }
+
         }
     }
 }

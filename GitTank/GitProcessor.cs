@@ -162,7 +162,7 @@ namespace GitTank
 
         public async Task<string> GetAllBranches(string repositoryPath)
         {
-            const string arguments = "branch -a"; // -r - only remote, -a - all
+            const string arguments = "branch"; // -r - only remote, -a - all
 
             var index = _repositories.ToList().IndexOf(_defaultRepository);
             var processHelper = GetProcessHelper(index, repositoryPath);
