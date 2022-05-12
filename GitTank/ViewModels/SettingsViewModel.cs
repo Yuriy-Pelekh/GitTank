@@ -156,7 +156,7 @@ namespace GitTank.ViewModels
                     Repositories = new List<string>()
                 };
                 source.Repositories.AddRange(AllRepositoriesDataCollection
-                    .Where(item => item.RepositoryPath.Contains(path))
+                    .Where(item => item.RepositoryPath.Equals($"{path}\\{item.RepositoryName}"))
                     .Select(item => item.RepositoryName));
                 sources.Add(source);
             }
