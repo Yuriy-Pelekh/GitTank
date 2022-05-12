@@ -3208,7 +3208,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:GitTank"
         "ProductCode" = "8:{562B863D-6CCF-4712-A816-4521D8D63748}"
-        "PackageCode" = "8:{4A8E536A-7858-437E-ADA0-4D1FC7AF30F0}"
+        "PackageCode" = "8:{42B4576C-5C00-4638-9920-8A74B38C7858}"
         "UpgradeCode" = "8:{F7B54045-C469-46B7-ACA5-96317D34AAC1}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -3328,20 +3328,6 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_9B44A812D49E460BAB6D5D09158FFE0C"
-            {
-            "Name" = "8:GitTank.exe"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_0F8848E28F344920B39B7E4F57FB9C5C"
-            "Folder" = "8:_3A867A297EC84532A002E765BBEE584A"
-            "WorkingFolder" = "8:_3A867A297EC84532A002E765BBEE584A"
-            "Icon" = "8:_BBA7C4D1E7BB4DEEBD04011F8EE5F641"
-            "Feature" = "8:"
-            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DBB27976807F4195B291436D24A5E382"
             {
             "Name" = "8:GitTank"
