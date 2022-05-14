@@ -22,12 +22,29 @@ dotnet_csproj:
 install:
 - pwsh: choco install opencover.portable
 - pwsh: choco install codecov
+- pwsh: >-
+    # Used downloaded file due to rate limit error from Microsoft's website.
+    #$url = "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/VisualStudioClient/vsextensions/MicrosoftVisualStudio2022InstallerProjects/2.0.0/vspackage"
+
+    $VsixLocation = "Build\InstallerProjects.vsix"
+
+    #Invoke-WebRequest -Uri $url -OutFile $VsixLocation
+
+    $VSInstallDir = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\ServiceHub\Services\Microsoft.VisualStudio.Setup.Service"
+
+    Start-Process -Filepath "$($VSInstallDir)\VSIXInstaller" -ArgumentList "/q /a $($VsixLocation)" -PassThru -Wait
 before_build:
 - pwsh: dotnet restore
 build_script:
 - pwsh: dotnet build --no-restore
 after_build:
 - pwsh: dotnet publish --no-build --no-restore
+- pwsh: ls GitTankSetup
+- pwsh: >-
+    & "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" "GitTank.sln" /build "$($env:CONFIGURATION)" /project "GitTankSetup\GitTankSetup.vdproj" /out "build.log"
+- pwsh: Get-Content "build.log"
+- pwsh: ls GitTankSetup
+- pwsh: ls "GitTankSetup\$($env:CONFIGURATION)"
 before_test:
   - cd GitTank.Tests
   - nuget install Appveyor.TestLogger
@@ -40,6 +57,8 @@ after_test:
 artifacts:
 - path: GitTank\bin\$(configuration)\net6.0-windows10.0.22000.0\publish
   name: $(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
+- path: GitTankSetup\$(configuration)
+  name: Installer-$(APPVEYOR_PROJECT_SLUG)-$(APPVEYOR_BUILD_VERSION)
 #on_finish:
 # https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
 #- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
