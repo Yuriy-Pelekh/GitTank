@@ -37,7 +37,7 @@ namespace GitTank
             {
                 _output.AppendLine(e.Data);
                 _result.AppendLine(e.Data);
-                if (_linesCount > 10000)
+                if (_linesCount > 1)
                 {
                     Output?.Invoke(_output.ToString());
                     _output.Clear();
@@ -83,7 +83,10 @@ namespace GitTank
 
             var summary = $"{Environment.NewLine}{(_process.ExitCode == 0 ? "Success" : "Failed")} ({_process.ExitTime - _process.StartTime} @ {_process.ExitTime.ToLocalTime()}){Environment.NewLine}";
             Output?.Invoke(summary);
-            Output?.Invoke("_________________________________________________________________________________");
+            for (var i = 0; i < 1000; i++)
+            {
+                Output?.Invoke($"______________________________________ {i} ___________________________________________");
+            }
             return _result.ToString();
         }
 
