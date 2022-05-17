@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using GitTank.Models;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +8,6 @@ using System.Threading.Tasks;
 using GitTank.Loggers;
 using Serilog.Context;
 using System.Diagnostics;
-using System;
 
 namespace GitTank
 {
@@ -14,11 +15,11 @@ namespace GitTank
     {
         public event OutputPerRepositoryEventHandler Output;
         private const string Command = "git";
-        private readonly string _rootWorkingDirectory;
+        private string _rootWorkingDirectory;
         private readonly string _defaultRepository;
         private readonly string _defaultBranch;
         private readonly IEnumerable<string> _repositories;
-
+        private readonly List<Sources> _sources;
         private readonly ILogger _logger;
 
         public GitProcessor(IConfiguration configuration, ILogger logger)
@@ -27,29 +28,40 @@ namespace GitTank
 
             LogContext.PushProperty(Constants.SourceContext, GetType().Name);
 
-            _rootWorkingDirectory = configuration.GetValue<string>("appSettings:sourcePath");
-            logger.Debug($"Original source path: {_rootWorkingDirectory ?? "null"}");
-
-            // Convert path to absolute in case it was set as relative.
-            _rootWorkingDirectory = Path.GetFullPath(_rootWorkingDirectory);
-            logger.Debug($"Absolute source path: {_rootWorkingDirectory}");
-
             _defaultRepository = configuration.GetValue<string>("appSettings:defaultRepository");
             logger.Debug($"Default repository: {_defaultRepository}");
 
             _defaultBranch = configuration.GetValue<string>("appSettings:defaultBranch");
             logger.Debug($"Default branch: {_defaultBranch}");
 
-            _repositories = configuration.GetSection("appSettings:repositories")
-                .GetChildren()
-                .Select(c => c.Value)
+            _sources = configuration
+                .GetSection("appSettings")
+                .GetSection("sources")
+                .Get<List<Sources>>();
+
+            _repositories = _sources
+                .SelectMany(source => source.Repositories)
                 .ToList();
-            logger.Debug($"Repositories: {string.Join(", ", _repositories)}");
+
+            var sources = _sources.Select(source =>
+                $"SourcePath: {source.SourcePath}. Repositories: {string.Join(", ", source.Repositories)}{Environment.NewLine}");
+            foreach (var source in sources)
+            {
+                logger.Debug(source);
+            }
         }
 
         private void OnOutput(int repositoryIndex, string line)
         {
             Output?.Invoke(repositoryIndex, line);
+        }
+
+        private string GetWorkingDirectoryByRepositoryName(string repositoryName)
+        {
+            return _sources
+                .Where(source => source.Repositories.Contains(repositoryName))
+                .Select(source => Path.GetFullPath(source.SourcePath))
+                .FirstOrDefault();
         }
 
         private ProcessHelper GetProcessHelper(int repositoryIndex, string workingDirectory)
@@ -83,6 +95,7 @@ namespace GitTank
             List<string> repositories = _repositories.ToList();
             for (var i = 0; i < repositories.Count; i++)
             {
+                _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(repositories[i]);
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
                 var processHelper = GetProcessHelper(i, workingDirectory);
 
@@ -117,6 +130,7 @@ namespace GitTank
             List<string> repositories = _repositories.ToList();
             for (var i = 0; i < repositories.Count; i++)
             {
+                _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(repositories[i]);
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
                 var processHelper = GetProcessHelper(i, workingDirectory);
 
@@ -136,6 +150,7 @@ namespace GitTank
         {
             const string arguments = "branch"; // -r - only remote, -a - all
 
+            _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(_defaultRepository);
             var workingDirectory = Path.Combine(_rootWorkingDirectory, _defaultRepository);
             var index = _repositories.ToList().IndexOf(_defaultRepository);
             var processHelper = GetProcessHelper(index, workingDirectory);
@@ -149,7 +164,7 @@ namespace GitTank
 
         public async Task<string> GetAllBranches(string repositoryPath)
         {
-            const string arguments = "branch -a"; // -r - only remote, -a - all
+            const string arguments = "branch"; // -r - only remote, -a - all
 
             var index = _repositories.ToList().IndexOf(_defaultRepository);
             var processHelper = GetProcessHelper(index, repositoryPath);
@@ -171,6 +186,7 @@ namespace GitTank
             List<string> repositories = _repositories.ToList();
             for (var i = 0; i < repositories.Count; i++)
             {
+                _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(repositories[i]);
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
                 var processHelper = GetProcessHelper(i, workingDirectory);
 
@@ -194,7 +210,7 @@ namespace GitTank
         {
             List<string> repositories = _repositories.ToList();
             List<Task> runningTasks = repositories
-                .Select(repository => Path.Combine(_rootWorkingDirectory, repository))
+                .Select(repository => Path.Combine(GetWorkingDirectoryByRepositoryName(repository), repository))
                 .Select((repositoryPath, repositoryIndex) => SyncOneRepository(repositoryIndex, repositoryPath))
                 .ToList();
 
@@ -224,6 +240,7 @@ namespace GitTank
             List<string> repositories = _repositories.ToList();
             for (var i = 0; i < repositories.Count; i++)
             {
+                _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(repositories[i]);
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
                 var processHelper = GetProcessHelper(i, workingDirectory);
 
@@ -238,9 +255,10 @@ namespace GitTank
 
         public async Task OpenTerminal(string selectedRepository)
         {
+            _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(selectedRepository);
             var workingDirectory = Path.Combine(_rootWorkingDirectory, selectedRepository);
 
-            ProcessStartInfo terminalStartInfo = new ProcessStartInfo
+            var terminalStartInfo = new ProcessStartInfo
             {
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
@@ -255,13 +273,13 @@ namespace GitTank
 
             try
             {
-                Process terminalProcess = Process.Start(terminalStartInfo);
-                _logger.Information($"{commandLog}, PID: {terminalProcess.Id}, Process Name: {terminalProcess.ProcessName}");
-                await terminalProcess.WaitForExitAsync();
+                var terminalProcess = Process.Start(terminalStartInfo);
+                _logger.Information($"{commandLog}, PID: {terminalProcess?.Id}, Process Name: {terminalProcess?.ProcessName}");
+                await terminalProcess?.WaitForExitAsync()!;
             }
             catch (Exception ex)
             {
-                _logger.Error("Faild to open terminal", ex);
+                _logger.Error("Failed to open terminal", ex);
             }
         }
 
@@ -274,6 +292,7 @@ namespace GitTank
             List<string> repositories = _repositories.ToList();
             for (var i = 0; i < repositories.Count; i++)
             {
+                _rootWorkingDirectory = GetWorkingDirectoryByRepositoryName(repositories[i]);
                 var workingDirectory = Path.Combine(_rootWorkingDirectory, repositories[i]);
                 var processHelper = GetProcessHelper(i, workingDirectory);
 
@@ -290,7 +309,7 @@ namespace GitTank
         {
             List<string> repositories = _repositories.ToList();
             List<Task> runningTasks = repositories
-                .Select(repository => Path.Combine(_rootWorkingDirectory, repository))
+                .Select(repository => Path.Combine(GetWorkingDirectoryByRepositoryName(repository), repository))
                 .Select((repositoryPath, repositoryIndex) => CreateBranchOneRepository(newBranch, repositoryIndex, repositoryPath))
                 .ToList();
 
