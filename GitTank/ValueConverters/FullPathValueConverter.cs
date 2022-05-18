@@ -15,7 +15,7 @@ namespace GitTank.ValueConverters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Path.GetRelativePath(null, (string)value);
+            return Path.GetRelativePath(Directory.GetCurrentDirectory(), (string)value);
         }
     }
 }
