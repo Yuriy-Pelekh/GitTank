@@ -18,8 +18,22 @@ There are many other useful features and plans. Stay tuned 😊
 
 ## TODO
 - [x] Installer
-- [x] Open tetminal from the app 
+- [x] Open terminal from the app 
 - [ ] Select default terminal to open
+- [ ] UI for application configuration and settings
+- [x] Application logs
+- [x] Git logs
+- [x] Multithreading work with repositories
+- [ ] New UI
+- [ ] Repository statuses
+- [ ] Advanced repository dependency configuration
+- [ ] Post actions
+- [ ] Commit to all repositories at once
+- [ ] Create pull request from the application
+- [ ] Reminders for uncommitted changes
+- [ ] Reminder to pull
+- [ ] Automatic fetch in background
+- [ ] ...
 
 ### Roadmap
 ![image](https://user-images.githubusercontent.com/4256363/169280350-bee2c76d-5e2c-4e9e-9f7c-aa7d767e3051.png)
