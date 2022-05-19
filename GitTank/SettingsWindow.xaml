@@ -3,10 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:valueConverters="clr-namespace:GitTank.ValueConverters"
         mc:Ignorable="d"
         Title="SettingsWindow" WindowStartupLocation="CenterScreen"
         Height="450" Width="800"
         MinHeight="450" MinWidth="450">
+    <Window.Resources>
+        <ResourceDictionary>
+            <valueConverters:FullPathValueConverter x:Key="FullPath" />
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <TabControl x:Name="SettingsTabControl" TabStripPlacement="Left" HorizontalAlignment="Left" Width="772" Height="394" VerticalAlignment="Center" Margin="4,0,0,0">
             <TabItem x:Name="RepositorySettings">
@@ -47,7 +53,7 @@
                                         x:Name="RepositoryPathColumn"
                                         Width="270"
                                         Header="Path"
-                                        DisplayMemberBinding="{Binding RepositoryPath}" />
+                                        DisplayMemberBinding="{Binding RepositoryPath, Converter={StaticResource FullPath}}" />
                                     <GridViewColumn
                                         Width="60"
                                         Header="Select">
