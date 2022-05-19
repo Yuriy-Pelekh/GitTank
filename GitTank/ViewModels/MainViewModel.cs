@@ -17,7 +17,7 @@ namespace GitTank.ViewModels
         private readonly IConfiguration _configuration;
         private readonly GitProcessor _gitProcessor;
 
-        private string _selectedRepo;
+        private string _selectedRepository;
         private string _selectedBranch;
         private bool _areAllGitCommandButtonsEnabled = true;
         private TabWithLogsViewModel _selectedTab;
@@ -29,15 +29,15 @@ namespace GitTank.ViewModels
 
         public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
 
-        public string SelectedRepo
+        public string SelectedRepository
         {
-            get => _selectedRepo;
+            get => _selectedRepository;
             set
             {
-                if (_selectedRepo != value)
+                if (_selectedRepository != value)
                 {
-                    _selectedRepo = value;
-                    SelectedTab = TabsWithLogs.FirstOrDefault(t => t.Header == _selectedRepo);
+                    _selectedRepository = value;
+                    SelectedTab = TabsWithLogs.FirstOrDefault(t => t.Header == _selectedRepository);
                     OnPropertyChanged();
                 }
             }
@@ -248,7 +248,7 @@ namespace GitTank.ViewModels
 
         private async Task OpenTerminal()
         {
-            await _gitProcessor.OpenTerminal(SelectedRepo);
+            await _gitProcessor.OpenTerminal(SelectedRepository);
         }
 
         #endregion
@@ -351,7 +351,7 @@ namespace GitTank.ViewModels
             var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
             Repositories.Clear();
             Repositories = new ObservableCollection<string>(repositories);
-            SelectedRepo = defaultRepository;
+            SelectedRepository = defaultRepository;
         }
 
         private List<string> ReadReposFromConfig()
