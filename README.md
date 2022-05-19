@@ -1,10 +1,10 @@
 # GitTank
 Git client that helps to manage and keep multiple repositries in a sync.
 
-Version | Build Status | Tests
------------- | ------------- | -------------
-Latest build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2412jpppsrern?svg=true)](https://ci.appveyor.com/project/Yuriy-Pelekh/gittank) | [![codecov](https://codecov.io/gh/Yuriy-Pelekh/GitTank/graph/badge.svg?token=3DFPOFMG80)](https://codecov.io/gh/Yuriy-Pelekh/GitTank)
-Stable build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2412jpppsrern/branch/main?svg=true)](https://ci.appveyor.com/project/Yuriy-Pelekh/gittank/branch/main) | [![codecov](https://codecov.io/gh/Yuriy-Pelekh/GitTank/branch/main/graph/badge.svg?token=3DFPOFMG80)](https://codecov.io/gh/Yuriy-Pelekh/GitTank)
+Version | Build Status | Tests | Maintainability | Test Coverage
+------------ | ------------- | ------------- | ------------- | -------------
+Latest build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2412jpppsrern?svg=true)](https://ci.appveyor.com/project/Yuriy-Pelekh/gittank) | [![codecov](https://codecov.io/gh/Yuriy-Pelekh/GitTank/graph/badge.svg?token=3DFPOFMG80)](https://codecov.io/gh/Yuriy-Pelekh/GitTank) | |
+Stable build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2412jpppsrern/branch/main?svg=true)](https://ci.appveyor.com/project/Yuriy-Pelekh/gittank/branch/main) | [![codecov](https://codecov.io/gh/Yuriy-Pelekh/GitTank/branch/main/graph/badge.svg?token=3DFPOFMG80)](https://codecov.io/gh/Yuriy-Pelekh/GitTank) | [![Maintainability](https://api.codeclimate.com/v1/badges/0051cc0a2ffddf2326fd/maintainability)](https://codeclimate.com/github/Yuriy-Pelekh/GitTank/maintainability) | [![Test Coverage](https://api.codeclimate.com/v1/badges/0051cc0a2ffddf2326fd/test_coverage)](https://codeclimate.com/github/Yuriy-Pelekh/GitTank/test_coverage)
 
 ![image](https://user-images.githubusercontent.com/4256363/169288310-54338b69-9960-4073-984f-160796ce5ec9.png)
 
