@@ -6,6 +6,8 @@ Version | Build Status | Tests
 Latest build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2412jpppsrern?svg=true)](https://ci.appveyor.com/project/Yuriy-Pelekh/gittank) | [![codecov](https://codecov.io/gh/Yuriy-Pelekh/GitTank/graph/badge.svg?token=3DFPOFMG80)](https://codecov.io/gh/Yuriy-Pelekh/GitTank)
 Stable build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2412jpppsrern/branch/main?svg=true)](https://ci.appveyor.com/project/Yuriy-Pelekh/gittank/branch/main) | [![codecov](https://codecov.io/gh/Yuriy-Pelekh/GitTank/branch/main/graph/badge.svg?token=3DFPOFMG80)](https://codecov.io/gh/Yuriy-Pelekh/GitTank)
 
+![image](https://user-images.githubusercontent.com/4256363/169288310-54338b69-9960-4073-984f-160796ce5ec9.png)
+
 ## About
 This project is designed to simplify work with multiple repositories simultaneously. The idea behind is that there are multiple dependent repositories that have always be on the same branch. GitTank does that and even more. It allows user to `checkout` or create new branch in all configured repositories in one click. Also, it supports other `git` commands like `fetch`, `pull`, `push`. There are plans to extend list of commands and use cases.
 
@@ -14,7 +16,6 @@ GitTank is highly efficient as it works with all repositories in separate thread
 This application is dedicated for developers. So, it means there is a big focus on enhanced logging for the application and for git commands.
 
 There are many other useful features and plans. Stay tuned 😊
-
 
 ## TODO
 - [x] Installer
