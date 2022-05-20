@@ -6,7 +6,7 @@ using System.Windows.Data;
 namespace GitTank.ValueConverters
 {
     [ValueConversion(typeof(string), typeof(string))]
-    public class FullPathValueConverter : IValueConverter
+    public class RelativeToFullPathValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

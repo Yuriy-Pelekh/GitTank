@@ -6,14 +6,14 @@ using NUnit.Framework;
 namespace GitTank.Tests.ValueConverters
 {
     [TestFixture]
-    public class FullPathValueConverterTest
+    public class RelativeToFullPathValueConverterTest
     {
-        private FullPathValueConverter _target = null!;
+        private RelativeToFullPathValueConverter _target = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _target = new FullPathValueConverter();
+            _target = new RelativeToFullPathValueConverter();
         }
 
         [Test]

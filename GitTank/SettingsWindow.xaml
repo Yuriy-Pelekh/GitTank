@@ -10,7 +10,7 @@
         MinHeight="450" MinWidth="450">
     <Window.Resources>
         <ResourceDictionary>
-            <valueConverters:FullPathValueConverter x:Key="FullPath" />
+            <valueConverters:RelativeToFullPathValueConverter x:Key="RelativeToFullPath" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -53,7 +53,7 @@
                                         x:Name="RepositoryPathColumn"
                                         Width="270"
                                         Header="Path"
-                                        DisplayMemberBinding="{Binding RepositoryPath, Converter={StaticResource FullPath}}" />
+                                        DisplayMemberBinding="{Binding RepositoryPath, Converter={StaticResource RelativeToFullPath}}" />
                                     <GridViewColumn
                                         Width="60"
                                         Header="Select">
