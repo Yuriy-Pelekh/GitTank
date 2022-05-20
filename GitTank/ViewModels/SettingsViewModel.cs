@@ -101,11 +101,6 @@ namespace GitTank.ViewModels
         {
             OnSetSettingsToAppSettingsFiles();
 
-            //var builder = new ConfigurationBuilder()
-            //    .SetBasePath(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName)
-            //    .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
-            //_settings = builder.Build();
-
             var mainWindow = new MainWindow(_settings, _logger);
             mainWindow.Show();
             foreach (Window window in Application.Current.Windows)
@@ -120,9 +115,15 @@ namespace GitTank.ViewModels
             Click?.Invoke();
         }
 
+        [Obsolete("Move it to Settings class")]
         private void OnSetSettingsToAppSettingsFiles()
         {
+#if DEBUG
             var appSettingsPath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "appsettings.Development.json");
+#else
+            var appSettingsPath = Path.Combine(Environment.CurrentDirectory, "appsettings.json");
+#endif
+
             var json = File.ReadAllText(appSettingsPath);
 
             var jsonSettings = new JsonSerializerSettings();
