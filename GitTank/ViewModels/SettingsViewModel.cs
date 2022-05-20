@@ -1,6 +1,5 @@
 ﻿using GitTank.Loggers;
 using GitTank.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using GitTank.Configuration;
 using GitTank.CustomCollections;
 using Application = System.Windows.Application;
 
@@ -26,14 +26,14 @@ namespace GitTank.ViewModels
         private bool _isAddRepositoryButtonEnabled = true;
         private bool _isRemoveRepositoryButtonEnabled = true;
         private bool _isSaveRepositoriesSettingsButtonEnabled;
-        private IConfiguration _configuration;
+        private ISettings _settings;
         private readonly ILogger _logger;
 
-        public SettingsViewModel(IConfiguration configuration, ILogger logger)
+        public SettingsViewModel(ISettings settings, ILogger logger)
         {
-            _gitProcessor = new GitProcessor(configuration, logger);
+            _gitProcessor = new GitProcessor(settings, logger);
             _logger = logger;
-            _configuration = configuration;
+            _settings = settings;
             OnLoaded();
         }
 
@@ -101,12 +101,12 @@ namespace GitTank.ViewModels
         {
             OnSetSettingsToAppSettingsFiles();
 
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName)
-                .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
-            _configuration = builder.Build();
+            //var builder = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName)
+            //    .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            //_settings = builder.Build();
 
-            var mainWindow = new MainWindow(_configuration, _logger);
+            var mainWindow = new MainWindow(_settings, _logger);
             mainWindow.Show();
             foreach (Window window in Application.Current.Windows)
             {
@@ -242,17 +242,14 @@ namespace GitTank.ViewModels
 
         private List<Sources> ReadSourcesFromConfig()
         {
-            var repositories = _configuration
-                .GetSection("appSettings")
-                .GetSection("sources").Get<List<Sources>>()
-                .ToList();
+            var repositories = _settings.Sources;
             return repositories;
         }
 
         private void UpdateAllRepositories(List<Sources> sources)
         {
-            var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
-            var defaultGitBranch = _configuration.GetValue<string>("appSettings:defaultBranch");
+            var defaultRepository = _settings.DefaultRepository;
+            var defaultGitBranch = _settings.DefaultBranch;
             foreach (var item in sources)
             {
                 foreach (var repo in item.Repositories)
