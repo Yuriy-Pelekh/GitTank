@@ -39,24 +39,25 @@ There are many other useful features and plans. Stay tuned 😊
 ![image](https://user-images.githubusercontent.com/4256363/169280350-bee2c76d-5e2c-4e9e-9f7c-aa7d767e3051.png)
 
 ### How to contribute
-Step 1: Sign into GitHub
-Step 2: Fork the project repository
-Step 3: Clone your fork
-Step 4: Navigate to your local repository
-Step 5: Check that your fork is the "origin" remote
-Step 6: Add the project repository as the "upstream" remote
-Step 7: Pull the latest changes from upstream into your local repository
-Step 8: Create a new branch
-Step 9: Make changes in your local repository
-Step 10: Commit your changes
-Step 11: Push your changes to your fork
-Step 12: Begin the pull request
-Step 13: Create the pull request
-Step 14: Review the pull request
-Step 15: Add more commits to your pull request
-Step 16: Discuss the pull request
-Step 17: Delete your branch from your fork
-Step 18: Delete your branch from your local repository
-Step 19: Synchronize your fork with the project repository
+- Step 1: Sign into GitHub
+- Step 2: Fork the project repository
+- Step 3: Clone your fork
+- Step 4: Navigate to your local repository
+- Step 5: Check that your fork is the "origin" remote
+- Step 6: Add the project repository as the "upstream" remote
+- Step 7: Pull the latest changes from upstream into your local repository
+- Step 8: Create a new branch
+- Step 9: Make changes in your local repository
+- Step 10: Commit your changes
+- Step 11: Push your changes to your fork
+- Step 12: Begin the pull request
+- Step 13: Create the pull request
+- Step 14: Review the pull request
+- Step 15: Add more commits to your pull request
+- Step 16: Discuss the pull request
+- Step 17: Delete your branch from your fork
+- Step 18: Delete your branch from your local repository
+- Step 19: Synchronize your fork with the project repository
+
 Congratulations!
 
