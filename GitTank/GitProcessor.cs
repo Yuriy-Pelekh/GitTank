@@ -1,5 +1,4 @@
 ﻿using GitTank.Models;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using GitTank.Loggers;
 using Serilog.Context;
 using System.Diagnostics;
+using GitTank.Configuration;
 
 namespace GitTank
 {
@@ -22,22 +22,19 @@ namespace GitTank
         private readonly List<Sources> _sources;
         private readonly ILogger _logger;
 
-        public GitProcessor(IConfiguration configuration, ILogger logger)
+        public GitProcessor(ISettings settings, ILogger logger)
         {
             _logger = logger;
 
             LogContext.PushProperty(Constants.SourceContext, GetType().Name);
 
-            _defaultRepository = configuration.GetValue<string>("appSettings:defaultRepository");
+            _defaultRepository = settings.DefaultRepository;
             logger.Debug($"Default repository: {_defaultRepository}");
 
-            _defaultBranch = configuration.GetValue<string>("appSettings:defaultBranch");
+            _defaultBranch = settings.DefaultBranch;
             logger.Debug($"Default branch: {_defaultBranch}");
 
-            _sources = configuration
-                .GetSection("appSettings")
-                .GetSection("sources")
-                .Get<List<Sources>>();
+            _sources = settings.Sources;
 
             _repositories = _sources
                 .SelectMany(source => source.Repositories)

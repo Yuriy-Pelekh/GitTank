@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using GitTank.Configuration;
 using GitTank.Loggers;
 using GitTank.ViewModels;
-using Microsoft.Extensions.Configuration;
 using Serilog.Context;
 
 namespace GitTank
@@ -15,14 +15,14 @@ namespace GitTank
     {
         private readonly ILogger _logger;
 
-        public MainWindow(IConfiguration configuration, ILogger logger)
+        public MainWindow(ISettings settings, ILogger logger)
         {
             _logger = logger;
             Closed += OnMainWindowClosed;
 
             InitializeComponent();
 
-            DataContext = new MainViewModel(configuration, logger);
+            DataContext = new MainViewModel(settings, logger);
         }
 
         private void OnMainWindowClosed(object sender, EventArgs e)

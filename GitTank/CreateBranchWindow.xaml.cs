@@ -1,7 +1,7 @@
 ﻿using GitTank.Loggers;
 using GitTank.ViewModels;
-using Microsoft.Extensions.Configuration;
 using System.Windows;
+using GitTank.Configuration;
 
 namespace GitTank
 {
@@ -10,10 +10,10 @@ namespace GitTank
     /// </summary>
     public partial class CreateBranchWindow
     {
-        public CreateBranchWindow(IConfiguration configuration, ILogger logger)
+        public CreateBranchWindow(ISettings settings, ILogger logger)
         {
             InitializeComponent();
-            DataContext = new CreateBranchViewModel(configuration, logger);
+            DataContext = new CreateBranchViewModel(settings, logger);
             ((CreateBranchViewModel)DataContext).CreateBranch += () =>
             {
                 Application.Current.Dispatcher.Invoke(Close);

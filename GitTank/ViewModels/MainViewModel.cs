@@ -1,20 +1,20 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Toolkit.Mvvm.Input;
+﻿using Microsoft.Toolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using GitTank.Loggers;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
+using GitTank.Configuration;
 using GitTank.CustomCollections;
-using GitTank.Models;
 
 namespace GitTank.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISettings _settings;
         private readonly GitProcessor _gitProcessor;
 
         private string _selectedRepository;
@@ -27,7 +27,7 @@ namespace GitTank.ViewModels
 
         public ObservableCollection<TabWithLogsViewModel> TabsWithLogs { get; set; }
 
-        public bool IsNewUI => _configuration.GetValue<bool>("appSettings:newUI");
+        public bool IsNewUI => _settings.IsNewUI;
 
         public string SelectedRepository
         {
@@ -37,7 +37,6 @@ namespace GitTank.ViewModels
                 if (_selectedRepository != value)
                 {
                     _selectedRepository = value;
-                    SelectedTab = TabsWithLogs.FirstOrDefault(t => t.Header == _selectedRepository);
                     OnPropertyChanged();
                 }
             }
@@ -68,7 +67,6 @@ namespace GitTank.ViewModels
                 }
             }
         }
-
 
         public bool AreAllGitCommandButtonsEnabled
         {
@@ -264,7 +262,7 @@ namespace GitTank.ViewModels
 
         private void OpenSettings()
         {
-            SettingsWindow settingsWindow = new(_configuration, _logger);
+            SettingsWindow settingsWindow = new(_settings, _logger);
             settingsWindow.Show();
         }
         #endregion
@@ -292,7 +290,7 @@ namespace GitTank.ViewModels
 
         private void OpenCreateBranchWindow()
         {
-            CreateBranchWindow createBranchWindow = new(_configuration, _logger);
+            CreateBranchWindow createBranchWindow = new(_settings, _logger);
             createBranchWindow.Closing += OnCreateBranchWindowClosing;
             ShowShadow = true;
             createBranchWindow.ShowDialog();
@@ -305,13 +303,22 @@ namespace GitTank.ViewModels
             Application.Current.Dispatcher.Invoke(async () => { await UpdateBranches(); });
         }
 
-        public MainViewModel(IConfiguration configuration, ILogger logger)
+        public MainViewModel(ISettings settings, ILogger logger)
         {
-            _configuration = configuration;
-            _gitProcessor = new GitProcessor(configuration, logger);
+            _settings = settings;
+            _gitProcessor = new GitProcessor(settings, logger);
             _gitProcessor.Output += OnOutput;
             _logger = logger;
+            PropertyChanged += OnPropertyChanged;
             OnLoaded();
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(SelectedRepository))
+            {
+                SelectedTab = TabsWithLogs.FirstOrDefault(tab => tab.Header == _selectedRepository);
+            }
         }
 
         private void OnLoaded()
@@ -348,7 +355,7 @@ namespace GitTank.ViewModels
 
         private void UpdateRepositories(List<string> repositories)
         {
-            var defaultRepository = _configuration.GetValue<string>("appSettings:defaultRepository");
+            var defaultRepository = _settings.DefaultRepository;
             Repositories.Clear();
             Repositories = new ObservableCollection<string>(repositories);
             SelectedRepository = defaultRepository;
@@ -356,10 +363,7 @@ namespace GitTank.ViewModels
 
         private List<string> ReadReposFromConfig()
         {
-            var repositories = _configuration
-                .GetSection("appSettings")
-                .GetSection("sources")
-                .Get<List<Sources>>()
+            var repositories = _settings.Sources
                 .SelectMany(c => c.Repositories)
                 .ToList();
             return repositories;

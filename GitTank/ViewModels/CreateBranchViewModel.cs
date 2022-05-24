@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
+using GitTank.Configuration;
 using GitTank.Loggers;
 using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Extensions.Configuration;
 
 namespace GitTank.ViewModels
 {
@@ -15,9 +15,9 @@ namespace GitTank.ViewModels
         private bool _isCreateButtonEnabled = true;
         private string _newBranchName;
 
-        public CreateBranchViewModel(IConfiguration configuration, ILogger logger)
+        public CreateBranchViewModel(ISettings settings, ILogger logger)
         {
-            _gitProcessor = new GitProcessor(configuration, logger);
+            _gitProcessor = new GitProcessor(settings, logger);
         }
 
         public bool IsCreateButtonEnabled

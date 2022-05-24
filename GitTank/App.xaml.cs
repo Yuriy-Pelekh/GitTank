@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using GitTank.Configuration;
 using GitTank.Loggers;
 using Serilog.Context;
 
@@ -83,6 +84,7 @@ namespace GitTank
         {
             services.AddSingleton(AddConfiguration());
             services.AddSingleton(AddLogger());
+            services.AddSingleton(typeof(ISettings), typeof(Settings));
             services.AddTransient(typeof(MainWindow));
         }
 
