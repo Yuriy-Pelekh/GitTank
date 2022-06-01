@@ -1,9 +1,22 @@
 # GitTank
 
 [![.NET Core Desktop](https://github.com/Yuriy-Pelekh/GitTank/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Yuriy-Pelekh/GitTank/actions/workflows/dotnet-desktop.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=Yuriy-Pelekh_GitTank)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
 
 Version | Build Status | Tests | Maintainability | Test Coverage
 ------------ | ------------- | ------------- | ------------- | -------------
