@@ -20,8 +20,11 @@ namespace GitTank.Tests.ValueConverters
         public void ConvertTest()
         {
             const string relativePath = @"..\..\..\..\..\GitTank";
-            var actual = _target.Convert(relativePath, typeof(string), null, CultureInfo.CurrentCulture);
-            Assert.False(((string)actual).Contains(".."));
+            var rawActual = _target.Convert(relativePath, typeof(string), null, CultureInfo.CurrentCulture);
+
+            Assert.NotNull(rawActual);
+            var actual = (string)rawActual;
+            Assert.False(actual.Contains(".."), actual);
         }
 
         [Test]
@@ -42,8 +45,11 @@ namespace GitTank.Tests.ValueConverters
         public void ConvertBackTest()
         {
             const string relativePath = @"C:\Users\Yuriy\repos\source\GitTank";
-            var actual = _target.ConvertBack(relativePath, typeof(string), null, CultureInfo.CurrentCulture);
-            Assert.True(((string)actual).Contains(".."));
+            var rawActual = _target.ConvertBack(relativePath, typeof(string), null, CultureInfo.CurrentCulture);
+            
+            Assert.NotNull(rawActual);
+            var actual = (string) rawActual;
+            Assert.True(actual.Contains(".."), actual);
         }
 
         [Test]
