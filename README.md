@@ -1,5 +1,7 @@
 # GitTank
 
+[![.NET Core Desktop](https://github.com/Yuriy-Pelekh/GitTank/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Yuriy-Pelekh/GitTank/actions/workflows/dotnet-desktop.yml)
+
 Version | Build Status | Tests | Maintainability | Test Coverage
 ------------ | ------------- | ------------- | ------------- | -------------
 Latest build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2412jpppsrern?svg=true)](https://ci.appveyor.com/project/Yuriy-Pelekh/gittank) | [![codecov](https://codecov.io/gh/Yuriy-Pelekh/GitTank/graph/badge.svg?token=3DFPOFMG80)](https://codecov.io/gh/Yuriy-Pelekh/GitTank) | |
