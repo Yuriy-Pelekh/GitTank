@@ -1,6 +1,9 @@
 # GitTank
 
 [![.NET Core Desktop](https://github.com/Yuriy-Pelekh/GitTank/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Yuriy-Pelekh/GitTank/actions/workflows/dotnet-desktop.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Yuriy-Pelekh_GitTank&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
+
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=Yuriy-Pelekh_GitTank)
 
 Version | Build Status | Tests | Maintainability | Test Coverage
 ------------ | ------------- | ------------- | ------------- | -------------
