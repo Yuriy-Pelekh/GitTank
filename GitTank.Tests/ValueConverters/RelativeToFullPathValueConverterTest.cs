@@ -1,5 +1,4 @@
 ﻿using System;
-using System.DirectoryServices.ActiveDirectory;
 using System.Globalization;
 using System.IO;
 using GitTank.ValueConverters;
@@ -23,7 +22,7 @@ namespace GitTank.Tests.ValueConverters
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             var pathRoot = Path.GetPathRoot(currentDirectory);
-            var relativePath = Path.GetRelativePath(currentDirectory, pathRoot);
+            var relativePath = Path.GetRelativePath(currentDirectory, pathRoot!);
             var rawActual = _target.Convert(relativePath, typeof(string), null, CultureInfo.CurrentCulture);
             Assert.NotNull(rawActual);
             var actual = (string)rawActual;
@@ -47,7 +46,8 @@ namespace GitTank.Tests.ValueConverters
         [Test]
         public void ConvertBackTest()
         {
-            string absolutePath = Path.GetFullPath(Directory.GetCurrentDirectory());
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var absolutePath = Path.GetFullPath("..", currentDirectory);
             var rawActual = _target.ConvertBack(absolutePath, typeof(string), null, CultureInfo.CurrentCulture);
             Assert.NotNull(rawActual);
             var actual = (string) rawActual;
