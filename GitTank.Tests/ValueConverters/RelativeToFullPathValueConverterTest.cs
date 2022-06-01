@@ -1,5 +1,7 @@
 ﻿using System;
+using System.DirectoryServices.ActiveDirectory;
 using System.Globalization;
+using System.IO;
 using GitTank.ValueConverters;
 using NUnit.Framework;
 
@@ -19,9 +21,10 @@ namespace GitTank.Tests.ValueConverters
         [Test]
         public void ConvertTest()
         {
-            const string relativePath = @"..\..\..\..\..\GitTank";
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var pathRoot = Path.GetPathRoot(currentDirectory);
+            var relativePath = Path.GetRelativePath(currentDirectory, pathRoot);
             var rawActual = _target.Convert(relativePath, typeof(string), null, CultureInfo.CurrentCulture);
-
             Assert.NotNull(rawActual);
             var actual = (string)rawActual;
             Assert.False(actual.Contains(".."), actual);
@@ -44,9 +47,8 @@ namespace GitTank.Tests.ValueConverters
         [Test]
         public void ConvertBackTest()
         {
-            const string relativePath = @"C:\Users\Yuriy\repos\source\GitTank";
-            var rawActual = _target.ConvertBack(relativePath, typeof(string), null, CultureInfo.CurrentCulture);
-            
+            string absolutePath = Path.GetFullPath(Directory.GetCurrentDirectory());
+            var rawActual = _target.ConvertBack(absolutePath, typeof(string), null, CultureInfo.CurrentCulture);
             Assert.NotNull(rawActual);
             var actual = (string) rawActual;
             Assert.True(actual.Contains(".."), actual);
