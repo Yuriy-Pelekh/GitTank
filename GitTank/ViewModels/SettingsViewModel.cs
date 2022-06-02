@@ -26,7 +26,7 @@ namespace GitTank.ViewModels
         private bool _isAddRepositoryButtonEnabled = true;
         private bool _isRemoveRepositoryButtonEnabled = true;
         private bool _isSaveRepositoriesSettingsButtonEnabled;
-        private ISettings _settings;
+        private readonly ISettings _settings;
         private readonly ILogger _logger;
 
         public SettingsViewModel(ISettings settings, ILogger logger)
@@ -203,7 +203,7 @@ namespace GitTank.ViewModels
                     AvailableRepositoriesCollection.Add(repository);
                 }
 
-                if (repository.StatusForCheckBox == false &&
+                if (!repository.StatusForCheckBox  &&
                     AvailableRepositoriesCollection.Any(path => path.RepositoryPath == repository.RepositoryPath))
                 {
                     AvailableRepositoriesCollection.Remove(repository);
