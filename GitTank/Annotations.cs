@@ -39,7 +39,7 @@ namespace GitTank.Annotations
   /// </summary>
   /// <example><code>
   /// [CanBeNull] object Test() => null;
-  /// 
+  ///
   /// void UseTest() {
   ///   var p = Test();
   ///   var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
@@ -112,7 +112,7 @@ namespace GitTank.Annotations
   /// <example><code>
   /// [StringFormatMethod("message")]
   /// void ShowError(string message, params object[] args) { /* do something */ }
-  /// 
+  ///
   /// void Foo() {
   ///   ShowError("Failed: {0}"); // Warning: Non-existing argument in format string
   /// }
@@ -264,12 +264,12 @@ namespace GitTank.Annotations
   /// <example><code>
   /// public class Foo : INotifyPropertyChanged {
   ///   public event PropertyChangedEventHandler PropertyChanged;
-  /// 
+  ///
   ///   [NotifyPropertyChangedInvocator]
   ///   protected virtual void NotifyChanged(string propertyName) { ... }
   ///
   ///   string _name;
-  /// 
+  ///
   ///   public string Name {
   ///     get { return _name; }
   ///     set { _name = value; NotifyChanged("LastName"); /* Warning */ }
@@ -388,7 +388,7 @@ namespace GitTank.Annotations
   /// <example><code>
   /// [CannotApplyEqualityOperator]
   /// class NoEquality { }
-  /// 
+  ///
   /// class UsesNoEquality {
   ///   void Test() {
   ///     var ca1 = new NoEquality();
@@ -409,7 +409,7 @@ namespace GitTank.Annotations
   /// <example><code>
   /// [BaseTypeRequired(typeof(IComponent)] // Specify requirement
   /// class ComponentAttribute : Attribute { }
-  /// 
+  ///
   /// [Component] // ComponentAttribute requires implementing IComponent interface
   /// class MyComponent : IComponent { }
   /// </code></example>
@@ -433,23 +433,23 @@ namespace GitTank.Annotations
   public sealed class UsedImplicitlyAttribute : Attribute
   {
     public UsedImplicitlyAttribute()
-      : this(ImplicitUseKindFlags.Default, ImplicitUseTargetFlags.Default) { }
+      : this(ImplicitUseKind.Default, ImplicitUseTarget.Default) { }
 
-    public UsedImplicitlyAttribute(ImplicitUseKindFlags useKindFlags)
-      : this(useKindFlags, ImplicitUseTargetFlags.Default) { }
+    public UsedImplicitlyAttribute(ImplicitUseKind useKindFlags)
+      : this(useKindFlags, ImplicitUseTarget.Default) { }
 
-    public UsedImplicitlyAttribute(ImplicitUseTargetFlags targetFlags)
-      : this(ImplicitUseKindFlags.Default, targetFlags) { }
+    public UsedImplicitlyAttribute(ImplicitUseTarget targetFlags)
+      : this(ImplicitUseKind.Default, targetFlags) { }
 
-    public UsedImplicitlyAttribute(ImplicitUseKindFlags useKindFlags, ImplicitUseTargetFlags targetFlags)
+    public UsedImplicitlyAttribute(ImplicitUseKind useKindFlags, ImplicitUseTarget targetFlags)
     {
       UseKindFlags = useKindFlags;
       TargetFlags = targetFlags;
     }
 
-    public ImplicitUseKindFlags UseKindFlags { get; }
+    public ImplicitUseKind UseKindFlags { get; }
 
-    public ImplicitUseTargetFlags TargetFlags { get; }
+    public ImplicitUseTarget TargetFlags { get; }
   }
 
   /// <summary>
@@ -462,23 +462,23 @@ namespace GitTank.Annotations
   public sealed class MeansImplicitUseAttribute : Attribute
   {
     public MeansImplicitUseAttribute()
-      : this(ImplicitUseKindFlags.Default, ImplicitUseTargetFlags.Default) { }
+      : this(ImplicitUseKind.Default, ImplicitUseTarget.Default) { }
 
-    public MeansImplicitUseAttribute(ImplicitUseKindFlags useKindFlags)
-      : this(useKindFlags, ImplicitUseTargetFlags.Default) { }
+    public MeansImplicitUseAttribute(ImplicitUseKind useKindFlags)
+      : this(useKindFlags, ImplicitUseTarget.Default) { }
 
-    public MeansImplicitUseAttribute(ImplicitUseTargetFlags targetFlags)
-      : this(ImplicitUseKindFlags.Default, targetFlags) { }
+    public MeansImplicitUseAttribute(ImplicitUseTarget targetFlags)
+      : this(ImplicitUseKind.Default, targetFlags) { }
 
-    public MeansImplicitUseAttribute(ImplicitUseKindFlags useKindFlags, ImplicitUseTargetFlags targetFlags)
+    public MeansImplicitUseAttribute(ImplicitUseKind useKindFlags, ImplicitUseTarget targetFlags)
     {
       UseKindFlags = useKindFlags;
       TargetFlags = targetFlags;
     }
 
-    [UsedImplicitly] public ImplicitUseKindFlags UseKindFlags { get; }
+    [UsedImplicitly] public ImplicitUseKind UseKindFlags { get; }
 
-    [UsedImplicitly] public ImplicitUseTargetFlags TargetFlags { get; }
+    [UsedImplicitly] public ImplicitUseTarget TargetFlags { get; }
   }
 
   /// <summary>
@@ -486,7 +486,7 @@ namespace GitTank.Annotations
   /// with <see cref="MeansImplicitUseAttribute"/> or <see cref="UsedImplicitlyAttribute"/>.
   /// </summary>
   [Flags]
-  public enum ImplicitUseKindFlags
+  public enum ImplicitUseKind
   {
     Default = Access | Assign | InstantiatedWithFixedConstructorSignature,
     /// <summary>Only entity marked with attribute considered used.</summary>
@@ -507,7 +507,7 @@ namespace GitTank.Annotations
   /// with <see cref="MeansImplicitUseAttribute"/> or <see cref="UsedImplicitlyAttribute"/>.
   /// </summary>
   [Flags]
-  public enum ImplicitUseTargetFlags
+  public enum ImplicitUseTarget
   {
     Default = Itself,
     Itself = 1,
@@ -523,13 +523,13 @@ namespace GitTank.Annotations
   /// This attribute is intended to mark publicly available API
   /// which should not be removed and so is treated as used.
   /// </summary>
-  [MeansImplicitUse(ImplicitUseTargetFlags.WithMembers)]
+  [MeansImplicitUse(ImplicitUseTarget.WithMembers)]
   [AttributeUsage(AttributeTargets.All, Inherited = false)]
-  public sealed class PublicAPIAttribute : Attribute
+  public sealed class PublicApiAttribute : Attribute
   {
-    public PublicAPIAttribute() { }
+    public PublicApiAttribute() { }
 
-    public PublicAPIAttribute([NotNull] string comment)
+    public PublicApiAttribute([NotNull] string comment)
     {
       Comment = comment;
     }
@@ -551,7 +551,7 @@ namespace GitTank.Annotations
   /// </summary>
   /// <example><code>
   /// [Pure] int Multiply(int x, int y) => x * y;
-  /// 
+  ///
   /// void M() {
   ///   Multiply(123, 42); // Warning: Return value of pure method is not used
   /// }
@@ -591,7 +591,7 @@ namespace GitTank.Annotations
   /// <example><code>
   /// class Foo {
   ///   [ProvidesContext] IBarService _barService = ...;
-  /// 
+  ///
   ///   void ProcessNode(INode node) {
   ///     DoSomething(node, node.GetGlobalServices().Bar);
   ///     //              ^ Warning: use value of '_barService' field
@@ -974,12 +974,12 @@ namespace GitTank.Annotations
   [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Property)]
   public sealed class CollectionAccessAttribute : Attribute
   {
-    public CollectionAccessAttribute(CollectionAccessType collectionAccessType)
+    public CollectionAccessAttribute(AccessOptions collectionAccessType)
     {
       CollectionAccessType = collectionAccessType;
     }
 
-    public CollectionAccessType CollectionAccessType { get; }
+    public AccessOptions CollectionAccessType { get; }
   }
 
   /// <summary>
@@ -987,7 +987,7 @@ namespace GitTank.Annotations
   /// how the collection method invocation affects the contents of the collection.
   /// </summary>
   [Flags]
-  public enum CollectionAccessType
+  public enum AccessOptions
   {
     /// <summary>Method does not use or modify content of the collection.</summary>
     None = 0,
@@ -1064,7 +1064,7 @@ namespace GitTank.Annotations
   /// {
   ///   // custom check for null but no enumeration
   /// }
-  /// 
+  ///
   /// void Foo(IEnumerable&lt;string&gt; values)
   /// {
   ///   ThrowIfNull(values, nameof(values));
