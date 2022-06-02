@@ -24,13 +24,13 @@ Latest build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2
 Stable build | [![Build status](https://ci.appveyor.com/api/projects/status/a6t2412jpppsrern/branch/main?svg=true)](https://ci.appveyor.com/project/Yuriy-Pelekh/gittank/branch/main) | [![codecov](https://codecov.io/gh/Yuriy-Pelekh/GitTank/branch/main/graph/badge.svg?token=3DFPOFMG80)](https://codecov.io/gh/Yuriy-Pelekh/GitTank) | [![Maintainability](https://api.codeclimate.com/v1/badges/0051cc0a2ffddf2326fd/maintainability)](https://codeclimate.com/github/Yuriy-Pelekh/GitTank/maintainability) | [![Test Coverage](https://api.codeclimate.com/v1/badges/0051cc0a2ffddf2326fd/test_coverage)](https://codeclimate.com/github/Yuriy-Pelekh/GitTank/test_coverage)
 
 ## About
-This project is designed to simplify work with multiple repositories simultaneously. The idea behind is that there are multiple dependent repositories that have always be on the same branch. GitTank does that and even more. It allows user to `checkout` or create new branch in all configured repositories in one click. Also, it supports other `git` commands like `fetch`, `pull`, `push`. There are plans to extend list of commands and use cases.
+This tool helps to manage and keep multiple repositories in sync. Its main goal is the simplification and speeding up of work with git repositories whenever the project requires engineers to work with several repos at once. GitTank supports popular git commands and allows to check out or create a new branch for all configured repositories in matter of seconds. The tool is highly efficient as it works with all repositories in separate threads and also has an emphasis on advanced logging for both the app actions and git commands.
 
-GitTank is highly efficient as it works with all repositories in separate threads. For example, regular user working with, let say, 5 repositories has to navigate to 5 directories and execute `pull` command in each of them and wait for completion before switching to another repository. GitTank does all that in one click and at least user spends 5 times less efforts and time.
-
-This application is dedicated for developers. So, it means there is a big focus on enhanced logging for the application and for git commands.
-
-There are many other useful features and plans. Stay tuned 😊
+### Benefits it grants
+- Support of fetch, pull, push and other commands for simultaneous execution in multiple repos
+- Separate threads logic ensures much faster work with several git repositories
+- Enhanced logging for the application and for git commands
+- Decreased possibility of human error when switching between repos to complete the needed work
 
 ![image](https://user-images.githubusercontent.com/4256363/169288310-54338b69-9960-4073-984f-160796ce5ec9.png)
 
