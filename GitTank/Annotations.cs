@@ -433,23 +433,23 @@ namespace GitTank.Annotations
   public sealed class UsedImplicitlyAttribute : Attribute
   {
     public UsedImplicitlyAttribute()
-      : this(ImplicitUseKind.Default, ImplicitUseTarget.Default) { }
+      : this(ImplicitUseKindOptions.Default, ImplicitUseTargetOptions.Default) { }
 
-    public UsedImplicitlyAttribute(ImplicitUseKind useKindFlags)
-      : this(useKindFlags, ImplicitUseTarget.Default) { }
+    public UsedImplicitlyAttribute(ImplicitUseKindOptions useKindOptions)
+      : this(useKindOptions, ImplicitUseTargetOptions.Default) { }
 
-    public UsedImplicitlyAttribute(ImplicitUseTarget targetFlags)
-      : this(ImplicitUseKind.Default, targetFlags) { }
+    public UsedImplicitlyAttribute(ImplicitUseTargetOptions targetOptions)
+      : this(ImplicitUseKindOptions.Default, targetOptions) { }
 
-    public UsedImplicitlyAttribute(ImplicitUseKind useKindFlags, ImplicitUseTarget targetFlags)
+    public UsedImplicitlyAttribute(ImplicitUseKindOptions useKindOptions, ImplicitUseTargetOptions targetOptions)
     {
-      UseKindFlags = useKindFlags;
-      TargetFlags = targetFlags;
+      UseKindOptions = useKindOptions;
+      TargetOptions = targetOptions;
     }
 
-    public ImplicitUseKind UseKindFlags { get; }
+    public ImplicitUseKindOptions UseKindOptions { get; }
 
-    public ImplicitUseTarget TargetFlags { get; }
+    public ImplicitUseTargetOptions TargetOptions { get; }
   }
 
   /// <summary>
@@ -462,23 +462,23 @@ namespace GitTank.Annotations
   public sealed class MeansImplicitUseAttribute : Attribute
   {
     public MeansImplicitUseAttribute()
-      : this(ImplicitUseKind.Default, ImplicitUseTarget.Default) { }
+      : this(ImplicitUseKindOptions.Default, ImplicitUseTargetOptions.Default) { }
 
-    public MeansImplicitUseAttribute(ImplicitUseKind useKindFlags)
-      : this(useKindFlags, ImplicitUseTarget.Default) { }
+    public MeansImplicitUseAttribute(ImplicitUseKindOptions useKindOptions)
+      : this(useKindOptions, ImplicitUseTargetOptions.Default) { }
 
-    public MeansImplicitUseAttribute(ImplicitUseTarget targetFlags)
-      : this(ImplicitUseKind.Default, targetFlags) { }
+    public MeansImplicitUseAttribute(ImplicitUseTargetOptions targetOptions)
+      : this(ImplicitUseKindOptions.Default, targetOptions) { }
 
-    public MeansImplicitUseAttribute(ImplicitUseKind useKindFlags, ImplicitUseTarget targetFlags)
+    public MeansImplicitUseAttribute(ImplicitUseKindOptions useKindOptions, ImplicitUseTargetOptions targetOptions)
     {
-      UseKindFlags = useKindFlags;
-      TargetFlags = targetFlags;
+      UseKindOptions = useKindOptions;
+      TargetOptions = targetOptions;
     }
 
-    [UsedImplicitly] public ImplicitUseKind UseKindFlags { get; }
+    [UsedImplicitly] public ImplicitUseKindOptions UseKindOptions { get; }
 
-    [UsedImplicitly] public ImplicitUseTarget TargetFlags { get; }
+    [UsedImplicitly] public ImplicitUseTargetOptions TargetOptions { get; }
   }
 
   /// <summary>
@@ -486,7 +486,7 @@ namespace GitTank.Annotations
   /// with <see cref="MeansImplicitUseAttribute"/> or <see cref="UsedImplicitlyAttribute"/>.
   /// </summary>
   [Flags]
-  public enum ImplicitUseKind
+  public enum ImplicitUseKindOptions
   {
     Default = Access | Assign | InstantiatedWithFixedConstructorSignature,
     /// <summary>Only entity marked with attribute considered used.</summary>
@@ -507,7 +507,7 @@ namespace GitTank.Annotations
   /// with <see cref="MeansImplicitUseAttribute"/> or <see cref="UsedImplicitlyAttribute"/>.
   /// </summary>
   [Flags]
-  public enum ImplicitUseTarget
+  public enum ImplicitUseTargetOptions
   {
     Default = Itself,
     Itself = 1,
@@ -523,7 +523,7 @@ namespace GitTank.Annotations
   /// This attribute is intended to mark publicly available API
   /// which should not be removed and so is treated as used.
   /// </summary>
-  [MeansImplicitUse(ImplicitUseTarget.WithMembers)]
+  [MeansImplicitUse(ImplicitUseTargetOptions.WithMembers)]
   [AttributeUsage(AttributeTargets.All, Inherited = false)]
   public sealed class PublicApiAttribute : Attribute
   {
@@ -974,12 +974,12 @@ namespace GitTank.Annotations
   [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Property)]
   public sealed class CollectionAccessAttribute : Attribute
   {
-    public CollectionAccessAttribute(AccessOptions collectionAccessType)
+    public CollectionAccessAttribute(CollectionAccessTypes collectionAccessType)
     {
       CollectionAccessType = collectionAccessType;
     }
 
-    public AccessOptions CollectionAccessType { get; }
+    public CollectionAccessTypes CollectionAccessType { get; }
   }
 
   /// <summary>
@@ -987,7 +987,7 @@ namespace GitTank.Annotations
   /// how the collection method invocation affects the contents of the collection.
   /// </summary>
   [Flags]
-  public enum AccessOptions
+  public enum CollectionAccessTypes
   {
     /// <summary>Method does not use or modify content of the collection.</summary>
     None = 0,
