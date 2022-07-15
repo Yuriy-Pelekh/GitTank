@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using GitTank.Common;
 using GitTank.Configuration;
+using GitTank.Core;
 using GitTank.Loggers;
 using Microsoft.Toolkit.Mvvm.Input;
 

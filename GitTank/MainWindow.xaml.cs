@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using GitTank.Common;
 using GitTank.Configuration;
 using GitTank.Loggers;
 using GitTank.ViewModels;

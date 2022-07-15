@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using GitTank.Configuration;
 using GitTank.CustomCollections;
 using Application = System.Windows.Application;
+using GitTank.Core;
 
 namespace GitTank.ViewModels
 {
