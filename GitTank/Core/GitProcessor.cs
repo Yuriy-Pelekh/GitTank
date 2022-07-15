@@ -8,8 +8,9 @@ using GitTank.Loggers;
 using Serilog.Context;
 using System.Diagnostics;
 using GitTank.Configuration;
+using GitTank.Common;
 
-namespace GitTank
+namespace GitTank.Core
 {
     internal class GitProcessor
     {
@@ -117,9 +118,9 @@ namespace GitTank
         {
             string[] arguments =
             {
-                //"fetch -v --progress --prune \"origin\"",
+                "fetch -v --progress --prune \"origin\"",
                 "pull --progress -v --no-rebase \"origin\"",
-                //"remote prune origin"
+                "remote prune origin"
             };
 
             List<Task> runningTasks = new();
