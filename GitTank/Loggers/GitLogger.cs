@@ -14,6 +14,7 @@ namespace GitTank.Loggers
                     rollingInterval: RollingInterval.Day,
                     shared: true)
                 .Enrich.FromLogContext()
+                .Enrich.With<ExceptionEnricher>()
                 .CreateLogger();
 
             Log = logger;
