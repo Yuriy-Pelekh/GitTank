@@ -1,4 +1,5 @@
-﻿using GitTank.Loggers;
+﻿using GitTank.Common;
+using GitTank.Loggers;
 using Serilog.Context;
 using System;
 using System.Diagnostics;
@@ -6,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GitTank
+namespace GitTank.Core
 {
     internal class ProcessHelper : IDisposable
     {

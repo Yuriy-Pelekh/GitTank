@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using GitTank.Configuration;
 using GitTank.Loggers;
 using Serilog.Context;
+using GitTank.Common;
 
 namespace GitTank
 {

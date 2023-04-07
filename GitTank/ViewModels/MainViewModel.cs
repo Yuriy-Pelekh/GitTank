@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Windows;
 using GitTank.Configuration;
 using GitTank.CustomCollections;
+using GitTank.Core;
 
 namespace GitTank.ViewModels
 {

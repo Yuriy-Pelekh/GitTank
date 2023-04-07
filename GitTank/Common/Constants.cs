@@ -1,4 +1,4 @@
-﻿namespace GitTank
+﻿namespace GitTank.Common
 {
     internal static class Constants
     {
